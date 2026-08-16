@@ -823,8 +823,13 @@ CHECKOUT
 
 <div id="homeDeliveryFields">
 <label>DISTRICT</label>
-<select id="coDistrict" onchange="updateCheckoutSummary()">
+<select id="coDistrict" onchange="onDistrictChange()">
 <option value="">Select district</option>
+</select>
+
+<label>UPAZILA / AREA</label>
+<select id="coUpazila" onchange="updateCheckoutSummary()">
+<option value="">Select district first</option>
 </select>
 
 <label>FULL ADDRESS</label>
@@ -850,6 +855,37 @@ Collect your order from our store:<br>
 <button class="btn" style="width:100%" type="submit">PLACE ORDER</button>
 
 </form>
+
+</div>
+
+<!-- ORDER SUCCESS -->
+<div class="panel" id="successPanel">
+
+<div class="panelHead">
+<h2>Order Placed!</h2>
+<button class="close" onclick="closePanels()">×</button>
+</div>
+
+<div style="text-align:center;padding:10px 0 25px">
+<div style="font-size:50px;margin-bottom:15px">✅</div>
+<p style="color:var(--muted);font-size:13px;line-height:1.7">
+Thank you! Your order has been received.<br>
+We'll contact you shortly to confirm.
+</p>
+</div>
+
+<div style="background:var(--cream);border-radius:12px;padding:18px;margin-bottom:20px">
+<div class="summaryRow"><span>Order ID</span><b id="successOrderId">—</b></div>
+<div class="summaryRow"><span>Total Amount</span><b id="successTotal">৳0</b></div>
+<div class="summaryRow" style="margin-bottom:0"><span>Delivery</span><b id="successMethod">—</b></div>
+</div>
+
+<a id="successWhatsapp" class="btn" style="width:100%;display:block;text-align:center;background:#25D366" href="#" target="_blank">
+CONFIRM VIA WHATSAPP
+</a>
+<button class="btn light" style="width:100%;margin-top:10px" onclick="closePanels()">
+CONTINUE SHOPPING
+</button>
 
 </div>
 
@@ -910,74 +946,4 @@ Your wishlist is currently empty.
 
 <main class="adminMain">
 
-<div class="adminTop">
-<div>
-<div class="small">ADMINISTRATION</div>
-<h1>Dashboard</h1>
-</div>
-
-<button class="adminBack" onclick="showShop()">Store</button>
-</div>
-
-<div class="dashboard">
-
-<div class="stat">
-<small>TOTAL SALES</small>
-<h2 id="adminTotalSales">৳0</h2>
-</div>
-
-<div class="stat">
-<small>ORDERS</small>
-<h2 id="adminOrderCount">0</h2>
-</div>
-
-<div class="stat">
-<small>CUSTOMERS</small>
-<h2 id="adminCustomerCount">—</h2>
-</div>
-
-<div class="stat">
-<small>PRODUCTS</small>
-<h2 id="adminProductCount">0</h2>
-</div>
-
-</div>
-
-<div class="adminTable">
-
-<h2 style="margin-bottom:20px">Recent Orders</h2>
-
-<table>
-<thead>
-<tr>
-<th>Order</th>
-<th>Customer</th>
-<th>Total</th>
-<th>Status</th>
-</tr>
-</thead>
-
-<tbody id="adminOrdersBody">
-<tr><td colspan="4">Loading...</td></tr>
-</tbody>
-</table>
-
-</div>
-
-</main>
-</div>
-
-</div>
-
-<div class="toast" id="toast"></div>
-
-<!-- Supabase client library -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script>
-
-/* ============================================================
-   SUPABASE CONNECTION
-   ============================================================ */
-const SUPABASE_URL = "https://otdbpahqfsarkzdpzwga.supabase.co";
-const SUPABASE_ANON_
+<div class
