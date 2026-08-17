@@ -420,6 +420,48 @@ color:#888
 .summaryRow{display:flex;justify-content:space-between;font-size:13px;margin-bottom:10px;color:#444}
 .summaryRow.total{font-size:16px;font-weight:800;color:#111;margin-top:15px}
 
+/* PRODUCT DETAIL GALLERY */
+.pdGallery{
+position:relative;
+aspect-ratio:3/4;
+background:var(--cream);
+border-radius:12px;
+overflow:hidden
+}
+.pdGalleryTrack{
+display:flex;
+height:100%;
+transition:transform .3s ease
+}
+.pdGalleryTrack .pdSlide{
+min-width:100%;height:100%;
+display:flex;align-items:center;justify-content:center;
+font-size:60px
+}
+.pdGalleryTrack .pdSlide img{
+width:100%;height:100%;object-fit:cover
+}
+.pdArrow{
+position:absolute;top:50%;transform:translateY(-50%);
+width:36px;height:36px;border-radius:50%;
+border:0;background:rgba(255,255,255,.9);
+font-size:20px;cursor:pointer;
+display:flex;align-items:center;justify-content:center;
+box-shadow:0 2px 8px rgba(0,0,0,.15)
+}
+.pdArrowLeft{left:12px}
+.pdArrowRight{right:12px}
+.pdDots{
+position:absolute;bottom:14px;left:0;right:0;
+display:flex;justify-content:center;gap:6px
+}
+.pdDots span{
+width:7px;height:7px;border-radius:50%;
+background:rgba(255,255,255,.6);
+transition:.2s
+}
+.pdDots span.active{background:#fff;width:18px;border-radius:5px}
+
 .toast{
 position:fixed;
 bottom:25px;
@@ -889,6 +931,44 @@ CONTINUE SHOPPING
 
 </div>
 
+<!-- PRODUCT DETAIL -->
+<div class="panel" id="productPanel">
+
+<div class="panelHead">
+<h2>Product Details</h2>
+<button class="close" onclick="closePanels()">×</button>
+</div>
+
+<div id="pdGallery" class="pdGallery">
+<div id="pdGalleryTrack" class="pdGalleryTrack"></div>
+<button class="pdArrow pdArrowLeft" onclick="pdSlide(-1)">‹</button>
+<button class="pdArrow pdArrowRight" onclick="pdSlide(1)">›</button>
+<div id="pdDots" class="pdDots"></div>
+</div>
+
+<div style="padding-top:18px">
+<div class="brand" id="pdBrand"></div>
+<h2 id="pdName" style="margin:6px 0 10px;font-size:22px"></h2>
+<div class="price" id="pdPrice" style="font-size:20px"></div>
+<div id="pdStock" style="font-size:12px;margin-top:6px"></div>
+
+<div class="qtyRow" style="margin-top:18px;gap:14px">
+<span style="font-size:12px;letter-spacing:1px;color:var(--muted)">QUANTITY</span>
+<button class="qtyBtn" onclick="pdChangeQty(-1)">−</button>
+<span id="pdQty">1</span>
+<button class="qtyBtn" onclick="pdChangeQty(1)">+</button>
+</div>
+
+<button class="btn" style="width:100%;margin-top:20px" id="pdAddToCart" onclick="pdAddToCart()">
+ADD TO CART
+</button>
+<button class="btn light" style="width:100%;margin-top:10px" onclick="pdBuyNow()">
+BUY NOW
+</button>
+</div>
+
+</div>
+
 <!-- WISHLIST -->
 <div class="panel left" id="wishlistPanel">
 
@@ -1160,7 +1240,7 @@ const imgOrIcon = p.imgs
 ? `<img src="${p.imgs.split(',')[0].trim()}" alt="${p.name}">`
 : `<div class="placeholder">${iconFor(p)}</div>`
 return `
-<div class="product" data-id="${p.id}" onclick="addToCart(${p.id})">
+<div class="product" data-id="${p.id}" onclick="openProductDetail(${p.id})">
 <div class="productImage">
 ${badge}
 ${imgOrIcon}
@@ -1230,8 +1310,98 @@ $("searchResults").innerHTML = results.length
 }
 
 /* ============================================================
-   CART — stored in localStorage on this domain
+   PRODUCT DETAIL — gallery, quantity, add to cart / buy now
    ============================================================ */
+let pdCurrentProduct = null
+let pdCurrentIndex = 0
+let pdQty = 1
+let pdTouchStartX = 0
+
+function openProductDetail(productId){
+const product = allProducts.find(p => p.id === productId)
+if(!product) return
+
+pdCurrentProduct = product
+pdCurrentIndex = 0
+pdQty = 1
+$("pdQty").textContent = 1
+
+const images = product.imgs
+? product.imgs.split(',').map(s => s.trim()).filter(Boolean)
+: []
+
+const track = $("pdGalleryTrack")
+const dots = $("pdDots")
+
+if(images.length){
+track.innerHTML = images.map(url => `<div class="pdSlide"><img src="${url}" alt="${product.name}"></div>`).join("")
+dots.innerHTML = images.map((_, i) => `<span class="${i===0?'active':''}"></span>`).join("")
+}else{
+const icon = CAT_ICONS[(product.cat||"").toLowerCase()] || CAT_ICONS.default
+track.innerHTML = `<div class="pdSlide">${icon}</div>`
+dots.innerHTML = ""
+}
+
+// Hide arrows/dots when there's only one image
+const multi = images.length > 1
+$("pdGallery").querySelectorAll('.pdArrow').forEach(a => a.style.display = multi ? 'flex' : 'none')
+
+track.style.transform = 'translateX(0%)'
+
+$("pdBrand").textContent = product.brand || ""
+$("pdName").textContent = product.name
+const oldPrice = product.old ? ` <span class="old">৳${Number(product.old).toLocaleString()}</span>` : ""
+$("pdPrice").innerHTML = `৳${Number(product.price).toLocaleString()}${oldPrice}`
+
+const inStock = Number(product.stock) > 0
+$("pdStock").textContent = inStock ? "✓ In Stock" : "Out of Stock"
+$("pdStock").style.color = inStock ? "#2a8f4f" : "var(--red)"
+$("pdAddToCart").disabled = !inStock
+$("pdAddToCart").textContent = inStock ? "ADD TO CART" : "OUT OF STOCK"
+
+// Swipe support (touch)
+track.ontouchstart = e => { pdTouchStartX = e.touches[0].clientX }
+track.ontouchend = e => {
+const delta = e.changedTouches[0].clientX - pdTouchStartX
+if(Math.abs(delta) > 40) pdSlide(delta > 0 ? -1 : 1)
+}
+
+openPanel("productPanel")
+}
+
+function pdSlide(direction){
+const images = pdCurrentProduct.imgs
+? pdCurrentProduct.imgs.split(',').map(s => s.trim()).filter(Boolean)
+: []
+if(images.length < 2) return
+
+pdCurrentIndex = (pdCurrentIndex + direction + images.length) % images.length
+$("pdGalleryTrack").style.transform = `translateX(-${pdCurrentIndex * 100}%)`
+$("pdDots").querySelectorAll('span').forEach((dot, i) =>
+dot.classList.toggle('active', i === pdCurrentIndex)
+)
+}
+
+function pdChangeQty(delta){
+pdQty = Math.max(1, pdQty + delta)
+$("pdQty").textContent = pdQty
+}
+
+function pdAddToCart(){
+if(!pdCurrentProduct) return
+for(let i = 0; i < pdQty; i++){
+addToCart(pdCurrentProduct.id)
+}
+closePanels()
+}
+
+function pdBuyNow(){
+if(!pdCurrentProduct) return
+for(let i = 0; i < pdQty; i++){
+addToCart(pdCurrentProduct.id)
+}
+checkout()
+}
 const CART_KEY = "lyrics_cart"
 
 function getCart(){
