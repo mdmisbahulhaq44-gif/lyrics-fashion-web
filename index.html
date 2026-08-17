@@ -864,18 +864,35 @@ CHECKOUT
 </div>
 
 <div id="homeDeliveryFields">
-<label>DISTRICT</label>
-<select id="coDistrict" onchange="onDistrictChange()">
-<option value="">Select district</option>
+<label>REGION</label>
+<select id="coRegion" onchange="onRegionChange()">
+<option value="">Select Region</option>
 </select>
 
-<label>UPAZILA / AREA</label>
-<select id="coUpazila" onchange="updateCheckoutSummary()">
-<option value="">Select district first</option>
+<label>CITY</label>
+<select id="coCity" onchange="onCityChange()" disabled>
+<option value="">Select City</option>
 </select>
 
-<label>FULL ADDRESS</label>
-<textarea id="coAddress" placeholder="House, road, area..."></textarea>
+<label>AREA</label>
+<select id="coArea" onchange="onAreaChange()" disabled>
+<option value="">Select Area</option>
+</select>
+
+<label id="coSubAreaLabel">SUB AREA (OPTIONAL)</label>
+<select id="coSubArea" onchange="updateCheckoutSummary()" disabled style="display:none">
+<option value="">Select Subarea</option>
+</select>
+
+<label>ADDRESS</label>
+<textarea id="coAddress" placeholder="Type House, Flat No, Road"></textarea>
+
+<label>ADDRESS TYPE</label>
+<div class="radioRow" id="coAddressType">
+<label><input type="radio" name="coAddrType" value="Home" checked> 🏠 Home</label>
+<label><input type="radio" name="coAddrType" value="Office"> 💼 Office</label>
+<label><input type="radio" name="coAddrType" value="Hometown"> 🏢 Hometown</label>
+</div>
 </div>
 
 <div id="pickupFields" style="display:none">
@@ -1561,22 +1578,26 @@ isFree
 }
 }
 
+let divisionIdByName = {}
 let districtIdByName = {}
+let dhakaAreaIdByName = {}
+let upazilaIdByName = {}
+const DHAKA_CITY_VALUE = 'DHAKA_CITY'
 
-async function loadDistrictsIntoSelect(){
+async function loadRegionsIntoSelect(){
 const { data, error } = await supabaseClient
-.from('districts')
+.from('divisions')
 .select('id,name_en,name')
 .order('name_en', { ascending:true })
 
-const select = $("coDistrict")
+const select = $("coRegion")
 if(error || !data){
 console.error(error)
 return
 }
 data.forEach(d => {
 const label = d.name_en || d.name
-districtIdByName[label] = d.id
+divisionIdByName[label] = d.id
 const opt = document.createElement('option')
 opt.value = label
 opt.textContent = label
@@ -1584,37 +1605,221 @@ select.appendChild(opt)
 })
 }
 
-async function onDistrictChange(){
-const districtName = $("coDistrict").value
-const upazilaSelect = $("coUpazila")
-upazilaSelect.innerHTML = '<option value="">Loading...</option>'
+async function onRegionChange(){
+const regionName = $("coRegion").value
+const citySelect = $("coCity")
+const areaSelect = $("coArea")
+const subAreaSelect = $("coSubArea")
 
-const districtId = districtIdByName[districtName]
+citySelect.innerHTML = '<option value="">Loading...</option>'
+citySelect.disabled = true
+areaSelect.innerHTML = '<option value="">Select Area</option>'
+areaSelect.disabled = true
+subAreaSelect.innerHTML = '<option value="">Select Subarea</option>'
+subAreaSelect.disabled = true
+subAreaSelect.style.display = 'none'
+
+const divisionId = divisionIdByName[regionName]
+if(!divisionId){
+citySelect.innerHTML = '<option value="">Select City</option>'
+updateCheckoutSummary()
+return
+}
+
+const { data, error } = await supabaseClient
+.from('districts')
+.select('id,name_en,name')
+.eq('division_id', divisionId)
+.order('name_en', { ascending:true })
+
+if(error || !data){
+console.error(error)
+citySelect.innerHTML = '<option value="">Could not load cities</option>'
+updateCheckoutSummary()
+return
+}
+
+let options = '<option value="">Select City</option>'
+// Dhaka Division gets a special "Dhaka City" entry above the regular
+// districts, matching how Bangladeshi marketplaces separate the metro
+// area (with its own area/sub-area system) from the rest of the district.
+const isDhakaDivision = regionName.toLowerCase().includes('dhaka')
+if(isDhakaDivision){
+options += `<option value="${DHAKA_CITY_VALUE}">Dhaka City</option>`
+}
+
+data.forEach(d => {
+let label = d.name_en || d.name
+districtIdByName[label] = d.id
+// Relabel the plain "Dhaka" district as "Dhaka District" when shown
+// alongside "Dhaka City" so the two are clearly distinct.
+if(isDhakaDivision && label.toLowerCase() === 'dhaka'){
+label = 'Dhaka District'
+districtIdByName[label] = d.id
+}
+options += `<option value="${label}">${label}</option>`
+})
+
+citySelect.innerHTML = options
+citySelect.disabled = false
+updateCheckoutSummary()
+}
+
+async function onCityChange(){
+const cityValue = $("coCity").value
+const areaSelect = $("coArea")
+const subAreaSelect = $("coSubArea")
+
+areaSelect.innerHTML = '<option value="">Loading...</option>'
+areaSelect.disabled = true
+subAreaSelect.innerHTML = '<option value="">Select Subarea</option>'
+subAreaSelect.disabled = true
+subAreaSelect.style.display = 'none'
+
+if(!cityValue){
+areaSelect.innerHTML = '<option value="">Select Area</option>'
+updateCheckoutSummary()
+return
+}
+
+if(cityValue === DHAKA_CITY_VALUE){
+// Dhaka City uses its own 113-area list instead of upazilas
+const { data, error } = await supabaseClient
+.from('dhaka_city_areas')
+.select('id,name_en,name_bn')
+.order('name_en', { ascending:true })
+
+if(error || !data){
+console.error(error)
+areaSelect.innerHTML = '<option value="">Could not load areas</option>'
+updateCheckoutSummary()
+return
+}
+
+dhakaAreaIdByName = {}
+areaSelect.innerHTML = '<option value="">Select Area</option>' +
+data.map(a => {
+const label = a.name_en || a.name_bn
+dhakaAreaIdByName[label] = a.id
+return `<option value="${label}">${label}</option>`
+}).join('')
+
+$("coSubAreaLabel").textContent = 'SUB AREA (OPTIONAL)'
+subAreaSelect.style.display = 'flex'
+areaSelect.disabled = false
+updateCheckoutSummary()
+return
+}
+
+// Regular district — area list comes from upazilas
+const districtId = districtIdByName[cityValue]
 if(!districtId){
-upazilaSelect.innerHTML = '<option value="">Select district first</option>'
+areaSelect.innerHTML = '<option value="">Select Area</option>'
 updateCheckoutSummary()
 return
 }
 
 const { data, error } = await supabaseClient
 .from('upazilas')
-.select('name_en,name')
+.select('id,name_en,name')
 .eq('district_id', districtId)
 .order('name_en', { ascending:true })
 
 if(error || !data){
 console.error(error)
-upazilaSelect.innerHTML = '<option value="">Could not load areas</option>'
+areaSelect.innerHTML = '<option value="">Could not load areas</option>'
 updateCheckoutSummary()
 return
 }
 
-upazilaSelect.innerHTML = '<option value="">Select upazila/area</option>' +
+upazilaIdByName = {}
+areaSelect.innerHTML = '<option value="">Select Area</option>' +
+data.map(u => {
+const label = u.name_en || u.name
+upazilaIdByName[label] = u.id
+return `<option value="${label}">${label}</option>`
+}).join('')
+
+$("coSubAreaLabel").textContent = 'UNION'
+subAreaSelect.style.display = 'flex'
+areaSelect.disabled = false
+updateCheckoutSummary()
+}
+
+async function onAreaChange(){
+const cityValue = $("coCity").value
+const areaValue = $("coArea").value
+const subAreaSelect = $("coSubArea")
+
+if(!areaValue){
+subAreaSelect.innerHTML = '<option value="">Select Subarea</option>'
+subAreaSelect.disabled = true
+updateCheckoutSummary()
+return
+}
+
+if(cityValue === DHAKA_CITY_VALUE){
+// Inside Dhaka City: Sub Area comes from the dhaka_city_sub_areas table
+const areaId = dhakaAreaIdByName[areaValue]
+if(!areaId){
+updateCheckoutSummary()
+return
+}
+
+subAreaSelect.innerHTML = '<option value="">Loading...</option>'
+const { data, error } = await supabaseClient
+.from('dhaka_city_sub_areas')
+.select('name_en,name_bn')
+.eq('area_id', areaId)
+.order('name_en', { ascending:true })
+
+if(error || !data || !data.length){
+subAreaSelect.innerHTML = '<option value="">Select Subarea</option>'
+subAreaSelect.disabled = true
+updateCheckoutSummary()
+return
+}
+
+subAreaSelect.innerHTML = '<option value="">Select Subarea</option>' +
+data.map(s => {
+const label = s.name_en || s.name_bn
+return `<option value="${label}">${label}</option>`
+}).join('')
+subAreaSelect.disabled = false
+updateCheckoutSummary()
+return
+}
+
+// Outside Dhaka City: this same field becomes "Union", populated from
+// the 4,500+ union dataset for the selected upazila.
+const upazilaId = upazilaIdByName[areaValue]
+if(!upazilaId){
+subAreaSelect.innerHTML = '<option value="">Select Union</option>'
+subAreaSelect.disabled = true
+updateCheckoutSummary()
+return
+}
+
+subAreaSelect.innerHTML = '<option value="">Loading...</option>'
+const { data, error } = await supabaseClient
+.from('unions')
+.select('name_en,name')
+.eq('upazila_id', upazilaId)
+.order('name_en', { ascending:true })
+
+if(error || !data || !data.length){
+subAreaSelect.innerHTML = '<option value="">Select Union</option>'
+subAreaSelect.disabled = true
+updateCheckoutSummary()
+return
+}
+
+subAreaSelect.innerHTML = '<option value="">Select Union</option>' +
 data.map(u => {
 const label = u.name_en || u.name
 return `<option value="${label}">${label}</option>`
 }).join('')
-
+subAreaSelect.disabled = false
 updateCheckoutSummary()
 }
 
@@ -1624,8 +1829,8 @@ updateCheckoutSummary()
 async function checkout(){
 if(!getCart().length) return
 await loadDeliverySettings()
-if(!$("coDistrict").options.length || $("coDistrict").options.length === 1){
-await loadDistrictsIntoSelect()
+if(!$("coRegion").options.length || $("coRegion").options.length === 1){
+await loadRegionsIntoSelect()
 }
 $("pickupAddressText").textContent = deliverySettings.pickup_address
 await updateCheckoutSummary()
@@ -1640,10 +1845,14 @@ $("homeDeliveryFields").style.flexDirection = 'column'
 $("homeDeliveryFields").style.gap = '12px'
 $("pickupFields").style.display = method === 'pickup' ? 'block' : 'none'
 if(method === 'home_delivery'){
-$("coDistrict").required = true
+$("coRegion").required = true
+$("coCity").required = true
+$("coArea").required = true
 $("coAddress").required = true
 }else{
-$("coDistrict").required = false
+$("coRegion").required = false
+$("coCity").required = false
+$("coArea").required = false
 $("coAddress").required = false
 }
 updateCheckoutSummary()
@@ -1652,8 +1861,11 @@ updateCheckoutSummary()
 async function updateCheckoutSummary(){
 const subtotal = cartSubtotal()
 const method = document.querySelector('input[name="coMethod"]:checked').value
-const district = $("coDistrict").value
-const { charge, label, isFree } = await calculateDeliveryCharge(subtotal, method, district)
+const cityValue = $("coCity").value
+// "Dhaka City" and the plain "Dhaka District" both bill at the in-city
+// delivery rate — everything else pays the outside-Dhaka rate.
+const cityForPricing = cityValue === DHAKA_CITY_VALUE ? 'Dhaka' : cityValue
+const { charge, label, isFree } = await calculateDeliveryCharge(subtotal, method, cityForPricing)
 
 $("coSubtotal").textContent = "৳" + subtotal.toLocaleString()
 $("coDeliveryLabel").textContent = label
@@ -1673,8 +1885,14 @@ return
 const name = $("coName").value.trim()
 const phone = $("coPhone").value.trim()
 const method = document.querySelector('input[name="coMethod"]:checked').value
-const district = method === 'home_delivery' ? $("coDistrict").value : ''
-const upazila = method === 'home_delivery' ? $("coUpazila").value : ''
+const region = method === 'home_delivery' ? $("coRegion").value : ''
+const cityValue = method === 'home_delivery' ? $("coCity").value : ''
+const cityLabel = cityValue === DHAKA_CITY_VALUE ? 'Dhaka City' : cityValue
+const area = method === 'home_delivery' ? $("coArea").value : ''
+const subArea = method === 'home_delivery' ? $("coSubArea").value : ''
+const addressType = method === 'home_delivery'
+? (document.querySelector('input[name="coAddrType"]:checked')?.value || 'Home')
+: ''
 const address = method === 'home_delivery' ? $("coAddress").value.trim() : deliverySettings.pickup_address
 const note = $("coNote").value.trim()
 
@@ -1683,13 +1901,14 @@ toast("Please fill in your name and phone number.")
 return
 }
 
-if(method === 'home_delivery' && (!district || !address)){
-toast("Please fill in district and address.")
+if(method === 'home_delivery' && (!region || !cityValue || !area || !address)){
+toast("Please fill in region, city, area and address.")
 return
 }
 
 const subtotal = cartSubtotal()
-const { charge } = await calculateDeliveryCharge(subtotal, method, district)
+const cityForPricing = cityValue === DHAKA_CITY_VALUE ? 'Dhaka' : cityValue
+const { charge } = await calculateDeliveryCharge(subtotal, method, cityForPricing)
 
 const submitBtn = e.target.querySelector('button[type="submit"]')
 submitBtn.disabled = true
@@ -1706,12 +1925,16 @@ items: cart.map(i => `${i.name} x${i.qty}`).join(', '),
 payment: 'COD',
 status: 'Pending',
 date: new Date().toISOString(),
-district: district,
-upazila: upazila,
+district: cityLabel,
+upazila: area,
 delivery_method: method,
 delivery_address: address,
 delivery_phone: phone,
-delivery_note: note,
+delivery_note: [
+subArea ? `${cityValue === DHAKA_CITY_VALUE ? 'Sub Area' : 'Union'}: ${subArea}` : '',
+addressType ? `Address Type: ${addressType}` : '',
+note
+].filter(Boolean).join(' | '),
 delivery_charge: idx === 0 ? charge : 0,
 product_id: item.id,
 quantity: item.qty
@@ -1733,7 +1956,7 @@ return
 // (with real id) is visible to you in the admin dashboard / Supabase table.
 const firstOrderId = "LF" + Date.now().toString().slice(-8)
 const total = subtotal + charge
-const methodLabel = method === 'pickup' ? 'Store Pickup (Mirpur 12)' : `Home Delivery — ${district}${upazila ? ', ' + upazila : ''}`
+const methodLabel = method === 'pickup' ? 'Store Pickup (Mirpur 12)' : `Home Delivery — ${cityLabel}${area ? ', ' + area : ''}${subArea ? ', ' + subArea : ''}`
 
 // Build a WhatsApp message so the customer can confirm the order
 // instantly with the shop owner — no backend/SMS service needed.
