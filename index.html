@@ -946,4 +946,749 @@ Your wishlist is currently empty.
 
 <main class="adminMain">
 
-<div class
+<div class="adminTop">
+<div>
+<div class="small">ADMINISTRATION</div>
+<h1>Dashboard</h1>
+</div>
+
+<button class="adminBack" onclick="showShop()">Store</button>
+</div>
+
+<div class="dashboard">
+
+<div class="stat">
+<small>TOTAL SALES</small>
+<h2 id="adminTotalSales">৳0</h2>
+</div>
+
+<div class="stat">
+<small>ORDERS</small>
+<h2 id="adminOrderCount">0</h2>
+</div>
+
+<div class="stat">
+<small>CUSTOMERS</small>
+<h2 id="adminCustomerCount">—</h2>
+</div>
+
+<div class="stat">
+<small>PRODUCTS</small>
+<h2 id="adminProductCount">0</h2>
+</div>
+
+</div>
+
+<div class="adminTable">
+
+<h2 style="margin-bottom:20px">Recent Orders</h2>
+
+<table>
+<thead>
+<tr>
+<th>Order</th>
+<th>Customer</th>
+<th>Total</th>
+<th>Status</th>
+</tr>
+</thead>
+
+<tbody id="adminOrdersBody">
+<tr><td colspan="4">Loading...</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</main>
+</div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Supabase client library -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+/* ============================================================
+   SUPABASE CONNECTION
+   ============================================================ */
+const SUPABASE_URL = "https://otdbpahqfsarkzdpzwga.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_AykcRsZJ3KH1-pmmbbEOpA_-2Cb6NbR";
+
+if(typeof window.supabase === 'undefined'){
+console.error('Supabase library failed to load from CDN. Check your internet connection or CDN access.')
+}
+const supabaseClient = window.supabase
+? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+: null;
+
+// Turns any error (string, Error, Supabase error object, plain object)
+// into a readable message instead of "[object Object]"
+function readableError(err){
+if(!err) return 'Unknown error'
+if(typeof err === 'string') return err
+if(err.message) return err.message
+try{ return JSON.stringify(err) } catch(e){ return String(err) }
+}
+
+window.addEventListener('unhandledrejection', function(e){
+console.error('Unhandled error:', readableError(e.reason))
+})
+
+const ADMIN_EMAIL = "mdmisbahulhaq44@gmail.com";
+
+function $(id){
+return document.getElementById(id)
+}
+
+/* ============================================================
+   PANELS
+   ============================================================ */
+function openPanel(id){
+closePanels()
+$("overlay").classList.add("show")
+$(id).classList.add("show")
+}
+
+function closePanels(){
+$("overlay").classList.remove("show")
+document.querySelectorAll(".panel").forEach(x=>x.classList.remove("show"))
+}
+
+function openAccount(){
+openPanel("accountPanel")
+}
+
+function openCart(){
+renderCart()
+openPanel("cartPanel")
+}
+
+function openWishlist(){
+openPanel("wishlistPanel")
+}
+
+function openSearch(){
+openPanel("searchPanel")
+setTimeout(()=>$("searchInput").focus(),200)
+}
+
+function showLogin(){
+$("loginForm").style.display="flex"
+$("registerForm").style.display="none"
+$("loginTab").classList.add("active")
+$("registerTab").classList.remove("active")
+}
+
+function showRegister(){
+$("loginForm").style.display="none"
+$("registerForm").style.display="flex"
+$("loginTab").classList.remove("active")
+$("registerTab").classList.add("active")
+}
+
+function toast(message){
+$("toast").textContent=message
+$("toast").classList.add("show")
+setTimeout(()=>$("toast").classList.remove("show"),2500)
+}
+
+/* ============================================================
+   AUTH (Supabase Auth)
+   ============================================================ */
+async function login(e){
+e.preventDefault()
+const email = $("loginEmail").value.trim()
+const password = $("loginPassword").value
+const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password })
+if(error){
+toast("Login failed: " + readableError(error))
+return
+}
+toast("Welcome back!")
+closePanels()
+if(email.toLowerCase() === ADMIN_EMAIL){
+location.hash = "#admin"
+showAdmin()
+}
+}
+
+async function register(e){
+e.preventDefault()
+const name = $("regName").value.trim()
+const email = $("regEmail").value.trim()
+const password = $("regPassword").value
+const password2 = $("regPassword2").value
+if(password !== password2){
+toast("Passwords do not match.")
+return
+}
+const { data, error } = await supabaseClient.auth.signUp({
+email, password,
+options:{ data:{ full_name:name } }
+})
+if(error){
+toast("Registration failed: " + readableError(error))
+return
+}
+toast("Account created! Check your email to confirm.")
+showLogin()
+}
+
+/* ============================================================
+   PRODUCTS — loaded live from Supabase
+   ============================================================ */
+let allProducts = []
+const CAT_ICONS = {
+"shirt":"👔","jeans":"👖","formal pant":"👖",
+"dress":"👗","bag":"👜","shoes":"👠","default":"🛍️"
+}
+
+function iconFor(p){
+if(p.imgs) return null // has a real image
+const key = (p.cat||"").toLowerCase()
+return CAT_ICONS[key] || CAT_ICONS.default
+}
+
+function productCardHTML(p){
+const badge = p.badge ? `<span class="badge ${p.badge.toLowerCase()==='sale'?'sale':''}">${p.badge}</span>` : ""
+const oldPrice = p.old ? `<span class="old">৳${Number(p.old).toLocaleString()}</span>` : ""
+const imgOrIcon = p.imgs
+? `<img src="${p.imgs.split(',')[0].trim()}" alt="${p.name}">`
+: `<div class="placeholder">${iconFor(p)}</div>`
+return `
+<div class="product" data-id="${p.id}" onclick="addToCart(${p.id})">
+<div class="productImage">
+${badge}
+${imgOrIcon}
+</div>
+<div class="brand">${p.brand||""}</div>
+<h3>${p.name}</h3>
+<div class="price">৳${Number(p.price).toLocaleString()} ${oldPrice}</div>
+</div>`
+}
+
+async function loadProducts(){
+const { data, error } = await supabaseClient
+.from('products')
+.select('id,name,brand,price,old,badge,cat,imgs,stock')
+.order('created_at', { ascending:false })
+
+if(error){
+console.error(error)
+$("productsGrid").innerHTML = `<div class="empty">Could not load products.</div>`
+return
+}
+
+allProducts = data || []
+renderProductGrid(allProducts)
+renderFilters(allProducts)
+}
+
+function renderProductGrid(list){
+if(!list.length){
+$("productsGrid").innerHTML = `<div class="empty">No products available right now.</div>`
+return
+}
+$("productsGrid").innerHTML = list.map(productCardHTML).join("")
+}
+
+function renderFilters(list){
+const cats = ["ALL", ...new Set(list.map(p=>p.cat).filter(Boolean))]
+$("filters").innerHTML = cats.map(c =>
+`<button class="filter ${c==='ALL'?'active':''}" data-cat="${c}" onclick="filterByCategory('${c.replace(/'/g,"\\'")}', this)">${c.toUpperCase()}</button>`
+).join("")
+}
+
+function filterByCategory(cat, btn){
+document.querySelectorAll(".filter").forEach(f=>f.classList.remove("active"))
+btn.classList.add("active")
+if(cat === "ALL"){
+renderProductGrid(allProducts)
+}else{
+renderProductGrid(allProducts.filter(p=>p.cat===cat))
+}
+}
+
+function searchProducts(e){
+e.preventDefault()
+const q = $("searchInput").value.trim().toLowerCase()
+if(!q){
+$("searchResults").innerHTML = ""
+toast("Enter a product name.")
+return
+}
+const results = allProducts.filter(p =>
+p.name.toLowerCase().includes(q) || (p.brand||"").toLowerCase().includes(q)
+)
+$("searchResults").innerHTML = results.length
+? `<div class="products" style="grid-template-columns:repeat(2,1fr)">${results.map(productCardHTML).join("")}</div>`
+: `<div class="empty">No products found for "${q}"</div>`
+}
+
+/* ============================================================
+   CART — stored in localStorage on this domain
+   ============================================================ */
+const CART_KEY = "lyrics_cart"
+
+function getCart(){
+try{ return JSON.parse(localStorage.getItem(CART_KEY)) || [] }
+catch(e){ return [] }
+}
+
+function saveCart(cart){
+localStorage.setItem(CART_KEY, JSON.stringify(cart))
+updateCartBadge()
+}
+
+function updateCartBadge(){
+const cart = getCart()
+const count = cart.reduce((s,i)=>s+i.qty,0)
+const badge = $("cartCount")
+if(count > 0){
+badge.style.display = "flex"
+badge.textContent = count
+}else{
+badge.style.display = "none"
+}
+}
+
+function addToCart(productId){
+const product = allProducts.find(p => p.id === productId)
+if(!product) return
+if(Number(product.stock) <= 0){
+toast("This item is out of stock.")
+return
+}
+const cart = getCart()
+const existing = cart.find(i => i.id === productId)
+if(existing){
+existing.qty += 1
+}else{
+cart.push({
+id: product.id,
+name: product.name,
+price: Number(product.price),
+imgs: product.imgs,
+qty: 1
+})
+}
+saveCart(cart)
+toast(product.name + " added to cart")
+}
+
+function changeQty(productId, delta){
+const cart = getCart()
+const item = cart.find(i => i.id === productId)
+if(!item) return
+item.qty += delta
+const updated = item.qty > 0 ? cart : cart.filter(i => i.id !== productId)
+saveCart(updated)
+renderCart()
+}
+
+function removeFromCart(productId){
+saveCart(getCart().filter(i => i.id !== productId))
+renderCart()
+}
+
+function cartSubtotal(){
+return getCart().reduce((s,i)=>s + i.price*i.qty, 0)
+}
+
+function renderCart(){
+const cart = getCart()
+const wrap = $("cartItemsWrap")
+
+if(!cart.length){
+wrap.innerHTML = `<div class="empty">🛒<br><br>Your cart is empty.</div>`
+$("cartTotal").textContent = "৳0"
+$("checkoutBtn").disabled = true
+return
+}
+
+wrap.innerHTML = cart.map(i => `
+<div class="cartItem">
+<div class="cartImg">${i.imgs ? `<img src="${i.imgs.split(',')[0].trim()}">` : "🛍️"}</div>
+<div class="cartInfo">
+<h4>${i.name}</h4>
+<small>৳${i.price.toLocaleString()} each</small>
+<div class="qtyRow">
+<button class="qtyBtn" onclick="changeQty(${i.id},-1)">−</button>
+<span>${i.qty}</span>
+<button class="qtyBtn" onclick="changeQty(${i.id},1)">+</button>
+<button class="removeBtn" onclick="removeFromCart(${i.id})">Remove</button>
+</div>
+</div>
+</div>
+`).join("")
+
+$("cartTotal").textContent = "৳" + cartSubtotal().toLocaleString()
+$("checkoutBtn").disabled = false
+}
+
+/* ============================================================
+   DELIVERY SETTINGS — fetched from Supabase `settings` table
+   ============================================================ */
+let deliverySettings = null
+
+async function loadDeliverySettings(){
+if(deliverySettings) return deliverySettings
+
+const { data, error } = await supabaseClient
+.from('settings')
+.select('key,value')
+.in('key', [
+'delivery_charge_dhaka','delivery_charge_outside',
+'free_delivery_threshold','pickup_available',
+'pickup_address','pickup_charge','whatsapp_number'
+])
+
+if(error || !data || !data.length){
+console.error('Delivery settings fetch failed:', error)
+deliverySettings = {
+delivery_charge_dhaka:50, delivery_charge_outside:60,
+free_delivery_threshold:1000, pickup_available:true,
+pickup_address:'Mirpur 12, Dhaka', pickup_charge:0,
+whatsapp_number:'8801877270165'
+}
+return deliverySettings
+}
+
+const map = {}
+data.forEach(r => map[r.key] = r.value)
+deliverySettings = {
+delivery_charge_dhaka: Number(map.delivery_charge_dhaka),
+delivery_charge_outside: Number(map.delivery_charge_outside),
+free_delivery_threshold: Number(map.free_delivery_threshold),
+pickup_available: map.pickup_available === 'true',
+pickup_address: map.pickup_address,
+pickup_charge: Number(map.pickup_charge||0),
+whatsapp_number: map.whatsapp_number || '8801877270165'
+}
+return deliverySettings
+}
+
+async function calculateDeliveryCharge(subtotal, deliveryMethod, district){
+const s = await loadDeliverySettings()
+
+if(deliveryMethod === 'pickup'){
+return { charge:s.pickup_charge, label:'Store Pickup', isFree:true }
+}
+
+const isDhaka = (district||"").trim().toLowerCase() === 'dhaka'
+let charge = isDhaka ? s.delivery_charge_dhaka : s.delivery_charge_outside
+const isFree = subtotal >= s.free_delivery_threshold
+if(isFree) charge = 0
+
+return {
+charge,
+label: isFree ? 'Free Delivery' : (isDhaka ? 'Dhaka Delivery' : 'Outside Dhaka Delivery'),
+isFree
+}
+}
+
+let districtIdByName = {}
+
+async function loadDistrictsIntoSelect(){
+const { data, error } = await supabaseClient
+.from('districts')
+.select('id,name_en,name')
+.order('name_en', { ascending:true })
+
+const select = $("coDistrict")
+if(error || !data){
+console.error(error)
+return
+}
+data.forEach(d => {
+const label = d.name_en || d.name
+districtIdByName[label] = d.id
+const opt = document.createElement('option')
+opt.value = label
+opt.textContent = label
+select.appendChild(opt)
+})
+}
+
+async function onDistrictChange(){
+const districtName = $("coDistrict").value
+const upazilaSelect = $("coUpazila")
+upazilaSelect.innerHTML = '<option value="">Loading...</option>'
+
+const districtId = districtIdByName[districtName]
+if(!districtId){
+upazilaSelect.innerHTML = '<option value="">Select district first</option>'
+updateCheckoutSummary()
+return
+}
+
+const { data, error } = await supabaseClient
+.from('upazilas')
+.select('name_en,name')
+.eq('district_id', districtId)
+.order('name_en', { ascending:true })
+
+if(error || !data){
+console.error(error)
+upazilaSelect.innerHTML = '<option value="">Could not load areas</option>'
+updateCheckoutSummary()
+return
+}
+
+upazilaSelect.innerHTML = '<option value="">Select upazila/area</option>' +
+data.map(u => {
+const label = u.name_en || u.name
+return `<option value="${label}">${label}</option>`
+}).join('')
+
+updateCheckoutSummary()
+}
+
+/* ============================================================
+   CHECKOUT
+   ============================================================ */
+async function checkout(){
+if(!getCart().length) return
+await loadDeliverySettings()
+if(!$("coDistrict").options.length || $("coDistrict").options.length === 1){
+await loadDistrictsIntoSelect()
+}
+$("pickupAddressText").textContent = deliverySettings.pickup_address
+await updateCheckoutSummary()
+closePanels()
+openPanel("checkoutPanel")
+}
+
+function onDeliveryMethodChange(){
+const method = document.querySelector('input[name="coMethod"]:checked').value
+$("homeDeliveryFields").style.display = method === 'home_delivery' ? 'flex' : 'none'
+$("homeDeliveryFields").style.flexDirection = 'column'
+$("homeDeliveryFields").style.gap = '12px'
+$("pickupFields").style.display = method === 'pickup' ? 'block' : 'none'
+if(method === 'home_delivery'){
+$("coDistrict").required = true
+$("coAddress").required = true
+}else{
+$("coDistrict").required = false
+$("coAddress").required = false
+}
+updateCheckoutSummary()
+}
+
+async function updateCheckoutSummary(){
+const subtotal = cartSubtotal()
+const method = document.querySelector('input[name="coMethod"]:checked').value
+const district = $("coDistrict").value
+const { charge, label, isFree } = await calculateDeliveryCharge(subtotal, method, district)
+
+$("coSubtotal").textContent = "৳" + subtotal.toLocaleString()
+$("coDeliveryLabel").textContent = label
+$("coDeliveryCharge").textContent = isFree ? "FREE" : "৳" + charge.toLocaleString()
+$("coTotal").textContent = "৳" + (subtotal + charge).toLocaleString()
+}
+
+async function placeOrder(e){
+e.preventDefault()
+
+const cart = getCart()
+if(!cart.length){
+toast("Your cart is empty.")
+return
+}
+
+const name = $("coName").value.trim()
+const phone = $("coPhone").value.trim()
+const method = document.querySelector('input[name="coMethod"]:checked').value
+const district = method === 'home_delivery' ? $("coDistrict").value : ''
+const upazila = method === 'home_delivery' ? $("coUpazila").value : ''
+const address = method === 'home_delivery' ? $("coAddress").value.trim() : deliverySettings.pickup_address
+const note = $("coNote").value.trim()
+
+if(!name || !phone){
+toast("Please fill in your name and phone number.")
+return
+}
+
+if(method === 'home_delivery' && (!district || !address)){
+toast("Please fill in district and address.")
+return
+}
+
+const subtotal = cartSubtotal()
+const { charge } = await calculateDeliveryCharge(subtotal, method, district)
+
+const submitBtn = e.target.querySelector('button[type="submit"]')
+submitBtn.disabled = true
+submitBtn.textContent = "PLACING ORDER..."
+
+try{
+// One row per cart line item. Full delivery charge is applied to the
+// first item only so the total isn't charged multiple times.
+const rows = cart.map((item, idx) => ({
+customer: name,
+phone: phone,
+address: address,
+items: cart.map(i => `${i.name} x${i.qty}`).join(', '),
+payment: 'COD',
+status: 'Pending',
+date: new Date().toISOString(),
+district: district,
+upazila: upazila,
+delivery_method: method,
+delivery_address: address,
+delivery_phone: phone,
+delivery_note: note,
+delivery_charge: idx === 0 ? charge : 0,
+product_id: item.id,
+quantity: item.qty
+}))
+
+const { error } = await supabaseClient.from('orders').insert(rows)
+
+if(error){
+console.error(error)
+toast("Order failed: " + readableError(error))
+submitBtn.disabled = false
+submitBtn.textContent = "PLACE ORDER"
+return
+}
+
+// Note: orders has no public SELECT policy (by design, so customers can't
+// browse each other's orders), so we can't read back the real DB id here.
+// A client-side reference number is shown instead — the actual order
+// (with real id) is visible to you in the admin dashboard / Supabase table.
+const firstOrderId = "LF" + Date.now().toString().slice(-8)
+const total = subtotal + charge
+const methodLabel = method === 'pickup' ? 'Store Pickup (Mirpur 12)' : `Home Delivery — ${district}${upazila ? ', ' + upazila : ''}`
+
+// Build a WhatsApp message so the customer can confirm the order
+// instantly with the shop owner — no backend/SMS service needed.
+const waText = encodeURIComponent(
+`New Order #${firstOrderId}\n` +
+`Name: ${name}\n` +
+`Phone: ${phone}\n` +
+`Items: ${cart.map(i => `${i.name} x${i.qty}`).join(', ')}\n` +
+`Delivery: ${methodLabel}\n` +
+(address ? `Address: ${address}\n` : '') +
+(note ? `Note: ${note}\n` : '') +
+`Total: ৳${total.toLocaleString()} (COD)`
+)
+const waNumber = (deliverySettings.whatsapp_number || '8801877270165').replace(/\D/g,'')
+$("successWhatsapp").href = `https://wa.me/${waNumber}?text=${waText}`
+
+$("successOrderId").textContent = "#" + firstOrderId
+$("successTotal").textContent = "৳" + total.toLocaleString()
+$("successMethod").textContent = methodLabel
+
+saveCart([])
+renderCart()
+e.target.reset()
+onDeliveryMethodChange()
+openPanel("successPanel")
+
+}catch(err){
+console.error(err)
+toast("Something went wrong. Please try again.")
+}finally{
+submitBtn.disabled = false
+submitBtn.textContent = "PLACE ORDER"
+}
+}
+
+/* ============================================================
+   NEWSLETTER
+   ============================================================ */
+function subscribe(e){
+e.preventDefault()
+toast("Thank you for subscribing!")
+e.target.reset()
+}
+
+/* ============================================================
+   ADMIN
+   ============================================================ */
+async function showAdmin(){
+try{
+if(!supabaseClient){
+toast("Connection issue — please reload the page.")
+openAccount()
+return
+}
+const { data:{ session } } = await supabaseClient.auth.getSession()
+if(!session || session.user.email.toLowerCase() !== ADMIN_EMAIL){
+toast("Admin access only. Please login with the admin account.")
+openAccount()
+return
+}
+$("shopPage").style.display="none"
+$("adminPage").style.display="block"
+closePanels()
+window.scrollTo(0,0)
+loadAdminData()
+}catch(err){
+console.error('showAdmin failed:', readableError(err))
+toast("Could not check login status — please login again.")
+openAccount()
+}
+}
+
+function showShop(){
+$("adminPage").style.display="none"
+$("shopPage").style.display="block"
+window.scrollTo(0,0)
+}
+
+async function loadAdminData(){
+$("adminProductCount").textContent = allProducts.length
+
+const { data: orders, error } = await supabaseClient
+.from('orders')
+.select('id,customer,total_amount,status,created_at')
+.order('created_at', { ascending:false })
+.limit(10)
+
+if(error){
+console.error(error)
+$("adminOrdersBody").innerHTML = `<tr><td colspan="4">Could not load orders (are you logged in as admin?)</td></tr>`
+return
+}
+
+const total = (orders||[]).reduce((s,o)=>s+Number(o.total_amount||0),0)
+$("adminTotalSales").textContent = "৳" + total.toLocaleString()
+$("adminOrderCount").textContent = orders.length
+
+$("adminOrdersBody").innerHTML = orders.length
+? orders.map(o => `
+<tr>
+<td>#${o.id}</td>
+<td>${o.customer||'—'}</td>
+<td>৳${Number(o.total_amount||0).toLocaleString()}</td>
+<td>${o.status}</td>
+</tr>`).join("")
+: `<tr><td colspan="4">No orders yet</td></tr>`
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+(async function init(){
+updateCartBadge()
+await loadProducts()
+
+document.querySelectorAll('input[name="coMethod"]').forEach(r =>
+r.addEventListener('change', onDeliveryMethodChange)
+)
+
+if(location.hash === "#admin"){
+showAdmin()
+}
+})()
+
+</script>
+
+</body>
+</html>
