@@ -3,7 +3,61 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LYRICS FASHION — Premium Fashion</title>
+<title>LYRICS FASHION — Premium Fashion in Bangladesh</title>
+<meta name="description" content="LYRICS FASHION — Premium men's and women's clothing in Bangladesh. Shirts, pants, polos and more with nationwide cash-on-delivery. Shop the latest collection online.">
+<meta name="keywords" content="LYRICS FASHION, Bangladesh fashion, men's clothing BD, women's clothing BD, online shirt shop Bangladesh, premium fashion Dhaka">
+<link rel="canonical" href="https://lyricsfashionbd.netlify.app/">
+
+<!-- Open Graph / social sharing -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="LYRICS FASHION">
+<meta property="og:title" content="LYRICS FASHION — Premium Fashion in Bangladesh">
+<meta property="og:description" content="Shop premium men's and women's fashion online in Bangladesh with nationwide cash-on-delivery.">
+<meta property="og:url" content="https://lyricsfashionbd.netlify.app/">
+
+<!-- Structured data: Organization -->
+<script type="application/ld+json">
+{
+"@context": "https://schema.org",
+"@type": "ClothingStore",
+"name": "LYRICS FASHION",
+"url": "https://lyricsfashionbd.netlify.app/",
+"description": "Premium men's and women's fashion retailer based in Dhaka, Bangladesh.",
+"address": {
+"@type": "PostalAddress",
+"addressLocality": "Mirpur, Dhaka",
+"addressCountry": "BD"
+},
+"sameAs": [
+"https://www.instagram.com/tanjumishu_2.0"
+]
+}
+</script>
+
+<!-- Google Analytics — paste your GA4 Measurement ID below (starts with G-) to activate -->
+<!--
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-XXXXXXX');
+</script>
+-->
+
+<!-- Meta (Facebook) Pixel — paste your Pixel ID below to activate -->
+<!--
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', 'YOUR_PIXEL_ID');
+fbq('track', 'PageView');
+</script>
+-->
+
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
 <style>
@@ -32,19 +86,38 @@ font-size:11px;letter-spacing:2px;padding:10px
 }
 
 nav{
-height:76px;padding:0 5%;
+height:64px;padding:0 4%;
 display:flex;align-items:center;
 justify-content:space-between;
 border-bottom:1px solid var(--line);
 position:sticky;top:0;z-index:100;
-background:rgba(255,255,255,.96);
-backdrop-filter:blur(15px)
+background:#fff
+}
+
+.navLeft, .navRightIcons{
+display:flex;align-items:center;gap:16px;
+flex:1
+}
+.navRightIcons{justify-content:flex-end}
+
+.hamburgerBtn{
+background:none;border:0;
+font-size:22px;cursor:pointer;
+padding:6px;color:#111;
+display:flex;flex-direction:column;gap:4px;
+width:24px
+}
+.hamburgerBtn span{
+display:block;height:2px;width:100%;
+background:#111
 }
 
 .logo{
-font-size:23px;font-weight:800;
-letter-spacing:1px
+font-size:19px;font-weight:800;
+letter-spacing:.5px;
+text-align:center
 }
+.logo img{height:28px;display:block;margin:0 auto}
 
 .navlinks{
 display:flex;gap:30px;list-style:none
@@ -55,25 +128,83 @@ font-size:12px;letter-spacing:1.5px
 }
 .navright{display:flex;gap:8px}
 .iconbtn{
-background:white;border:1px solid var(--line);
-width:42px;height:42px;border-radius:50%;
-cursor:pointer;font-size:17px;
-position:relative
+background:none;border:0;
+width:34px;height:34px;
+cursor:pointer;font-size:19px;
+position:relative;color:#111
 }
-.iconbtn:hover{border-color:#111}
 .cartCount{
-position:absolute;top:-6px;right:-6px;
+position:absolute;top:-4px;right:-2px;
 background:var(--red);color:#fff;
-font-size:10px;font-weight:700;
-width:18px;height:18px;border-radius:50%;
+font-size:9px;font-weight:700;
+width:16px;height:16px;border-radius:50%;
 display:flex;align-items:center;justify-content:center
+}
+
+.catTabBar{
+display:flex;
+border-bottom:1px solid var(--line);
+background:#fafafa;
+overflow-x:auto;
+white-space:nowrap
+}
+.catTabBar button{
+flex:1;background:none;border:0;
+padding:14px 10px;
+font-size:11px;font-weight:600;letter-spacing:1px;
+color:#333;cursor:pointer;
+border-right:1px solid var(--line)
+}
+.catTabBar button:last-child{border-right:0}
+.catTabBar button:first-child{
+background:#111;color:#fff
+}
+
+/* BOTTOM MOBILE NAV — Fabrilife style */
+.bottomNav{
+position:fixed;bottom:0;left:0;right:0;
+background:#fff;
+border-top:1px solid var(--line);
+display:flex;
+z-index:200;
+padding-bottom:env(safe-area-inset-bottom)
+}
+.bottomNav button{
+flex:1;background:none;border:0;
+display:flex;flex-direction:column;align-items:center;
+gap:3px;padding:9px 0 8px;
+font-size:9px;letter-spacing:.5px;
+color:#888;cursor:pointer;position:relative
+}
+.bottomNav button .bnIcon{font-size:19px;line-height:1;position:relative;display:inline-block}
+.bottomNav button.active{color:#111}
+body{padding-bottom:64px}
+
+/* DRAWER MENU */
+.drawer{
+position:fixed;top:0;bottom:0;left:0;
+width:min(300px,80vw);
+background:#fff;z-index:501;
+transform:translateX(-100%);
+transition:.3s;
+padding:25px 22px;
+overflow:auto
+}
+.drawer.show{transform:translateX(0)}
+.drawer a{
+display:block;padding:14px 0;
+text-decoration:none;color:#111;
+font-size:14px;letter-spacing:1px;
+border-bottom:1px solid var(--line)
 }
 
 .hero{
 min-height:78vh;
 background:
-linear-gradient(90deg,rgba(0,0,0,.55),rgba(0,0,0,.05)),
-linear-gradient(135deg,#c9b08b,#eee8dc);
+linear-gradient(90deg,rgba(0,0,0,.6),rgba(0,0,0,.15)),
+url('https://res.cloudinary.com/dtdztxbfg/image/upload/v1786946898/file_00000000078c8206b955fa4524f68d0d_xnkryd.png');
+background-size:cover;
+background-position:center 20%;
 display:flex;align-items:center;
 padding:7%;
 color:white
@@ -133,33 +264,40 @@ font-weight:800
 }
 
 .categories{
-display:grid;
-grid-template-columns:2fr 1fr 1fr;
-grid-template-rows:230px 230px;
-gap:12px
+display:flex;
+flex-direction:column;
+gap:14px
 }
 .category{
 position:relative;
 overflow:hidden;
-border-radius:12px;
+border-radius:0;
 background:linear-gradient(135deg,#eee,#d5d5d5);
-display:flex;align-items:end;
-padding:25px;
+aspect-ratio:3/1;
+display:flex;align-items:center;
+padding:0 8%;
 color:white
 }
-.category:first-child{grid-row:1/3}
-.category:nth-child(2){background:linear-gradient(135deg,#d8c4a0,#a88c62)}
-.category:nth-child(3){background:linear-gradient(135deg,#d9d9d9,#999)}
-.category:nth-child(4){background:linear-gradient(135deg,#decac0,#ad8b7b)}
-.category:nth-child(5){background:linear-gradient(135deg,#b8c3bd,#6e8077)}
+.category:nth-child(1){background:linear-gradient(120deg,#3a3226,#8c7a5c)}
+.category:nth-child(2){background:linear-gradient(120deg,#5a4a3a,#c9b08b)}
+.category:nth-child(3){background:linear-gradient(120deg,#2c2c2c,#8a8a8a)}
+.category:nth-child(4){background:linear-gradient(120deg,#4a3d33,#ad8b7b)}
+.category:nth-child(5){background:linear-gradient(120deg,#111,#444)}
 .category:after{
 content:"";position:absolute;inset:0;
-background:linear-gradient(transparent,rgba(0,0,0,.65))
+background:linear-gradient(90deg,rgba(0,0,0,.45),transparent 60%)
 }
 .catText{position:relative;z-index:2}
-.catText h3{font-size:25px}
+.catText h3{
+font-size:13px;
+font-weight:600;
+letter-spacing:6px;
+text-transform:uppercase
+}
 .catText span{
-font-size:10px;letter-spacing:2px
+display:block;
+font-size:9px;letter-spacing:1.5px;
+margin-top:6px;color:rgba(255,255,255,.75)
 }
 
 .filters{
@@ -181,14 +319,14 @@ background:#111;color:white;border-color:#111
 
 .products{
 display:grid;
-grid-template-columns:repeat(4,1fr);
-gap:22px
+grid-template-columns:repeat(2,1fr);
+gap:16px
 }
 .product{cursor:pointer}
 .productImage{
-aspect-ratio:3/4;
-background:var(--cream);
-border-radius:12px;
+aspect-ratio:1/1;
+background:#f4f4f4;
+border-radius:6px;
 position:relative;
 overflow:hidden;
 display:flex;
@@ -196,9 +334,26 @@ align-items:center;
 justify-content:center
 }
 .productImage img{
-width:100%;height:100%;
-object-fit:cover
+width:82%;height:82%;
+object-fit:contain;
+transition:transform .4s ease
 }
+.product:hover .productImage img{
+transform:scale(1.06)
+}
+
+@keyframes skeletonPulse{
+0%{opacity:.6} 50%{opacity:1} 100%{opacity:.6}
+}
+.skeletonCard .productImage{
+background:#eee;
+animation:skeletonPulse 1.4s ease-in-out infinite
+}
+.skeletonLine{
+height:12px;background:#eee;border-radius:4px;margin-top:12px;
+animation:skeletonPulse 1.4s ease-in-out infinite
+}
+.skeletonLine.short{width:60%}
 .placeholder{
 font-size:55px
 }
@@ -213,20 +368,18 @@ border-radius:20px
 }
 .badge.sale{background:var(--red)}
 .product h3{
-font-size:15px;
-margin-top:12px;
-margin-bottom:5px
+font-size:12.5px;
+font-weight:400;
+margin-top:10px;
+margin-bottom:3px;
+color:#333;
+white-space:nowrap;overflow:hidden;text-overflow:ellipsis
 }
-.brand{
-font-size:9px;
-letter-spacing:2px;
-color:var(--muted);
-text-transform:uppercase
-}
-.price{font-weight:800;font-size:16px}
+.brand{display:none}
+.price{font-weight:700;font-size:13.5px;color:#111}
 .old{
 color:#999;text-decoration:line-through;
-font-size:12px;margin-left:7px
+font-size:11px;margin-left:6px
 }
 
 .promo{
@@ -551,9 +704,12 @@ border-radius:20px;
 cursor:pointer
 }
 
+@media(min-width:901px){
+.products{grid-template-columns:repeat(4,1fr);gap:22px}
+}
+
 @media(max-width:900px){
 .navlinks{display:none}
-.products{grid-template-columns:repeat(2,1fr)}
 .features{grid-template-columns:repeat(2,1fr)}
 .feature{border-bottom:1px solid var(--line)}
 .footergrid{grid-template-columns:1fr 1fr}
@@ -563,16 +719,10 @@ cursor:pointer
 @media(max-width:600px){
 nav{padding:0 18px}
 .logo{font-size:19px}
-.hero{min-height:72vh;padding:30px}
+.hero{min-height:72vh;padding:30px;background-position:center 15%}
 .section{padding:55px 18px}
-.categories{
-grid-template-columns:1fr 1fr;
-grid-template-rows:220px 150px 150px
-}
-.category:first-child{
-grid-column:1/3;
-grid-row:auto
-}
+.category{aspect-ratio:2.6/1;padding:0 7%}
+.catText h3{font-size:12px;letter-spacing:5px}
 .products{gap:12px}
 .heading h2{font-size:28px}
 .promo{margin:10px 18px 55px;padding:45px 25px}
@@ -596,39 +746,43 @@ FREE SHIPPING ON ORDERS OVER ৳1,000
 </div>
 
 <nav>
+<div class="navLeft">
+<button class="hamburgerBtn" onclick="openDrawer()"><span></span><span></span><span></span></button>
+</div>
+
 <div class="logo">LYRICS FASHION</div>
 
-<ul class="navlinks">
-<li><a href="#new">NEW</a></li>
-<li><a href="#women">WOMEN</a></li>
-<li><a href="#men">MEN</a></li>
-<li><a href="#accessories">ACCESSORIES</a></li>
-<li><a href="#sale">SALE</a></li>
-</ul>
-
-<div class="navright">
+<div class="navRightIcons">
 <button class="iconbtn" onclick="openSearch()">⌕</button>
-<button class="iconbtn" onclick="openAccount()">♙</button>
 <button class="iconbtn" onclick="openWishlist()">♡</button>
-<button class="iconbtn" onclick="openCart()">🛒<span class="cartCount" id="cartCount" style="display:none">0</span></button>
 </div>
 </nav>
 
-<section class="hero">
-<div class="heroText">
-<div class="tag">LYRICS FASHION / 2026 COLLECTION</div>
-<h1>DEFINE<br>YOUR<br>STYLE.</h1>
-<p>
-Premium fashion designed for people who want
-clean silhouettes, modern elegance and timeless
-confidence.
-</p>
-<a class="btn light" href="#new">SHOP COLLECTION</a>
+<div class="catTabBar">
+<button onclick="scrollToShop()">SHOP NOW</button>
+<button onclick="filterByGenderFromTab('men')">MEN</button>
+<button onclick="filterByGenderFromTab('women')">WOMEN</button>
+<button onclick="scrollToShop()">SALE</button>
 </div>
-</section>
 
-<section class="section" id="women">
-<div class="heading">
+<!-- DRAWER MENU -->
+<div class="overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:25px">
+<div class="logo" style="font-size:18px">LYRICS FASHION</div>
+<button class="close" onclick="closeDrawer()">×</button>
+</div>
+<a href="#new" onclick="closeDrawer()">New Arrivals</a>
+<a href="#women" onclick="closeDrawer()">Women</a>
+<a href="#men" onclick="closeDrawer()">Men</a>
+<a href="#accessories" onclick="closeDrawer()">Accessories</a>
+<a href="#sale" onclick="closeDrawer()">Sale</a>
+<a href="#" onclick="closeDrawer();openAboutUs();return false">About Us</a>
+<a href="#" onclick="closeDrawer();openTrackOrder();return false">Track Order</a>
+</div>
+
+<section class="section" id="women" style="padding-left:0;padding-right:0;padding-top:24px">
+<div class="heading" style="padding:0 5%">
 <div>
 <div class="small">EXPLORE</div>
 <h2>Shop by Category</h2>
@@ -681,8 +835,31 @@ confidence.
 </div>
 </div>
 
-<div class="filters" id="filters">
+<div class="filters" id="genderTabs" style="margin-bottom:16px">
+<button class="filter active" data-gender="ALL" onclick="filterByGender('ALL', this)">ALL</button>
+<button class="filter" data-gender="men" onclick="filterByGender('men', this)">MEN</button>
+<button class="filter" data-gender="women" onclick="filterByGender('women', this)">WOMEN</button>
+</div>
+
+<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:30px;flex-wrap:wrap">
+<div class="filters" id="filters" style="margin-bottom:0">
 <button class="filter active" data-cat="ALL">ALL</button>
+</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<select id="priceSelect" onchange="onPriceChange()" style="border:1px solid var(--line);border-radius:30px;padding:9px 14px;font-size:11px;background:white">
+<option value="all">Any Price</option>
+<option value="0-500">Under ৳500</option>
+<option value="500-1000">৳500 – ৳1,000</option>
+<option value="1000-2000">৳1,000 – ৳2,000</option>
+<option value="2000-999999">৳2,000+</option>
+</select>
+<select id="sortSelect" onchange="onSortChange()" style="border:1px solid var(--line);border-radius:30px;padding:9px 14px;font-size:11px;background:white">
+<option value="newest">Newest</option>
+<option value="popular">Popular</option>
+<option value="price_low">Price: Low to High</option>
+<option value="price_high">Price: High to Low</option>
+</select>
+</div>
 </div>
 
 <div class="products" id="productsGrid">
@@ -731,6 +908,20 @@ confidence.
 </div>
 </section>
 
+<section class="section" id="testimonials" style="padding-bottom:0">
+<div class="heading">
+<div>
+<div class="small">TESTIMONIALS</div>
+<h2>What Our Customers Say</h2>
+</div>
+</div>
+<div id="testimonialsWrap" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px"></div>
+</section>
+
+<style>
+@media(max-width:900px){#testimonialsWrap{grid-template-columns:1fr}}
+</style>
+
 <section class="news">
 <h2>Join LYRICS</h2>
 <p>Get new collection updates and exclusive offers.</p>
@@ -751,6 +942,7 @@ Modern fashion with timeless elegance.
 Discover our latest collections and find
 your signature style.
 </p>
+<p><a href="#" onclick="openAboutUs();return false">About Us</a></p>
 </div>
 
 <div>
@@ -763,16 +955,16 @@ your signature style.
 
 <div>
 <h3>HELP</h3>
-<p>Contact Us</p>
+<p><a href="https://wa.me/8801877270165" target="_blank">Contact Us</a></p>
 <p>Shipping</p>
 <p>Returns</p>
-<p>Track Order</p>
+<p onclick="openTrackOrder()" style="cursor:pointer">Track Order</p>
 </div>
 
 <div>
 <h3>FOLLOW</h3>
-<p>Facebook</p>
-<p>Instagram</p>
+<p><a href="https://www.facebook.com" target="_blank">Facebook</a></p>
+<p><a href="https://www.instagram.com/tanjumishu_2.0" target="_blank">Instagram</a></p>
 <p>TikTok</p>
 </div>
 
@@ -783,6 +975,25 @@ your signature style.
 </div>
 </footer>
 
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottomNav" id="bottomNav">
+<button class="active" onclick="showShop();window.scrollTo(0,0)">
+<span class="bnIcon">🏠</span>Home
+</button>
+<button onclick="scrollToShop()">
+<span class="bnIcon">▦</span>Category
+</button>
+<button onclick="openCart()">
+<span class="bnIcon">🛒<span class="cartCount" id="cartCount" style="display:none">0</span></span>Cart
+</button>
+<button onclick="window.open('https://wa.me/8801877270165','_blank')">
+<span class="bnIcon">💬</span>Chat
+</button>
+<button onclick="openAccount()">
+<span class="bnIcon">👤</span>Login
+</button>
 </div>
 
 <!-- OVERLAY -->
@@ -796,7 +1007,7 @@ your signature style.
 <button class="close" onclick="closePanels()">×</button>
 </div>
 
-<div class="accountTabs">
+<div class="accountTabs" id="accountTabs">
 <button id="loginTab" class="active" onclick="showLogin()">LOGIN</button>
 <button id="registerTab" onclick="showRegister()">CREATE ACCOUNT</button>
 </div>
@@ -805,14 +1016,58 @@ your signature style.
 <input type="email" id="loginEmail" placeholder="Email address" required>
 <input type="password" id="loginPassword" placeholder="Password" required>
 <button class="btn">LOGIN</button>
+<div style="text-align:center;margin-top:4px">
+<a href="#" onclick="showForgotPassword();return false" style="font-size:11px;color:var(--muted);text-decoration:underline">Forgot password?</a>
+</div>
 </form>
 
 <form class="form" id="registerForm" style="display:none" onsubmit="register(event)">
 <input type="text" id="regName" placeholder="Full name" required>
 <input type="email" id="regEmail" placeholder="Email address" required>
+<input type="tel" id="regPhone" placeholder="Phone number (01XXXXXXXXX)" required>
 <input type="password" id="regPassword" placeholder="Create password" required>
 <input type="password" id="regPassword2" placeholder="Confirm password" required>
 <button class="btn">CREATE ACCOUNT</button>
+</form>
+
+<form class="form" id="forgotForm" style="display:none">
+<p style="font-size:12px;color:var(--muted);margin-bottom:6px">Enter your account email and we'll send you a password reset link.</p>
+<input type="email" id="forgotEmail" placeholder="Email address" required>
+<button class="btn" type="button" onclick="sendPasswordReset()">SEND RESET LINK</button>
+<div style="text-align:center;margin-top:4px">
+<a href="#" onclick="showLogin();return false" style="font-size:11px;color:var(--muted);text-decoration:underline">Back to login</a>
+</div>
+</form>
+
+<div id="accountLoggedIn" style="display:none">
+<div style="background:var(--cream);border-radius:12px;padding:18px;margin-bottom:20px">
+<div style="font-weight:700;font-size:16px" id="accName">—</div>
+<div style="font-size:12px;color:var(--muted);margin-top:3px" id="accEmail">—</div>
+</div>
+
+<div style="font-size:11px;letter-spacing:2px;color:var(--muted);margin-bottom:12px">MY ORDERS</div>
+<div id="accOrdersWrap">
+<div class="empty" style="padding:30px 10px">Loading...</div>
+</div>
+
+<button class="btn light" style="width:100%;margin-top:20px" onclick="logout()">LOGOUT</button>
+</div>
+
+</div>
+
+<!-- RESET PASSWORD (opened automatically from email reset link) -->
+<div class="panel" id="resetPasswordPanel">
+
+<div class="panelHead">
+<h2>Set New Password</h2>
+<button class="close" onclick="closePanels()">×</button>
+</div>
+
+<form class="form" id="resetPasswordForm" onsubmit="submitNewPassword(event)">
+<p style="font-size:12px;color:var(--muted);margin-bottom:6px">Choose a new password for your account.</p>
+<input type="password" id="newPassword" placeholder="New password" required>
+<input type="password" id="newPassword2" placeholder="Confirm new password" required>
+<button class="btn">UPDATE PASSWORD</button>
 </form>
 
 </div>
@@ -863,6 +1118,14 @@ CHECKOUT
 <label><input type="radio" name="coMethod" value="pickup" onchange="onDeliveryMethodChange()"> Store Pickup</label>
 </div>
 
+<label>PAYMENT METHOD</label>
+<div class="radioRow" style="flex-direction:column;align-items:flex-start;gap:10px">
+<label><input type="radio" name="coPayment" value="COD" checked> 💵 Cash on Delivery</label>
+<label style="opacity:.45;cursor:not-allowed">
+<input type="radio" name="coPayment" value="bkash" disabled> 📱 bKash / Nagad <span style="font-size:10px;background:#eee;padding:2px 8px;border-radius:20px;margin-left:4px">Coming Soon</span>
+</label>
+</div>
+
 <div id="homeDeliveryFields">
 <label>REGION</label>
 <select id="coRegion" onchange="onRegionChange()">
@@ -905,13 +1168,22 @@ Collect your order from our store:<br>
 <label>ORDER NOTE (OPTIONAL)</label>
 <textarea id="coNote" placeholder="Any special instruction..."></textarea>
 
+<label>COUPON CODE (OPTIONAL)</label>
+<div style="display:flex;gap:8px">
+<input type="text" id="coCoupon" placeholder="Enter coupon code" style="flex:1;text-transform:uppercase">
+<button type="button" class="btn light" style="padding:14px 18px" onclick="applyCoupon()">APPLY</button>
+</div>
+<div id="coCouponMsg" style="font-size:11px"></div>
+
 <div style="margin-top:8px">
 <div class="summaryRow"><span>Subtotal</span><span id="coSubtotal">৳0</span></div>
+<div class="summaryRow" id="coDiscountRow" style="display:none;color:var(--gold)"><span id="coDiscountLabel">Discount</span><span id="coDiscountAmount">−৳0</span></div>
 <div class="summaryRow"><span id="coDeliveryLabel">Delivery</span><span id="coDeliveryCharge">৳0</span></div>
 <div class="summaryRow total"><span>Total</span><span id="coTotal">৳0</span></div>
 </div>
 
 <button class="btn" style="width:100%" type="submit">PLACE ORDER</button>
+
 
 </form>
 
@@ -966,8 +1238,12 @@ CONTINUE SHOPPING
 <div style="padding-top:18px">
 <div class="brand" id="pdBrand"></div>
 <h2 id="pdName" style="margin:6px 0 10px;font-size:22px"></h2>
+<div id="pdRatingSummary" style="font-size:12px;color:var(--muted);margin-bottom:6px"></div>
 <div class="price" id="pdPrice" style="font-size:20px"></div>
 <div id="pdStock" style="font-size:12px;margin-top:6px"></div>
+
+<div id="pdFabricSizes" style="font-size:12px;color:var(--muted)"></div>
+<button type="button" id="pdSizeChartBtn" onclick="openSizeChart()" style="display:none;background:none;border:0;text-decoration:underline;font-size:11px;color:var(--gold);padding:0;margin-top:6px;cursor:pointer">SIZE GUIDE</button>
 
 <div class="qtyRow" style="margin-top:18px;gap:14px">
 <span style="font-size:12px;letter-spacing:1px;color:var(--muted)">QUANTITY</span>
@@ -982,8 +1258,147 @@ ADD TO CART
 <button class="btn light" style="width:100%;margin-top:10px" onclick="pdBuyNow()">
 BUY NOW
 </button>
+
+<div style="display:flex;justify-content:space-between;gap:6px;margin-top:18px;text-align:center">
+<div style="flex:1;font-size:9px;color:var(--muted)"><div style="font-size:18px">🔒</div>Secure Checkout</div>
+<div style="flex:1;font-size:9px;color:var(--muted)"><div style="font-size:18px">💵</div>Cash on Delivery</div>
+<div style="flex:1;font-size:9px;color:var(--muted)"><div style="font-size:18px">↩️</div>Easy Return</div>
 </div>
 
+<div id="pdRelatedSection" style="border-top:1px solid var(--line);margin-top:30px;padding-top:20px;display:none">
+<div style="font-size:11px;letter-spacing:2px;color:var(--muted);margin-bottom:14px">YOU MAY ALSO LIKE</div>
+<div id="pdRelatedWrap"></div>
+</div>
+
+<div style="border-top:1px solid var(--line);margin-top:30px;padding-top:20px">
+<div style="font-size:11px;letter-spacing:2px;color:var(--muted);margin-bottom:14px">REVIEWS</div>
+<div id="pdReviewsList"><div class="empty" style="padding:20px 10px">Loading reviews...</div></div>
+
+<div id="pdReviewFormWrap" style="margin-top:16px">
+<form class="form" id="pdReviewForm" onsubmit="submitReview(event)">
+<label>YOUR RATING</label>
+<select id="pdReviewRating" required>
+<option value="">Select rating</option>
+<option value="5">★★★★★ (5)</option>
+<option value="4">★★★★ (4)</option>
+<option value="3">★★★ (3)</option>
+<option value="2">★★ (2)</option>
+<option value="1">★ (1)</option>
+</select>
+<textarea id="pdReviewComment" placeholder="Share your experience with this product (optional)"></textarea>
+<button class="btn light" style="width:100%">SUBMIT REVIEW</button>
+</form>
+</div>
+</div>
+</div>
+
+</div>
+
+<!-- ADMIN: PRODUCT FORM -->
+<div class="panel" id="productFormPanel">
+<div class="panelHead">
+<h2 id="productFormTitle">Add Product</h2>
+<button class="close" onclick="closePanels()">×</button>
+</div>
+<form class="form" id="productForm" onsubmit="saveProduct(event)">
+<input type="hidden" id="pfId">
+
+<label>PRODUCT NAME</label>
+<input type="text" id="pfName" required>
+
+<label>BRAND</label>
+<input type="text" id="pfBrand" value="LYRICS FASHION">
+
+<label>CATEGORY</label>
+<input type="text" id="pfCat" placeholder="e.g. Shirt, Pants, Polo" required>
+
+<label>GENDER</label>
+<select id="pfGender">
+<option value="men">Men</option>
+<option value="women">Women</option>
+<option value="unisex">Unisex</option>
+</select>
+
+<label>PRICE (৳)</label>
+<input type="number" id="pfPrice" required>
+
+<label>OLD PRICE (OPTIONAL, FOR SALE STRIKETHROUGH)</label>
+<input type="number" id="pfOld">
+
+<label>BADGE (OPTIONAL — e.g. New, Sale, Bestseller)</label>
+<input type="text" id="pfBadge">
+
+<label>STOCK QUANTITY</label>
+<input type="number" id="pfStock" required>
+
+<label>IMAGE URLS (comma-separated, first = main image)</label>
+<textarea id="pfImgs" placeholder="https://res.cloudinary.com/.../img1.png, https://.../img2.png"></textarea>
+
+<label>FABRIC (OPTIONAL)</label>
+<input type="text" id="pfFabric" placeholder="e.g. 100% Cotton">
+
+<label>AVAILABLE SIZES (comma-separated, OPTIONAL)</label>
+<input type="text" id="pfSizes" placeholder="S, M, L, XL">
+
+<label>COLOR NAME (OPTIONAL — leave blank if this product has no color variants)</label>
+<input type="text" id="pfColorName" placeholder="e.g. Navy Blue">
+
+<label>COLOR GROUP ID (OPTIONAL — use the SAME value on two products to link them as color variants of each other)</label>
+<input type="text" id="pfColorGroup" placeholder="e.g. boxy-shirt-01">
+
+<label>SIZE CHART (OPTIONAL, ADVANCED — JSON format)</label>
+<textarea id="pfSizeChart" placeholder='{"S":{"chest":38,"length":27},"M":{"chest":40,"length":28}}'></textarea>
+
+<button class="btn" style="width:100%;margin-top:10px">SAVE PRODUCT</button>
+<button type="button" class="btn light" style="width:100%" id="pfDeleteBtn" onclick="deleteCurrentProduct()">DELETE PRODUCT</button>
+</form>
+</div>
+
+<!-- ABOUT US -->
+<div class="panel" id="aboutUsPanel">
+<div class="panelHead">
+<h2>About Us</h2>
+<button class="close" onclick="closePanels()">×</button>
+</div>
+<div style="font-size:13px;line-height:1.9;color:#444">
+<p style="margin-bottom:16px">
+<b>LYRICS FASHION</b> is a Bangladesh-based fashion brand built around clean silhouettes, honest fabric quality and everyday wearability. What started as a small local shop in Mirpur, Dhaka has grown into an online destination for people who want premium clothing without unnecessary noise.
+</p>
+<p style="margin-bottom:16px">
+Every piece we sell is chosen or made with the same question in mind: would we wear this ourselves? That's the standard we hold our shirts, pants and accessories to — considered fits, durable fabric, and prices that make sense for Bangladesh.
+</p>
+<p style="margin-bottom:16px">
+We ship cash-on-delivery to all 64 districts, and our Mirpur store is open for anyone who'd rather see and try before they buy.
+</p>
+<p style="font-size:11px;color:var(--muted)">
+Want to know more about our story, our factory, or the team behind LYRICS FASHION? Reach out to us on WhatsApp — we'd love to share more.
+</p>
+</div>
+</div>
+
+<!-- ORDER TRACKING -->
+<div class="panel" id="trackOrderPanel">
+<div class="panelHead">
+<h2>Track Your Order</h2>
+<button class="close" onclick="closePanels()">×</button>
+</div>
+<form class="form" id="trackOrderForm" onsubmit="submitTrackOrder(event)">
+<label>ORDER ID</label>
+<input type="text" id="trackOrderId" placeholder="e.g. 42" required>
+<label>PHONE NUMBER USED FOR THE ORDER</label>
+<input type="tel" id="trackOrderPhone" placeholder="01XXXXXXXXX" required>
+<button class="btn" style="width:100%">TRACK ORDER</button>
+</form>
+<div id="trackOrderResult" style="margin-top:20px"></div>
+</div>
+
+<!-- SIZE CHART MODAL -->
+<div class="panel" id="sizeChartPanel">
+<div class="panelHead">
+<h2>Size Guide</h2>
+<button class="close" onclick="closePanels()">×</button>
+</div>
+<div id="sizeChartTable" style="overflow:auto"></div>
 </div>
 
 <!-- WISHLIST -->
@@ -1010,9 +1425,11 @@ Your wishlist is currently empty.
 </div>
 
 <form class="form" onsubmit="searchProducts(event)">
-<input id="searchInput" placeholder="Search products..." autofocus>
+<input id="searchInput" placeholder="Search products..." autofocus oninput="onSearchInput()">
 <button class="btn">SEARCH</button>
 </form>
+
+<div id="searchSuggestions"></div>
 
 <div id="searchResults" style="margin-top:20px"></div>
 
@@ -1027,9 +1444,9 @@ Your wishlist is currently empty.
 
 <div class="adminLogo">LYRICS ADMIN</div>
 
-<button class="active">Dashboard</button>
-<button>Products</button>
-<button>Orders</button>
+<button class="active" id="navDashboard" onclick="adminNav('dashboard')">Dashboard</button>
+<button id="navProducts" onclick="adminNav('products')">Products</button>
+<button id="navOrders" onclick="adminNav('orders')">Orders</button>
 <button>Customers</button>
 <button>Categories</button>
 <button>Discounts</button>
@@ -1043,14 +1460,17 @@ Your wishlist is currently empty.
 
 <main class="adminMain">
 
-<div class="adminTop">
+<div class="adminTop" id="adminTop">
 <div>
 <div class="small">ADMINISTRATION</div>
-<h1>Dashboard</h1>
+<h1 id="adminTitle">Dashboard</h1>
 </div>
 
 <button class="adminBack" onclick="showShop()">Store</button>
 </div>
+
+<!-- DASHBOARD VIEW -->
+<div id="adminDashboardView">
 
 <div class="dashboard">
 
@@ -1095,6 +1515,45 @@ Your wishlist is currently empty.
 </tbody>
 </table>
 
+</div>
+
+</div>
+
+<!-- PRODUCTS VIEW -->
+<div id="adminProductsView" style="display:none">
+<div class="adminTable">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+<h2>All Products</h2>
+<button class="btn" onclick="openProductForm()">+ ADD PRODUCT</button>
+</div>
+<table>
+<thead>
+<tr>
+<th>Image</th><th>Name</th><th>Category</th><th>Gender</th><th>Price</th><th>Stock</th><th>Color</th><th></th>
+</tr>
+</thead>
+<tbody id="adminProductsBody">
+<tr><td colspan="8">Loading...</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<!-- ORDERS VIEW -->
+<div id="adminOrdersView" style="display:none">
+<div class="adminTable">
+<h2 style="margin-bottom:20px">All Orders</h2>
+<table>
+<thead>
+<tr>
+<th>Order</th><th>Customer</th><th>Phone</th><th>Total</th><th>Status</th><th>Date</th>
+</tr>
+</thead>
+<tbody id="adminAllOrdersBody">
+<tr><td colspan="6">Loading...</td></tr>
+</tbody>
+</table>
+</div>
 </div>
 
 </main>
@@ -1157,6 +1616,29 @@ document.querySelectorAll(".panel").forEach(x=>x.classList.remove("show"))
 
 function openAccount(){
 openPanel("accountPanel")
+refreshAccountView()
+}
+
+function openDrawer(){
+$("drawerOverlay").classList.add("show")
+$("drawer").classList.add("show")
+}
+
+function closeDrawer(){
+$("drawerOverlay").classList.remove("show")
+$("drawer").classList.remove("show")
+}
+
+function scrollToShop(){
+document.getElementById("new").scrollIntoView({behavior:"smooth"})
+}
+
+function filterByGenderFromTab(gender){
+scrollToShop()
+setTimeout(()=>{
+const btn = document.querySelector(`#genderTabs [data-gender="${gender}"]`)
+if(btn) filterByGender(gender, btn)
+}, 400)
 }
 
 function openCart(){
@@ -1174,17 +1656,31 @@ setTimeout(()=>$("searchInput").focus(),200)
 }
 
 function showLogin(){
+$("accountTabs").style.display="flex"
 $("loginForm").style.display="flex"
 $("registerForm").style.display="none"
+$("forgotForm").style.display="none"
+$("accountLoggedIn").style.display="none"
 $("loginTab").classList.add("active")
 $("registerTab").classList.remove("active")
 }
 
 function showRegister(){
+$("accountTabs").style.display="flex"
 $("loginForm").style.display="none"
 $("registerForm").style.display="flex"
+$("forgotForm").style.display="none"
+$("accountLoggedIn").style.display="none"
 $("loginTab").classList.remove("active")
 $("registerTab").classList.add("active")
+}
+
+function showForgotPassword(){
+$("accountTabs").style.display="none"
+$("loginForm").style.display="none"
+$("registerForm").style.display="none"
+$("accountLoggedIn").style.display="none"
+$("forgotForm").style.display="flex"
 }
 
 function toast(message){
@@ -1217,6 +1713,7 @@ async function register(e){
 e.preventDefault()
 const name = $("regName").value.trim()
 const email = $("regEmail").value.trim()
+const phone = $("regPhone").value.trim()
 const password = $("regPassword").value
 const password2 = $("regPassword2").value
 if(password !== password2){
@@ -1225,7 +1722,7 @@ return
 }
 const { data, error } = await supabaseClient.auth.signUp({
 email, password,
-options:{ data:{ full_name:name } }
+options:{ data:{ full_name:name, phone:phone } }
 })
 if(error){
 toast("Registration failed: " + readableError(error))
@@ -1235,10 +1732,100 @@ toast("Account created! Check your email to confirm.")
 showLogin()
 }
 
+async function sendPasswordReset(){
+const email = $("forgotEmail").value.trim()
+if(!email){
+toast("Please enter your email address.")
+return
+}
+const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+redirectTo: window.location.origin + window.location.pathname
+})
+if(error){
+toast("Could not send reset link: " + readableError(error))
+return
+}
+toast("Reset link sent! Check your email.")
+showLogin()
+}
+
+async function submitNewPassword(e){
+e.preventDefault()
+const p1 = $("newPassword").value
+const p2 = $("newPassword2").value
+if(p1 !== p2){
+toast("Passwords do not match.")
+return
+}
+if(p1.length < 6){
+toast("Password should be at least 6 characters.")
+return
+}
+const { error } = await supabaseClient.auth.updateUser({ password: p1 })
+if(error){
+toast("Could not update password: " + readableError(error))
+return
+}
+toast("Password updated! You're logged in.")
+closePanels()
+}
+
+async function logout(){
+await supabaseClient.auth.signOut()
+toast("Logged out.")
+closePanels()
+}
+
+async function refreshAccountView(){
+const { data:{ session } } = await supabaseClient.auth.getSession()
+if(!session){
+showLogin()
+return
+}
+$("accountTabs").style.display="none"
+$("loginForm").style.display="none"
+$("registerForm").style.display="none"
+$("forgotForm").style.display="none"
+$("accountLoggedIn").style.display="block"
+$("accName").textContent = session.user.user_metadata?.full_name || "My Account"
+$("accEmail").textContent = session.user.email
+loadMyOrders(session.user.id)
+}
+
+async function loadMyOrders(userId){
+const { data: orders, error } = await supabaseClient
+.from('orders')
+.select('id,items,total_amount,status,created_at')
+.eq('user_id', userId)
+.order('created_at', { ascending:false })
+.limit(20)
+
+if(error || !orders || !orders.length){
+$("accOrdersWrap").innerHTML = `<div class="empty" style="padding:30px 10px">No orders yet.</div>`
+return
+}
+
+$("accOrdersWrap").innerHTML = orders.map(o => `
+<div style="border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:10px">
+<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted)">
+<span>#${o.id}</span><span>${o.status}</span>
+</div>
+<div style="font-size:13px;margin:6px 0">${o.items||''}</div>
+<div style="font-weight:700">৳${Number(o.total_amount||0).toLocaleString()}</div>
+</div>
+`).join('')
+}
+
 /* ============================================================
    PRODUCTS — loaded live from Supabase
    ============================================================ */
 let allProducts = []
+const COLOR_HEX = {
+"black":"#111","white":"#fff","cream":"#f0e8d8","navy blue":"#1b2a4a","navy":"#1b2a4a",
+"grey":"#9a9a9a","gray":"#9a9a9a","brown":"#6b4a35","beige":"#d8c4a0","red":"#c0392b",
+"maroon":"#5c1f1f","green":"#3d5a3d","olive":"#6b6b3a","blue":"#2a5ca8","khaki":"#c3b091",
+"espresso":"#3c2a1e","washed brown":"#8a6b52","dark ash":"#3a3a3a"
+}
 const CAT_ICONS = {
 "shirt":"👔","jeans":"👖","formal pant":"👖",
 "dress":"👗","bag":"👜","shoes":"👠","default":"🛍️"
@@ -1250,12 +1837,28 @@ const key = (p.cat||"").toLowerCase()
 return CAT_ICONS[key] || CAT_ICONS.default
 }
 
+function colorSwatchesHTML(p){
+if(!p.color_group) return ""
+const siblings = allProducts.filter(x => x.color_group === p.color_group && x.color_name)
+if(siblings.length < 2) return ""
+return `<div style="display:flex;gap:5px;margin-top:6px" onclick="event.stopPropagation()">
+${siblings.map(s => `
+<span onclick="openProductDetail(${s.id})" title="${s.color_name}"
+style="width:16px;height:16px;border-radius:50%;display:inline-block;cursor:pointer;
+border:${s.id===p.id?'2px solid #111':'1px solid #ccc'};
+background:${COLOR_HEX[s.color_name.toLowerCase()]||'#ccc'}"></span>
+`).join('')}
+</div>`
+}
+
 function productCardHTML(p){
 const badge = p.badge ? `<span class="badge ${p.badge.toLowerCase()==='sale'?'sale':''}">${p.badge}</span>` : ""
 const oldPrice = p.old ? `<span class="old">৳${Number(p.old).toLocaleString()}</span>` : ""
 const imgOrIcon = p.imgs
 ? `<img src="${p.imgs.split(',')[0].trim()}" alt="${p.name}">`
 : `<div class="placeholder">${iconFor(p)}</div>`
+const stockNote = (p.stock !== null && p.stock !== undefined && p.stock > 0 && p.stock <= 5)
+? `<div style="font-size:11px;color:var(--red);margin-top:3px">Only ${p.stock} left</div>` : ""
 return `
 <div class="product" data-id="${p.id}" onclick="openProductDetail(${p.id})">
 <div class="productImage">
@@ -1265,13 +1868,23 @@ ${imgOrIcon}
 <div class="brand">${p.brand||""}</div>
 <h3>${p.name}</h3>
 <div class="price">৳${Number(p.price).toLocaleString()} ${oldPrice}</div>
+${stockNote}
+${colorSwatchesHTML(p)}
 </div>`
 }
 
 async function loadProducts(){
+$("productsGrid").innerHTML = Array(8).fill(0).map(()=>`
+<div class="product skeletonCard">
+<div class="productImage"></div>
+<div class="skeletonLine"></div>
+<div class="skeletonLine short"></div>
+</div>
+`).join('')
+
 const { data, error } = await supabaseClient
 .from('products')
-.select('id,name,brand,price,old,badge,cat,imgs,stock')
+.select('id,name,brand,price,old,badge,cat,imgs,stock,gender,color_name,color_group,fabric,sizes,size_chart,created_at')
 .order('created_at', { ascending:false })
 
 if(error){
@@ -1300,18 +1913,83 @@ $("filters").innerHTML = cats.map(c =>
 ).join("")
 }
 
+let currentCategory = "ALL"
+let currentGender = "ALL"
+let currentPrice = "all"
+let currentSort = "newest"
+
+function applySort(list){
+const sorted = [...list]
+if(currentSort === "price_low") sorted.sort((a,b)=>Number(a.price)-Number(b.price))
+else if(currentSort === "price_high") sorted.sort((a,b)=>Number(b.price)-Number(a.price))
+else if(currentSort === "popular") sorted.sort((a,b)=>(b.badge?1:0)-(a.badge?1:0))
+else sorted.sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0))
+return sorted
+}
+
+function applyFiltersAndSort(){
+let list = allProducts
+if(currentGender !== "ALL") list = list.filter(p=>p.gender===currentGender || p.gender==='unisex')
+if(currentCategory !== "ALL") list = list.filter(p=>p.cat===currentCategory)
+if(currentPrice !== "all"){
+const [min,max] = currentPrice.split('-').map(Number)
+list = list.filter(p=>Number(p.price)>=min && Number(p.price)<=max)
+}
+renderProductGrid(applySort(list))
+}
+
+function onSortChange(){
+currentSort = $("sortSelect").value
+applyFiltersAndSort()
+}
+
+function onPriceChange(){
+currentPrice = $("priceSelect").value
+applyFiltersAndSort()
+}
+
+function filterByGender(gender, btn){
+document.querySelectorAll("#genderTabs .filter").forEach(f=>f.classList.remove("active"))
+btn.classList.add("active")
+currentGender = gender
+renderFilters(currentGender === "ALL" ? allProducts : allProducts.filter(p=>p.gender===gender || p.gender==='unisex'))
+currentCategory = "ALL"
+applyFiltersAndSort()
+}
+
 function filterByCategory(cat, btn){
 document.querySelectorAll(".filter").forEach(f=>f.classList.remove("active"))
 btn.classList.add("active")
-if(cat === "ALL"){
-renderProductGrid(allProducts)
-}else{
-renderProductGrid(allProducts.filter(p=>p.cat===cat))
+currentCategory = cat
+applyFiltersAndSort()
 }
+
+function onSearchInput(){
+const q = $("searchInput").value.trim().toLowerCase()
+if(q.length < 2){
+$("searchSuggestions").innerHTML = ""
+return
+}
+const matches = allProducts.filter(p =>
+p.name.toLowerCase().includes(q) || (p.brand||"").toLowerCase().includes(q) || (p.cat||"").toLowerCase().includes(q)
+).slice(0, 5)
+
+$("searchSuggestions").innerHTML = matches.length ? matches.map(p => `
+<div onclick="closePanels();openProductDetail(${p.id})" style="display:flex;align-items:center;gap:10px;padding:10px 4px;border-bottom:1px solid var(--line);cursor:pointer">
+<div style="width:40px;height:50px;background:var(--cream);border-radius:6px;overflow:hidden;flex-shrink:0">
+${p.imgs ? `<img src="${p.imgs.split(',')[0].trim()}" style="width:100%;height:100%;object-fit:cover">` : ''}
+</div>
+<div style="flex:1">
+<div style="font-size:13px">${p.name}</div>
+<div style="font-size:11px;color:var(--muted)">৳${Number(p.price).toLocaleString()}</div>
+</div>
+</div>
+`).join('') : `<div style="font-size:12px;color:var(--muted);padding:10px 4px">No matches</div>`
 }
 
 function searchProducts(e){
 e.preventDefault()
+$("searchSuggestions").innerHTML = ""
 const q = $("searchInput").value.trim().toLowerCase()
 if(!q){
 $("searchResults").innerHTML = ""
@@ -1371,10 +2049,29 @@ const oldPrice = product.old ? ` <span class="old">৳${Number(product.old).toLo
 $("pdPrice").innerHTML = `৳${Number(product.price).toLocaleString()}${oldPrice}`
 
 const inStock = Number(product.stock) > 0
-$("pdStock").textContent = inStock ? "✓ In Stock" : "Out of Stock"
-$("pdStock").style.color = inStock ? "#2a8f4f" : "var(--red)"
+const lowStock = inStock && Number(product.stock) <= 5
+$("pdStock").textContent = !inStock ? "Out of Stock" : lowStock ? `Only ${product.stock} left in stock!` : "✓ In Stock"
+$("pdStock").style.color = !inStock ? "var(--red)" : lowStock ? "var(--red)" : "#2a8f4f"
 $("pdAddToCart").disabled = !inStock
 $("pdAddToCart").textContent = inStock ? "ADD TO CART" : "OUT OF STOCK"
+
+// Fabric / size info
+const sizes = Array.isArray(product.sizes) ? product.sizes : []
+const infoBits = []
+if(product.fabric) infoBits.push(`<b>Fabric:</b> ${product.fabric}`)
+if(sizes.length) infoBits.push(`<b>Available Sizes:</b> ${sizes.join(', ')}`)
+$("pdFabricSizes").innerHTML = infoBits.length
+? infoBits.map(b=>`<div style="margin-top:4px">${b}</div>`).join('')
+: ""
+const hasSizeChart = product.size_chart && Object.keys(product.size_chart).length > 0
+$("pdSizeChartBtn").style.display = hasSizeChart ? "inline-block" : "none"
+
+// Related products — same category, excluding current
+const related = allProducts.filter(p => p.cat === product.cat && p.id !== product.id).slice(0, 4)
+$("pdRelatedWrap").innerHTML = related.length
+? `<div class="products" style="grid-template-columns:repeat(2,1fr);gap:12px">${related.map(productCardHTML).join('')}</div>`
+: ""
+$("pdRelatedSection").style.display = related.length ? "block" : "none"
 
 // Swipe support (touch)
 track.ontouchstart = e => { pdTouchStartX = e.touches[0].clientX }
@@ -1384,6 +2081,7 @@ if(Math.abs(delta) > 40) pdSlide(delta > 0 ? -1 : 1)
 }
 
 openPanel("productPanel")
+loadReviews(product.id)
 }
 
 function pdSlide(direction){
@@ -1397,6 +2095,150 @@ $("pdGalleryTrack").style.transform = `translateX(-${pdCurrentIndex * 100}%)`
 $("pdDots").querySelectorAll('span').forEach((dot, i) =>
 dot.classList.toggle('active', i === pdCurrentIndex)
 )
+}
+
+/* ============================================================
+   REVIEWS & RATINGS
+   ============================================================ */
+function starString(rating){
+const r = Math.round(rating)
+return "★★★★★".slice(0, r) + "☆☆☆☆☆".slice(0, 5 - r)
+}
+
+async function loadReviews(productId){
+const { data: reviews, error } = await supabaseClient
+.from('reviews')
+.select('id,name,rating,comment,created_at')
+.eq('product_id', productId)
+.order('created_at', { ascending:false })
+
+if(error){
+$("pdReviewsList").innerHTML = `<div class="empty" style="padding:20px 10px">Could not load reviews.</div>`
+$("pdRatingSummary").textContent = ""
+return
+}
+
+if(!reviews || !reviews.length){
+$("pdReviewsList").innerHTML = `<div class="empty" style="padding:20px 10px">No reviews yet. Be the first to review!</div>`
+$("pdRatingSummary").textContent = "No ratings yet"
+}else{
+const avg = reviews.reduce((s,r)=>s+r.rating,0) / reviews.length
+$("pdRatingSummary").innerHTML = `<span style="color:var(--gold)">${starString(avg)}</span> ${avg.toFixed(1)} (${reviews.length} review${reviews.length>1?'s':''})`
+$("pdReviewsList").innerHTML = reviews.map(r => `
+<div style="border-bottom:1px solid var(--line);padding:12px 0">
+<div style="display:flex;justify-content:space-between;align-items:center">
+<b style="font-size:13px">${r.name}</b>
+<span style="color:var(--gold);font-size:12px">${starString(r.rating)}</span>
+</div>
+${r.comment ? `<p style="font-size:12px;color:var(--muted);margin-top:6px">${r.comment}</p>` : ''}
+</div>
+`).join('')
+}
+
+const { data:{ session } } = await supabaseClient.auth.getSession()
+$("pdReviewFormWrap").innerHTML = session
+? `<form class="form" id="pdReviewForm" onsubmit="submitReview(event, ${productId})">
+<label>YOUR RATING</label>
+<select id="pdReviewRating" required>
+<option value="">Select rating</option>
+<option value="5">★★★★★ (5)</option>
+<option value="4">★★★★ (4)</option>
+<option value="3">★★★ (3)</option>
+<option value="2">★★ (2)</option>
+<option value="1">★ (1)</option>
+</select>
+<textarea id="pdReviewComment" placeholder="Share your experience with this product (optional)"></textarea>
+<button class="btn light" style="width:100%">SUBMIT REVIEW</button>
+</form>`
+: `<p style="font-size:12px;color:var(--muted)"><a href="#" onclick="closePanels();openAccount();return false" style="text-decoration:underline">Login</a> to write a review.</p>`
+}
+
+async function submitReview(e, productId){
+e.preventDefault()
+const rating = Number($("pdReviewRating").value)
+const comment = $("pdReviewComment").value.trim()
+const { data:{ session } } = await supabaseClient.auth.getSession()
+if(!session){
+toast("Please login to submit a review.")
+return
+}
+const name = session.user.user_metadata?.full_name || session.user.email.split('@')[0]
+
+const { error } = await supabaseClient.from('reviews').insert({
+product_id: productId,
+user_id: session.user.id,
+name: name,
+rating: rating,
+comment: comment
+})
+
+if(error){
+toast("Could not submit review: " + readableError(error))
+return
+}
+toast("Thank you for your review!")
+loadReviews(productId)
+}
+
+function openAboutUs(){
+openPanel("aboutUsPanel")
+}
+
+function openTrackOrder(){
+$("trackOrderResult").innerHTML = ""
+openPanel("trackOrderPanel")
+}
+
+async function submitTrackOrder(e){
+e.preventDefault()
+const id = Number($("trackOrderId").value.trim())
+const phone = $("trackOrderPhone").value.trim()
+$("trackOrderResult").innerHTML = `<div class="empty" style="padding:20px 10px">Searching...</div>`
+
+const { data, error } = await supabaseClient.rpc('track_order', { p_id:id, p_phone:phone })
+
+if(error || !data || !data.length){
+$("trackOrderResult").innerHTML = `<div class="empty" style="padding:20px 10px">No matching order found. Please check the Order ID and phone number.</div>`
+return
+}
+
+const o = data[0]
+const steps = ['Pending','Processing','Shipped','Delivered']
+const currentStep = steps.indexOf(o.status)
+$("trackOrderResult").innerHTML = `
+<div style="background:var(--cream);border-radius:12px;padding:18px">
+<div class="summaryRow"><span>Order ID</span><b>#${o.id}</b></div>
+<div class="summaryRow"><span>Items</span><b style="text-align:right;max-width:60%">${o.items||''}</b></div>
+<div class="summaryRow"><span>Total</span><b>৳${Number(o.total_amount||0).toLocaleString()}</b></div>
+<div class="summaryRow" style="margin-bottom:0"><span>Delivery</span><b>${o.delivery_method==='pickup'?'Store Pickup':'Home Delivery'}</b></div>
+</div>
+<div style="display:flex;justify-content:space-between;margin-top:20px">
+${steps.map((s,i) => `
+<div style="text-align:center;flex:1">
+<div style="width:24px;height:24px;border-radius:50%;margin:0 auto 6px;display:flex;align-items:center;justify-content:center;font-size:11px;
+background:${i<=currentStep?'#111':'#eee'};color:${i<=currentStep?'#fff':'#999'}">${i+1}</div>
+<div style="font-size:9px;color:${i<=currentStep?'#111':'#999'}">${s}</div>
+</div>
+`).join('')}
+</div>`
+}
+
+function openSizeChart(){
+const chart = pdCurrentProduct?.size_chart
+if(!chart || !Object.keys(chart).length){
+toast("Size chart not available for this product.")
+return
+}
+const sizes = Object.keys(chart)
+const measures = Object.keys(chart[sizes[0]] || {})
+let html = `<table style="width:100%;border-collapse:collapse;font-size:12px">
+<tr style="border-bottom:1px solid var(--line)"><th style="text-align:left;padding:8px 4px">Size</th>${measures.map(m=>`<th style="text-align:left;padding:8px 4px;text-transform:capitalize">${m}</th>`).join('')}</tr>`
+sizes.forEach(s => {
+html += `<tr style="border-bottom:1px solid var(--line)"><td style="padding:8px 4px;font-weight:700">${s}</td>${measures.map(m=>`<td style="padding:8px 4px">${chart[s][m]}"</td>`).join('')}</tr>`
+})
+html += `</table><p style="font-size:11px;color:var(--muted);margin-top:10px">All measurements in inches.</p>`
+$("sizeChartTable").innerHTML = html
+openPanel("sizeChartPanel")
 }
 
 function pdChangeQty(delta){
@@ -1858,6 +2700,59 @@ $("coAddress").required = false
 updateCheckoutSummary()
 }
 
+let appliedCoupon = null
+
+function couponDiscountAmount(subtotal){
+if(!appliedCoupon) return 0
+const raw = appliedCoupon.type === 'percent'
+? subtotal * Number(appliedCoupon.value) / 100
+: Number(appliedCoupon.value)
+return Math.min(raw, subtotal)
+}
+
+async function applyCoupon(){
+const code = $("coCoupon").value.trim()
+if(!code){
+toast("Please enter a coupon code.")
+return
+}
+const subtotal = cartSubtotal()
+const { data, error } = await supabaseClient
+.from('coupons')
+.select('code,type,value,minorder,active,expires')
+.ilike('code', code)
+.maybeSingle()
+
+if(error || !data || !data.active){
+appliedCoupon = null
+$("coCouponMsg").textContent = "Invalid or inactive coupon code."
+$("coCouponMsg").style.color = "var(--red)"
+updateCheckoutSummary()
+return
+}
+
+if(data.expires && new Date(data.expires) < new Date()){
+appliedCoupon = null
+$("coCouponMsg").textContent = "This coupon has expired."
+$("coCouponMsg").style.color = "var(--red)"
+updateCheckoutSummary()
+return
+}
+
+if(data.minorder && subtotal < Number(data.minorder)){
+appliedCoupon = null
+$("coCouponMsg").textContent = `Minimum order ৳${Number(data.minorder).toLocaleString()} required for this coupon.`
+$("coCouponMsg").style.color = "var(--red)"
+updateCheckoutSummary()
+return
+}
+
+appliedCoupon = data
+$("coCouponMsg").textContent = `Coupon "${data.code}" applied!`
+$("coCouponMsg").style.color = "var(--gold)"
+updateCheckoutSummary()
+}
+
 async function updateCheckoutSummary(){
 const subtotal = cartSubtotal()
 const method = document.querySelector('input[name="coMethod"]:checked').value
@@ -1866,11 +2761,21 @@ const cityValue = $("coCity").value
 // delivery rate — everything else pays the outside-Dhaka rate.
 const cityForPricing = cityValue === DHAKA_CITY_VALUE ? 'Dhaka' : cityValue
 const { charge, label, isFree } = await calculateDeliveryCharge(subtotal, method, cityForPricing)
+const discount = couponDiscountAmount(subtotal)
 
 $("coSubtotal").textContent = "৳" + subtotal.toLocaleString()
 $("coDeliveryLabel").textContent = label
 $("coDeliveryCharge").textContent = isFree ? "FREE" : "৳" + charge.toLocaleString()
-$("coTotal").textContent = "৳" + (subtotal + charge).toLocaleString()
+
+if(discount > 0){
+$("coDiscountRow").style.display = "flex"
+$("coDiscountLabel").textContent = `Discount (${appliedCoupon.code})`
+$("coDiscountAmount").textContent = "−৳" + discount.toLocaleString()
+}else{
+$("coDiscountRow").style.display = "none"
+}
+
+$("coTotal").textContent = "৳" + (subtotal - discount + charge).toLocaleString()
 }
 
 async function placeOrder(e){
@@ -1909,17 +2814,23 @@ return
 const subtotal = cartSubtotal()
 const cityForPricing = cityValue === DHAKA_CITY_VALUE ? 'Dhaka' : cityValue
 const { charge } = await calculateDeliveryCharge(subtotal, method, cityForPricing)
+const discount = couponDiscountAmount(subtotal)
+const couponCode = appliedCoupon ? appliedCoupon.code : ''
 
 const submitBtn = e.target.querySelector('button[type="submit"]')
 submitBtn.disabled = true
 submitBtn.textContent = "PLACING ORDER..."
 
 try{
-// One row per cart line item. Full delivery charge is applied to the
-// first item only so the total isn't charged multiple times.
+const { data:{ session } } = await supabaseClient.auth.getSession()
+const userId = session ? session.user.id : null
+
+// One row per cart line item. Full delivery charge and discount are
+// applied to the first item only so the total isn't charged multiple times.
 const rows = cart.map((item, idx) => ({
 customer: name,
 phone: phone,
+user_id: userId,
 address: address,
 items: cart.map(i => `${i.name} x${i.qty}`).join(', '),
 payment: 'COD',
@@ -1933,9 +2844,14 @@ delivery_phone: phone,
 delivery_note: [
 subArea ? `${cityValue === DHAKA_CITY_VALUE ? 'Sub Area' : 'Union'}: ${subArea}` : '',
 addressType ? `Address Type: ${addressType}` : '',
+couponCode ? `Coupon: ${couponCode} (−৳${discount.toLocaleString()})` : '',
 note
 ].filter(Boolean).join(' | '),
 delivery_charge: idx === 0 ? charge : 0,
+unit_price: item.price,
+total_amount: idx === 0
+? (item.price * item.qty) + charge - discount
+: (item.price * item.qty),
 product_id: item.id,
 quantity: item.qty
 }))
@@ -1955,7 +2871,7 @@ return
 // A client-side reference number is shown instead — the actual order
 // (with real id) is visible to you in the admin dashboard / Supabase table.
 const firstOrderId = "LF" + Date.now().toString().slice(-8)
-const total = subtotal + charge
+const total = subtotal - discount + charge
 const methodLabel = method === 'pickup' ? 'Store Pickup (Mirpur 12)' : `Home Delivery — ${cityLabel}${area ? ', ' + area : ''}${subArea ? ', ' + subArea : ''}`
 
 // Build a WhatsApp message so the customer can confirm the order
@@ -1980,6 +2896,9 @@ $("successMethod").textContent = methodLabel
 saveCart([])
 renderCart()
 e.target.reset()
+appliedCoupon = null
+$("coCouponMsg").textContent = ""
+$("coDiscountRow").style.display = "none"
 onDeliveryMethodChange()
 openPanel("successPanel")
 
@@ -1995,8 +2914,45 @@ submitBtn.textContent = "PLACE ORDER"
 /* ============================================================
    NEWSLETTER
    ============================================================ */
-function subscribe(e){
+async function loadTestimonials(){
+const { data: reviews, error } = await supabaseClient
+.from('reviews')
+.select('name,rating,comment')
+.gte('rating', 4)
+.not('comment', 'is', null)
+.order('created_at', { ascending:false })
+.limit(3)
+
+const wrap = $("testimonialsWrap")
+if(!wrap) return
+
+if(error || !reviews || !reviews.length){
+wrap.parentElement.style.display = "none"
+return
+}
+
+wrap.innerHTML = reviews.map(r => `
+<div style="border:1px solid var(--line);border-radius:12px;padding:22px">
+<div style="color:var(--gold);font-size:14px;margin-bottom:10px">${starString(r.rating)}</div>
+<p style="font-size:13px;color:#444;line-height:1.7;margin-bottom:14px">"${r.comment}"</p>
+<div style="font-size:12px;font-weight:700">— ${r.name}</div>
+</div>
+`).join('')
+}
+
+async function subscribe(e){
 e.preventDefault()
+const email = e.target.querySelector('input[type="email"]').value.trim()
+const { error } = await supabaseClient.from('newsletter_subscribers').insert({ email })
+if(error){
+if(error.code === '23505'){
+toast("You're already subscribed!")
+}else{
+toast("Could not subscribe: " + readableError(error))
+}
+e.target.reset()
+return
+}
 toast("Thank you for subscribing!")
 e.target.reset()
 }
@@ -2004,6 +2960,169 @@ e.target.reset()
 /* ============================================================
    ADMIN
    ============================================================ */
+function adminNav(section){
+document.querySelectorAll('.adminSide button').forEach(b=>b.classList.remove('active'))
+$("adminDashboardView").style.display = section==='dashboard' ? 'block' : 'none'
+$("adminProductsView").style.display = section==='products' ? 'block' : 'none'
+$("adminOrdersView").style.display = section==='orders' ? 'block' : 'none'
+
+if(section==='dashboard'){ $("navDashboard").classList.add('active'); $("adminTitle").textContent="Dashboard"; loadAdminData() }
+if(section==='products'){ $("navProducts").classList.add('active'); $("adminTitle").textContent="Products"; renderAdminProductsTable() }
+if(section==='orders'){ $("navOrders").classList.add('active'); $("adminTitle").textContent="Orders"; loadAllOrders() }
+}
+
+function renderAdminProductsTable(){
+if(!allProducts.length){
+$("adminProductsBody").innerHTML = `<tr><td colspan="8">No products yet.</td></tr>`
+return
+}
+$("adminProductsBody").innerHTML = allProducts.map(p => `
+<tr>
+<td><div style="width:36px;height:44px;background:var(--cream);border-radius:6px;overflow:hidden">${p.imgs ? `<img src="${p.imgs.split(',')[0].trim()}" style="width:100%;height:100%;object-fit:cover">` : ''}</div></td>
+<td>${p.name}</td>
+<td>${p.cat||'—'}</td>
+<td>${p.gender||'—'}</td>
+<td>৳${Number(p.price).toLocaleString()}</td>
+<td>${p.stock}</td>
+<td>${p.color_name||'—'}</td>
+<td><button class="btn light" style="padding:6px 14px;font-size:10px" onclick="openProductForm(${p.id})">EDIT</button></td>
+</tr>`).join('')
+}
+
+function openProductForm(productId){
+$("productForm").reset()
+$("pfDeleteBtn").style.display = "none"
+if(productId){
+const p = allProducts.find(x=>x.id===productId)
+if(!p) return
+$("productFormTitle").textContent = "Edit Product"
+$("pfId").value = p.id
+$("pfName").value = p.name || ""
+$("pfBrand").value = p.brand || ""
+$("pfCat").value = p.cat || ""
+$("pfGender").value = p.gender || "men"
+$("pfPrice").value = p.price || ""
+$("pfOld").value = p.old || ""
+$("pfBadge").value = p.badge || ""
+$("pfStock").value = p.stock || 0
+$("pfImgs").value = p.imgs || ""
+$("pfFabric").value = p.fabric || ""
+$("pfSizes").value = Array.isArray(p.sizes) ? p.sizes.join(', ') : ""
+$("pfColorName").value = p.color_name || ""
+$("pfColorGroup").value = p.color_group || ""
+$("pfSizeChart").value = (p.size_chart && Object.keys(p.size_chart).length) ? JSON.stringify(p.size_chart) : ""
+$("pfDeleteBtn").style.display = "block"
+}else{
+$("productFormTitle").textContent = "Add Product"
+$("pfId").value = ""
+$("pfGender").value = "men"
+$("pfBrand").value = "LYRICS FASHION"
+}
+openPanel("productFormPanel")
+}
+
+async function saveProduct(e){
+e.preventDefault()
+const id = $("pfId").value
+const sizesArr = $("pfSizes").value.split(',').map(s=>s.trim()).filter(Boolean)
+
+let sizeChartObj = {}
+const rawChart = $("pfSizeChart").value.trim()
+if(rawChart){
+try{ sizeChartObj = JSON.parse(rawChart) }
+catch(err){ toast("Size chart isn't valid JSON — please check the format."); return }
+}
+
+const payload = {
+name: $("pfName").value.trim(),
+brand: $("pfBrand").value.trim(),
+cat: $("pfCat").value.trim(),
+gender: $("pfGender").value,
+price: Number($("pfPrice").value),
+old: $("pfOld").value ? Number($("pfOld").value) : null,
+badge: $("pfBadge").value.trim() || null,
+stock: Number($("pfStock").value),
+imgs: $("pfImgs").value.trim(),
+fabric: $("pfFabric").value.trim() || null,
+sizes: sizesArr,
+color_name: $("pfColorName").value.trim() || null,
+size_chart: sizeChartObj
+}
+
+// Only set color_group if the admin typed one — otherwise let the
+// database default (a fresh unique id) apply for new products.
+if($("pfColorGroup").value.trim()){
+payload.color_group = $("pfColorGroup").value.trim()
+}
+
+const submitBtn = e.target.querySelector('button[type="submit"]')
+submitBtn.disabled = true
+submitBtn.textContent = "SAVING..."
+
+let error
+if(id){
+({ error } = await supabaseClient.from('products').update(payload).eq('id', id))
+}else{
+({ error } = await supabaseClient.from('products').insert(payload))
+}
+
+submitBtn.disabled = false
+submitBtn.textContent = "SAVE PRODUCT"
+
+if(error){
+toast("Could not save product: " + readableError(error))
+return
+}
+
+toast(id ? "Product updated!" : "Product added!")
+closePanels()
+await loadProducts()
+renderAdminProductsTable()
+$("adminProductCount").textContent = allProducts.length
+}
+
+async function deleteCurrentProduct(){
+const id = $("pfId").value
+if(!id) return
+if(!confirm("Delete this product permanently? This cannot be undone.")) return
+
+const { error } = await supabaseClient.from('products').delete().eq('id', id)
+if(error){
+toast("Could not delete product: " + readableError(error))
+return
+}
+toast("Product deleted.")
+closePanels()
+await loadProducts()
+renderAdminProductsTable()
+$("adminProductCount").textContent = allProducts.length
+}
+
+async function loadAllOrders(){
+const { data: orders, error } = await supabaseClient
+.from('orders')
+.select('id,customer,phone,total_amount,status,created_at')
+.order('created_at', { ascending:false })
+.limit(100)
+
+if(error){
+$("adminAllOrdersBody").innerHTML = `<tr><td colspan="6">Could not load orders.</td></tr>`
+return
+}
+
+$("adminAllOrdersBody").innerHTML = orders.length
+? orders.map(o => `
+<tr>
+<td>#${o.id}</td>
+<td>${o.customer||'—'}</td>
+<td>${o.phone||'—'}</td>
+<td>৳${Number(o.total_amount||0).toLocaleString()}</td>
+<td>${o.status}</td>
+<td>${new Date(o.created_at).toLocaleDateString()}</td>
+</tr>`).join("")
+: `<tr><td colspan="6">No orders yet</td></tr>`
+}
+
 async function showAdmin(){
 try{
 if(!supabaseClient){
@@ -2021,7 +3140,7 @@ $("shopPage").style.display="none"
 $("adminPage").style.display="block"
 closePanels()
 window.scrollTo(0,0)
-loadAdminData()
+adminNav('dashboard')
 }catch(err){
 console.error('showAdmin failed:', readableError(err))
 toast("Could not check login status — please login again.")
@@ -2071,10 +3190,19 @@ $("adminOrdersBody").innerHTML = orders.length
 (async function init(){
 updateCartBadge()
 await loadProducts()
+loadTestimonials()
 
 document.querySelectorAll('input[name="coMethod"]').forEach(r =>
 r.addEventListener('change', onDeliveryMethodChange)
 )
+
+if(supabaseClient){
+supabaseClient.auth.onAuthStateChange((event, session) => {
+if(event === 'PASSWORD_RECOVERY'){
+openPanel('resetPasswordPanel')
+}
+})
+}
 
 if(location.hash === "#admin"){
 showAdmin()
