@@ -730,7 +730,24 @@ nav{padding:0 18px}
 .features{grid-template-columns:1fr}
 .feature{border-right:0}
 .footergrid{grid-template-columns:1fr}
-.adminSide{display:none}
+.admin{display:block}
+.adminSide{
+width:100%;
+display:flex;
+overflow-x:auto;
+padding:14px 14px 10px;
+gap:6px;
+min-height:auto;
+position:sticky;top:0;z-index:50
+}
+.adminLogo{display:none}
+.adminSide button{
+white-space:nowrap;
+width:auto;flex-shrink:0;
+margin-bottom:0;
+padding:9px 16px;
+font-size:12px
+}
 .adminMain{padding:20px}
 }
 </style>
@@ -3138,6 +3155,8 @@ return
 }
 $("shopPage").style.display="none"
 $("adminPage").style.display="block"
+$("bottomNav").style.display="none"
+document.body.style.paddingBottom="0"
 closePanels()
 window.scrollTo(0,0)
 adminNav('dashboard')
@@ -3151,6 +3170,8 @@ openAccount()
 function showShop(){
 $("adminPage").style.display="none"
 $("shopPage").style.display="block"
+$("bottomNav").style.display="flex"
+document.body.style.paddingBottom="64px"
 window.scrollTo(0,0)
 }
 
