@@ -264,18 +264,18 @@ font-weight:800
 }
 
 .categories{
-display:flex;
-flex-direction:column;
-gap:14px
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:12px
 }
 .category{
 position:relative;
 overflow:hidden;
-border-radius:0;
+border-radius:14px;
 background:linear-gradient(135deg,#eee,#d5d5d5);
-aspect-ratio:3/1;
-display:flex;align-items:center;
-padding:0 8%;
+height:110px;
+display:flex;align-items:flex-end;
+padding:14px;
 color:white
 }
 .category:nth-child(1){background:linear-gradient(120deg,#3a3226,#8c7a5c)}
@@ -289,15 +289,15 @@ background:linear-gradient(90deg,rgba(0,0,0,.45),transparent 60%)
 }
 .catText{position:relative;z-index:2}
 .catText h3{
-font-size:13px;
-font-weight:600;
-letter-spacing:6px;
+font-size:12px;
+font-weight:700;
+letter-spacing:2px;
 text-transform:uppercase
 }
 .catText span{
 display:block;
-font-size:9px;letter-spacing:1.5px;
-margin-top:6px;color:rgba(255,255,255,.75)
+font-size:8.5px;letter-spacing:1px;
+margin-top:3px;color:rgba(255,255,255,.75)
 }
 
 .filters{
@@ -324,7 +324,7 @@ gap:16px
 }
 .product{cursor:pointer}
 .productImage{
-aspect-ratio:1/1;
+aspect-ratio:3/4;
 background:#f4f4f4;
 border-radius:6px;
 position:relative;
@@ -334,8 +334,8 @@ align-items:center;
 justify-content:center
 }
 .productImage img{
-width:82%;height:82%;
-object-fit:contain;
+width:100%;height:100%;
+object-fit:cover;
 transition:transform .4s ease
 }
 .product:hover .productImage img{
@@ -399,20 +399,34 @@ margin-bottom:25px
 }
 
 .features{
-display:grid;
-grid-template-columns:repeat(4,1fr);
+display:flex;
+gap:10px;
+overflow-x:auto;
+padding:18px 5% 22px;
 border-top:1px solid var(--line);
 border-bottom:1px solid var(--line)
 }
 .feature{
-padding:35px;
-border-right:1px solid var(--line)
+flex:1 0 auto;
+min-width:130px;
+padding:14px 16px;
+border-radius:14px;
+background:var(--cream);
+display:flex;
+align-items:center;
+gap:10px
 }
-.feature:last-child{border:0}
-.feature b{display:block;margin-bottom:7px}
+.feature .featIcon{
+width:36px;height:36px;border-radius:50%;
+display:flex;align-items:center;justify-content:center;
+font-size:16px;flex-shrink:0;
+background:linear-gradient(135deg,#f5e6d3,#e8c9a8)
+}
+.feature b{display:block;font-size:12px;margin-bottom:2px}
 .feature span{
-font-size:11px;color:var(--muted);
-line-height:1.6
+font-size:9.5px;color:var(--muted);
+line-height:1.4;
+display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden
 }
 
 .news{
@@ -485,6 +499,40 @@ transform:translateX(-100%)
 }
 .panel.left.show{transform:translateX(0)}
 
+.pdWhatsapp{
+position:absolute;
+right:22px;bottom:26px;
+width:52px;height:52px;
+background:#25D366;
+border-radius:50%;
+display:flex;align-items:center;justify-content:center;
+box-shadow:0 6px 16px rgba(0,0,0,.25);
+z-index:20;
+text-decoration:none
+}
+.pdWhatsapp:active{transform:scale(0.94)}
+
+.trackStep{display:flex;gap:14px}
+.trackStep .trackDot{
+width:26px;height:26px;border-radius:50%;
+display:flex;align-items:center;justify-content:center;
+font-size:13px;flex-shrink:0;font-weight:700
+}
+.trackStep .trackLine{
+width:2px;flex:1;margin:2px 0;min-height:24px
+}
+.trackStep.done .trackDot{background:#1c8a45;color:#fff}
+.trackStep.done .trackLine{background:#1c8a45}
+.trackStep.current .trackDot{background:#111;color:#fff}
+.trackStep.current .trackLine{background:#e2e2e2}
+.trackStep.pending .trackDot{background:#eee;color:#aaa}
+.trackStep.pending .trackLine{background:#e2e2e2}
+.trackStepCol{display:flex;flex-direction:column;align-items:center}
+.trackStepBody{padding-bottom:22px}
+.trackStepBody .trackTitle{font-weight:700;font-size:14px}
+.trackStepBody .trackDesc{font-size:12px;color:var(--muted);margin-top:3px}
+.trackStepBody .trackTime{font-size:10px;color:#bbb;margin-top:2px}
+
 .panelHead{
 display:flex;
 justify-content:space-between;
@@ -508,7 +556,7 @@ gap:12px
 padding:14px;
 border:1px solid #ddd;
 outline:none;
-border-radius:8px;
+border-radius:14px;
 font-size:13px;
 width:100%
 }
@@ -517,6 +565,80 @@ width:100%
 .form label{font-size:11px;letter-spacing:1px;color:var(--muted);margin-bottom:-6px}
 .radioRow{display:flex;gap:16px;font-size:13px}
 .radioRow label{display:flex;align-items:center;gap:6px;color:#111;letter-spacing:0}
+
+.pickerField{
+display:flex;align-items:center;justify-content:space-between;
+padding:14px;
+border:1px solid #ddd;
+border-radius:14px;
+font-size:13px;
+width:100%;
+background:white;
+text-align:left;
+color:#111;
+cursor:pointer
+}
+.pickerField.placeholder{color:#999}
+.pickerField:disabled{opacity:.45;cursor:not-allowed;background:#fafafa}
+.pickerField .chev{color:#bbb;font-size:11px;margin-left:8px}
+
+.pickerSheet{
+position:fixed;inset:0;
+background:white;
+z-index:400;
+display:none;
+flex-direction:column
+}
+.pickerSheet.open{display:flex}
+.pickerSheetHead{
+padding:16px 18px 12px;
+border-bottom:1px solid var(--line);
+flex-shrink:0
+}
+.pickerSheetHead h2{font-size:16px;margin-bottom:12px}
+.pickerSearchBox{
+position:relative
+}
+.pickerSearchBox input{
+width:100%;
+padding:13px 16px 13px 40px;
+border:1px solid #ddd;
+border-radius:30px;
+font-size:13px;
+outline:none;
+background:#fafafa
+}
+.pickerSearchBox input:focus{border-color:#111;background:white}
+.pickerSearchBox::before{
+content:"⌕";
+position:absolute;left:15px;top:50%;transform:translateY(-50%);
+font-size:16px;color:#999
+}
+.pickerSheetClose{
+position:absolute;top:14px;right:16px;
+width:32px;height:32px;border-radius:50%;
+background:#f4f4f4;border:0;
+font-size:16px;cursor:pointer
+}
+.pickerList{
+flex:1;overflow-y:auto;
+padding:6px 8px 30px
+}
+.pickerRow{
+display:flex;align-items:center;justify-content:space-between;
+padding:15px 14px;
+border-radius:12px;
+cursor:pointer;
+font-size:14px
+}
+.pickerRow:hover,.pickerRow:active{background:#f7f7f7}
+.pickerRow.selected{background:#111;color:white}
+.pickerRow .check{color:var(--gold);font-weight:800}
+.pickerRow.selected .check{color:white}
+.pickerEmpty{
+text-align:center;color:var(--muted);
+padding:40px 20px;font-size:13px
+}
 
 .accountTabs{
 display:flex;
@@ -563,6 +685,18 @@ cursor:pointer;font-size:13px;line-height:1
 background:none;border:0;color:var(--red);
 font-size:11px;cursor:pointer;text-decoration:underline
 }
+
+.sizePillRow{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.sizePill{
+border:1px solid var(--line);background:#fff;color:#111;
+min-width:42px;height:38px;padding:0 12px;border-radius:8px;
+font-size:13px;font-weight:600;cursor:pointer;letter-spacing:0.5px
+}
+.sizePill.active{background:#111;color:#fff;border-color:#111}
+.sizePill.disabled{color:#ccc;border-color:#eee;cursor:not-allowed;text-decoration:line-through}
+.sizeChartRow{cursor:pointer}
+.sizeChartRow:active{background:var(--cream)}
+.sizeChartRow.selected td:first-child{color:var(--gold)}
 
 .empty{
 text-align:center;
@@ -647,17 +781,28 @@ font-size:20px;font-weight:800;
 margin-bottom:45px
 }
 .adminSide button{
-display:block;width:100%;
+display:flex;align-items:center;gap:10px;
+width:100%;
 text-align:left;
 padding:13px 10px;
 background:none;border:0;
 color:#aaa;cursor:pointer;
 margin-bottom:4px;
-border-radius:7px
+border-radius:7px;
+font-size:13px
 }
 .adminSide button:hover,
 .adminSide button.active{
 background:#292929;color:white
+}
+.adminSide button.soon{
+color:#555;cursor:default;
+justify-content:space-between
+}
+.adminSide button.soon:hover{background:none}
+.adminSide button.soon span.tag{
+font-size:9px;background:#292929;color:#888;
+padding:2px 7px;border-radius:20px;letter-spacing:0.5px
 }
 .adminMain{
 flex:1;padding:35px
@@ -675,16 +820,26 @@ gap:18px
 }
 .stat{
 background:white;
-padding:25px;
-border-radius:12px
+padding:22px 25px;
+border-radius:14px;
+border:1px solid #eee;
+display:flex;align-items:center;gap:16px;
+transition:box-shadow .2s ease
 }
-.stat small{color:#888}
-.stat h2{margin-top:8px}
+.stat:hover{box-shadow:0 6px 20px rgba(0,0,0,.06)}
+.stat .statIcon{
+width:44px;height:44px;border-radius:12px;
+display:flex;align-items:center;justify-content:center;
+font-size:19px;flex-shrink:0
+}
+.stat small{color:#888;letter-spacing:0.5px;font-size:10px}
+.stat h2{margin-top:4px;font-size:21px}
 .adminTable{
 margin-top:25px;
 background:white;
 padding:25px;
-border-radius:12px;
+border-radius:14px;
+border:1px solid #eee;
 overflow:auto
 }
 table{
@@ -692,16 +847,41 @@ width:100%;
 border-collapse:collapse;
 font-size:12px
 }
-th,td{
+th{
+padding:12px 14px;
+text-align:left;
+border-bottom:2px solid #eee;
+color:#888;font-size:10px;
+letter-spacing:0.5px;text-transform:uppercase
+}
+td{
 padding:14px;
 text-align:left;
-border-bottom:1px solid #eee
+border-bottom:1px solid #f2f2f2
 }
+tbody tr:hover td{background:#fafafa}
 .adminBack{
 background:#111;color:white;
 border:0;padding:10px 18px;
 border-radius:20px;
 cursor:pointer
+}
+.statusBadge{
+display:inline-block;padding:4px 11px;
+border-radius:20px;font-size:10px;
+font-weight:700;letter-spacing:0.4px
+}
+.statusBadge.pending{background:#fff3d6;color:#966600}
+.statusBadge.processing{background:#dceaff;color:#1a5bb8}
+.statusBadge.shipped{background:#e9ddff;color:#6934c9}
+.statusBadge.delivered{background:#dcf5e3;color:#1c8a45}
+.statusBadge.cancelled{background:#fde0e0;color:#c0392b}
+.adminSearchRow{
+display:flex;gap:10px;margin-bottom:18px
+}
+.adminSearchRow input{
+flex:1;padding:11px 15px;border:1px solid var(--line);
+border-radius:10px;font-size:13px;background:#fafafa
 }
 
 @media(min-width:901px){
@@ -710,8 +890,6 @@ cursor:pointer
 
 @media(max-width:900px){
 .navlinks{display:none}
-.features{grid-template-columns:repeat(2,1fr)}
-.feature{border-bottom:1px solid var(--line)}
 .footergrid{grid-template-columns:1fr 1fr}
 .dashboard{grid-template-columns:repeat(2,1fr)}
 }
@@ -721,14 +899,11 @@ nav{padding:0 18px}
 .logo{font-size:19px}
 .hero{min-height:72vh;padding:30px;background-position:center 15%}
 .section{padding:55px 18px}
-.category{aspect-ratio:2.6/1;padding:0 7%}
-.catText h3{font-size:12px;letter-spacing:5px}
+.catText h3{font-size:11px;letter-spacing:1.5px}
 .products{gap:12px}
 .heading h2{font-size:28px}
 .promo{margin:10px 18px 55px;padding:45px 25px}
 .promo h2{font-size:32px}
-.features{grid-template-columns:1fr}
-.feature{border-right:0}
 .footergrid{grid-template-columns:1fr}
 .admin{display:block}
 .adminSide{
@@ -772,6 +947,9 @@ FREE SHIPPING ON ORDERS OVER ৳1,000
 <div class="navRightIcons">
 <button class="iconbtn" onclick="openSearch()">⌕</button>
 <button class="iconbtn" onclick="openWishlist()">♡</button>
+<button class="iconbtn" onclick="openCart()" style="position:relative">
+🛍️<span class="cartCount" id="cartCountTop" style="display:none">0</span>
+</button>
 </div>
 </nav>
 
@@ -806,7 +984,7 @@ FREE SHIPPING ON ORDERS OVER ৳1,000
 </div>
 </div>
 
-<div class="categories">
+<div class="categories" style="padding:0 5%">
 <div class="category">
 <div class="catText">
 <h3>Women</h3>
@@ -1005,8 +1183,8 @@ your signature style.
 <button onclick="openCart()">
 <span class="bnIcon">🛒<span class="cartCount" id="cartCount" style="display:none">0</span></span>Cart
 </button>
-<button onclick="window.open('https://wa.me/8801877270165','_blank')">
-<span class="bnIcon">💬</span>Chat
+<button onclick="openTrackOrder()">
+<span class="bnIcon">📦</span>Track
 </button>
 <button onclick="openAccount()">
 <span class="bnIcon">👤</span>Login
@@ -1024,11 +1202,7 @@ your signature style.
 <button class="close" onclick="closePanels()">×</button>
 </div>
 
-<div class="accountTabs" id="accountTabs">
-<button id="loginTab" class="active" onclick="showLogin()">LOGIN</button>
-<button id="registerTab" onclick="showRegister()">CREATE ACCOUNT</button>
-</div>
-
+<!-- LOGIN (default view) -->
 <form class="form" id="loginForm" onsubmit="login(event)">
 <input type="email" id="loginEmail" placeholder="Email address" required>
 <input type="password" id="loginPassword" placeholder="Password" required>
@@ -1036,15 +1210,34 @@ your signature style.
 <div style="text-align:center;margin-top:4px">
 <a href="#" onclick="showForgotPassword();return false" style="font-size:11px;color:var(--muted);text-decoration:underline">Forgot password?</a>
 </div>
+<div style="text-align:center;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)">
+<span style="font-size:12px;color:var(--muted)">Don't have an account? </span>
+<a href="#" onclick="showSignupStep1();return false" style="font-size:12px;color:#111;font-weight:700;text-decoration:underline">Create one</a>
+</div>
 </form>
 
-<form class="form" id="registerForm" style="display:none" onsubmit="register(event)">
-<input type="text" id="regName" placeholder="Full name" required>
-<input type="email" id="regEmail" placeholder="Email address" required>
-<input type="tel" id="regPhone" placeholder="Phone number (01XXXXXXXXX)" required>
-<input type="password" id="regPassword" placeholder="Create password" required>
-<input type="password" id="regPassword2" placeholder="Confirm password" required>
-<button class="btn">CREATE ACCOUNT</button>
+<!-- SIGN UP — step 1: details, sends a code to email -->
+<form class="form" id="signupStep1Form" style="display:none" onsubmit="sendSignupOtp(event)">
+<input type="text" id="suName" placeholder="Full name" required>
+<input type="email" id="suEmail" placeholder="Email address" required>
+<input type="tel" id="suPhone" placeholder="Phone number (optional)">
+<p style="font-size:11px;color:var(--muted);margin-top:-6px">We'll send a 6-digit code to your email to verify it's you — no password needed.</p>
+<button class="btn">SEND CODE</button>
+<div style="text-align:center;margin-top:14px">
+<a href="#" onclick="showLogin();return false" style="font-size:11px;color:var(--muted);text-decoration:underline">Back to login</a>
+</div>
+</form>
+
+<!-- SIGN UP — step 2: enter the code -->
+<form class="form" id="signupStep2Form" style="display:none" onsubmit="verifySignupOtp(event)">
+<p style="font-size:12px;color:var(--muted);margin-bottom:2px">Enter the 6-digit code we sent to</p>
+<p style="font-size:13px;font-weight:700;margin-bottom:6px" id="suEmailConfirm"></p>
+<input type="text" id="suOtp" placeholder="000000" inputmode="numeric" maxlength="6" style="text-align:center;letter-spacing:8px;font-size:20px;font-weight:700" required>
+<button class="btn">VERIFY & CREATE ACCOUNT</button>
+<div style="text-align:center;margin-top:14px;display:flex;justify-content:center;gap:18px">
+<a href="#" onclick="sendSignupOtp(event);return false" style="font-size:11px;color:var(--muted);text-decoration:underline">Resend code</a>
+<a href="#" onclick="showSignupStep1();return false" style="font-size:11px;color:var(--muted);text-decoration:underline">Change email</a>
+</div>
 </form>
 
 <form class="form" id="forgotForm" style="display:none">
@@ -1113,6 +1306,39 @@ CHECKOUT
 
 </div>
 
+<!-- QUICK PROFILE (frictionless "login" before ordering) -->
+<div class="panel" id="quickProfilePanel">
+
+<div class="panelHead">
+<h2>Almost there</h2>
+<button class="close" onclick="closePanels()">×</button>
+</div>
+
+<div style="text-align:center;padding:6px 0 20px">
+<div style="font-size:40px;margin-bottom:10px">👋</div>
+<p style="color:var(--muted);font-size:13px;line-height:1.7">
+Just your name and a phone or email — no password needed.<br>
+This lets you track your orders anytime.
+</p>
+</div>
+
+<form class="form" id="quickProfileForm" onsubmit="submitQuickProfile(event)">
+<label>FULL NAME</label>
+<input type="text" id="qpName" placeholder="Your full name" required>
+
+<label>PHONE NUMBER</label>
+<input type="tel" id="qpPhone" placeholder="01XXXXXXXXX">
+
+<label>EMAIL (OPTIONAL IF PHONE GIVEN)</label>
+<input type="email" id="qpEmail" placeholder="you@example.com">
+
+<p style="font-size:11px;color:var(--muted);margin-top:-6px">Give either your phone number or your email — one is enough.</p>
+
+<button class="btn" style="width:100%;margin-top:6px">CONTINUE</button>
+</form>
+
+</div>
+
 <!-- CHECKOUT -->
 <div class="panel" id="checkoutPanel">
 
@@ -1145,24 +1371,36 @@ CHECKOUT
 
 <div id="homeDeliveryFields">
 <label>REGION</label>
-<select id="coRegion" onchange="onRegionChange()">
+<select id="coRegion" onchange="onRegionChange()" style="display:none">
 <option value="">Select Region</option>
 </select>
+<button type="button" class="pickerField placeholder" id="coRegionBtn" onclick="openAddressPicker('coRegion','Select Region')">
+<span id="coRegionBtnText">Select Region</span><span class="chev">▾</span>
+</button>
 
 <label>CITY</label>
-<select id="coCity" onchange="onCityChange()" disabled>
+<select id="coCity" onchange="onCityChange()" disabled style="display:none">
 <option value="">Select City</option>
 </select>
+<button type="button" class="pickerField placeholder" id="coCityBtn" disabled onclick="openAddressPicker('coCity','Select City')">
+<span id="coCityBtnText">Select City</span><span class="chev">▾</span>
+</button>
 
 <label>AREA</label>
-<select id="coArea" onchange="onAreaChange()" disabled>
+<select id="coArea" onchange="onAreaChange()" disabled style="display:none">
 <option value="">Select Area</option>
 </select>
+<button type="button" class="pickerField placeholder" id="coAreaBtn" disabled onclick="openAddressPicker('coArea','Select Area')">
+<span id="coAreaBtnText">Select Area</span><span class="chev">▾</span>
+</button>
 
 <label id="coSubAreaLabel">SUB AREA (OPTIONAL)</label>
-<select id="coSubArea" onchange="updateCheckoutSummary()" disabled style="display:none">
+<select id="coSubArea" onchange="updateCheckoutSummary();syncPickerButtons()" disabled style="display:none">
 <option value="">Select Subarea</option>
 </select>
+<button type="button" class="pickerField placeholder" id="coSubAreaBtn" disabled style="display:none" onclick="openAddressPicker('coSubArea','Select Subarea')">
+<span id="coSubAreaBtnText">Select Subarea</span><span class="chev">▾</span>
+</button>
 
 <label>ADDRESS</label>
 <textarea id="coAddress" placeholder="Type House, Flat No, Road"></textarea>
@@ -1228,9 +1466,16 @@ We'll contact you shortly to confirm.
 <div class="summaryRow" style="margin-bottom:0"><span>Delivery</span><b id="successMethod">—</b></div>
 </div>
 
+<p style="font-size:11px;color:var(--muted);text-align:center;margin-top:-12px;margin-bottom:18px">
+Save this Order ID and your phone number — use them anytime in <b>Track Order</b> to see your order status.
+</p>
+
 <a id="successWhatsapp" class="btn" style="width:100%;display:block;text-align:center;background:#25D366" href="#" target="_blank">
 CONFIRM VIA WHATSAPP
 </a>
+<button class="btn light" style="width:100%;margin-top:10px" onclick="closePanels();openTrackOrder()">
+TRACK THIS ORDER
+</button>
 <button class="btn light" style="width:100%;margin-top:10px" onclick="closePanels()">
 CONTINUE SHOPPING
 </button>
@@ -1244,6 +1489,10 @@ CONTINUE SHOPPING
 <h2>Product Details</h2>
 <button class="close" onclick="closePanels()">×</button>
 </div>
+
+<a href="https://wa.me/8801877270165" target="_blank" class="pdWhatsapp" title="Ask about this product on WhatsApp">
+<svg viewBox="0 0 32 32" width="26" height="26" fill="#fff"><path d="M16 3C9.4 3 4 8.4 4 15c0 2.4.7 4.6 1.9 6.5L4 29l7.7-1.9c1.8 1 3.9 1.5 6.1 1.5 6.6 0 12-5.4 12-12S22.6 3 16 3zm0 22c-2 0-3.9-.5-5.5-1.5l-.4-.2-4.6 1.2 1.2-4.5-.3-.4C5.4 18 4.8 16.5 4.8 15c0-6.2 5-11.2 11.2-11.2S27.2 8.8 27.2 15 22.2 25 16 25zm6.2-8.3c-.3-.2-2-1-2.3-1.1-.3-.1-.5-.2-.8.2-.2.3-.9 1.1-1.1 1.3-.2.2-.4.2-.7.1-.3-.2-1.4-.5-2.7-1.7-1-.9-1.7-2-1.9-2.3-.2-.3 0-.5.1-.7.1-.1.3-.4.5-.5.2-.2.2-.3.3-.5.1-.2.1-.4 0-.6-.1-.2-.8-1.9-1.1-2.6-.3-.7-.6-.6-.8-.6h-.7c-.2 0-.6.1-.9.4-.3.3-1.2 1.2-1.2 2.8s1.2 3.2 1.4 3.5c.2.3 2.4 3.7 5.9 5.1.8.3 1.4.5 1.9.7.8.2 1.5.2 2.1.1.6-.1 2-.8 2.3-1.6.3-.8.3-1.5.2-1.6-.1-.1-.3-.2-.6-.3z"/></svg>
+</a>
 
 <div id="pdGallery" class="pdGallery">
 <div id="pdGalleryTrack" class="pdGalleryTrack"></div>
@@ -1261,6 +1510,11 @@ CONTINUE SHOPPING
 
 <div id="pdFabricSizes" style="font-size:12px;color:var(--muted)"></div>
 <button type="button" id="pdSizeChartBtn" onclick="openSizeChart()" style="display:none;background:none;border:0;text-decoration:underline;font-size:11px;color:var(--gold);padding:0;margin-top:6px;cursor:pointer">SIZE GUIDE</button>
+
+<div id="pdSizeSelectWrap" style="display:none;margin-top:14px">
+<span style="font-size:12px;letter-spacing:1px;color:var(--muted)">SELECT SIZE</span>
+<div id="pdSizePills" class="sizePillRow"></div>
+</div>
 
 <div class="qtyRow" style="margin-top:18px;gap:14px">
 <span style="font-size:12px;letter-spacing:1px;color:var(--muted)">QUANTITY</span>
@@ -1396,17 +1650,35 @@ Want to know more about our story, our factory, or the team behind LYRICS FASHIO
 <!-- ORDER TRACKING -->
 <div class="panel" id="trackOrderPanel">
 <div class="panelHead">
-<h2>Track Your Order</h2>
+<h2>My Orders</h2>
 <button class="close" onclick="closePanels()">×</button>
 </div>
+
+<div id="trackOrderMyList"></div>
+
+<div id="trackOrderManualWrap" style="display:none">
 <form class="form" id="trackOrderForm" onsubmit="submitTrackOrder(event)">
 <label>ORDER ID</label>
-<input type="text" id="trackOrderId" placeholder="e.g. 42" required>
+<input type="text" id="trackOrderId" placeholder="e.g. LF12345678" required>
 <label>PHONE NUMBER USED FOR THE ORDER</label>
 <input type="tel" id="trackOrderPhone" placeholder="01XXXXXXXXX" required>
 <button class="btn" style="width:100%">TRACK ORDER</button>
 </form>
+</div>
+
 <div id="trackOrderResult" style="margin-top:20px"></div>
+</div>
+
+<!-- ADDRESS PICKER SHEET -->
+<div class="pickerSheet" id="pickerSheet">
+<div class="pickerSheetHead">
+<h2 id="pickerSheetTitle">Select</h2>
+<button class="pickerSheetClose" onclick="closeAddressPicker()">×</button>
+<div class="pickerSearchBox">
+<input type="text" id="pickerSearchInput" placeholder="Search..." oninput="renderPickerList(this.value)">
+</div>
+</div>
+<div class="pickerList" id="pickerListBody"></div>
 </div>
 
 <!-- SIZE CHART MODAL -->
@@ -1461,13 +1733,13 @@ Your wishlist is currently empty.
 
 <div class="adminLogo">LYRICS ADMIN</div>
 
-<button class="active" id="navDashboard" onclick="adminNav('dashboard')">Dashboard</button>
-<button id="navProducts" onclick="adminNav('products')">Products</button>
-<button id="navOrders" onclick="adminNav('orders')">Orders</button>
-<button>Customers</button>
-<button>Categories</button>
-<button>Discounts</button>
-<button>Settings</button>
+<button class="active" id="navDashboard" onclick="adminNav('dashboard')">📊 Dashboard</button>
+<button id="navProducts" onclick="adminNav('products')">🛍️ Products</button>
+<button id="navOrders" onclick="adminNav('orders')">📦 Orders</button>
+<button class="soon">👥 Customers <span class="tag">Soon</span></button>
+<button class="soon">🏷️ Categories <span class="tag">Soon</span></button>
+<button class="soon">🎟️ Discounts <span class="tag">Soon</span></button>
+<button class="soon">⚙️ Settings <span class="tag">Soon</span></button>
 
 <br><br>
 
@@ -1492,23 +1764,23 @@ Your wishlist is currently empty.
 <div class="dashboard">
 
 <div class="stat">
-<small>TOTAL SALES</small>
-<h2 id="adminTotalSales">৳0</h2>
+<div class="statIcon" style="background:#e8f5ea;color:#1c8a45">৳</div>
+<div><small>TOTAL SALES</small><h2 id="adminTotalSales">৳0</h2></div>
 </div>
 
 <div class="stat">
-<small>ORDERS</small>
-<h2 id="adminOrderCount">0</h2>
+<div class="statIcon" style="background:#e6eefd;color:#1a5bb8">📦</div>
+<div><small>ORDERS</small><h2 id="adminOrderCount">0</h2></div>
 </div>
 
 <div class="stat">
-<small>CUSTOMERS</small>
-<h2 id="adminCustomerCount">—</h2>
+<div class="statIcon" style="background:#fbeadd;color:#c9701f">👥</div>
+<div><small>CUSTOMERS</small><h2 id="adminCustomerCount">—</h2></div>
 </div>
 
 <div class="stat">
-<small>PRODUCTS</small>
-<h2 id="adminProductCount">0</h2>
+<div class="statIcon" style="background:#f1e9fb;color:#6934c9">🛍️</div>
+<div><small>PRODUCTS</small><h2 id="adminProductCount">0</h2></div>
 </div>
 
 </div>
@@ -1543,6 +1815,9 @@ Your wishlist is currently empty.
 <h2>All Products</h2>
 <button class="btn" onclick="openProductForm()">+ ADD PRODUCT</button>
 </div>
+<div class="adminSearchRow">
+<input id="adminProductSearch" placeholder="Search products by name or category..." oninput="renderAdminProductsTable()">
+</div>
 <table>
 <thead>
 <tr>
@@ -1560,6 +1835,9 @@ Your wishlist is currently empty.
 <div id="adminOrdersView" style="display:none">
 <div class="adminTable">
 <h2 style="margin-bottom:20px">All Orders</h2>
+<div class="adminSearchRow">
+<input id="adminOrderSearch" placeholder="Search orders by customer or phone..." oninput="loadAllOrders(true)">
+</div>
 <table>
 <thead>
 <tr>
@@ -1595,7 +1873,15 @@ if(typeof window.supabase === 'undefined'){
 console.error('Supabase library failed to load from CDN. Check your internet connection or CDN access.')
 }
 const supabaseClient = window.supabase
-? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+auth: {
+persistSession: true,
+autoRefreshToken: true,
+detectSessionInUrl: true,
+storage: window.localStorage,
+storageKey: 'lyrics-fashion-auth'
+}
+})
 : null;
 
 // Turns any error (string, Error, Supabase error object, plain object)
@@ -1673,29 +1959,36 @@ setTimeout(()=>$("searchInput").focus(),200)
 }
 
 function showLogin(){
-$("accountTabs").style.display="flex"
 $("loginForm").style.display="flex"
-$("registerForm").style.display="none"
+$("signupStep1Form").style.display="none"
+$("signupStep2Form").style.display="none"
 $("forgotForm").style.display="none"
 $("accountLoggedIn").style.display="none"
-$("loginTab").classList.add("active")
-$("registerTab").classList.remove("active")
 }
 
-function showRegister(){
-$("accountTabs").style.display="flex"
+function showSignupStep1(){
 $("loginForm").style.display="none"
-$("registerForm").style.display="flex"
+$("signupStep1Form").style.display="flex"
+$("signupStep2Form").style.display="none"
 $("forgotForm").style.display="none"
 $("accountLoggedIn").style.display="none"
-$("loginTab").classList.remove("active")
-$("registerTab").classList.add("active")
+}
+
+function showSignupStep2(email){
+$("loginForm").style.display="none"
+$("signupStep1Form").style.display="none"
+$("signupStep2Form").style.display="flex"
+$("forgotForm").style.display="none"
+$("accountLoggedIn").style.display="none"
+$("suEmailConfirm").textContent = email
+$("suOtp").value = ""
+setTimeout(()=>$("suOtp").focus(), 150)
 }
 
 function showForgotPassword(){
-$("accountTabs").style.display="none"
 $("loginForm").style.display="none"
-$("registerForm").style.display="none"
+$("signupStep1Form").style.display="none"
+$("signupStep2Form").style.display="none"
 $("accountLoggedIn").style.display="none"
 $("forgotForm").style.display="flex"
 }
@@ -1726,27 +2019,82 @@ showAdmin()
 }
 }
 
-async function register(e){
+/* --- Passwordless sign-up: name + email (+ optional phone), verified
+   by a 6-digit code emailed via Supabase Auth OTP. No password is set,
+   so there's nothing to leak or brute-force for these accounts. ---
+   NOTE: for signInWithOtp to send a numeric code (not a magic link),
+   the "Magic Link" email template in Supabase Auth must include
+   {{ .Token }} — a one-time dashboard setting, not something this code
+   can change. */
+let pendingSignup = null
+
+async function sendSignupOtp(e){
 e.preventDefault()
-const name = $("regName").value.trim()
-const email = $("regEmail").value.trim()
-const phone = $("regPhone").value.trim()
-const password = $("regPassword").value
-const password2 = $("regPassword2").value
-if(password !== password2){
-toast("Passwords do not match.")
+const name = $("suName").value.trim()
+const email = $("suEmail").value.trim()
+const phone = $("suPhone").value.trim()
+
+if(!name || !email){
+toast("Please enter your name and email.")
 return
 }
-const { data, error } = await supabaseClient.auth.signUp({
-email, password,
-options:{ data:{ full_name:name, phone:phone } }
+
+const submitBtn = e.target.querySelector('button')
+if(submitBtn){ submitBtn.disabled = true; submitBtn.textContent = "SENDING..." }
+
+const { error } = await supabaseClient.auth.signInWithOtp({
+email,
+options:{ shouldCreateUser:true, data:{ full_name:name, phone:phone } }
 })
+
+if(submitBtn){ submitBtn.disabled = false; submitBtn.textContent = "SEND CODE" }
+
 if(error){
-toast("Registration failed: " + readableError(error))
+toast("Could not send code: " + readableError(error))
 return
 }
-toast("Account created! Check your email to confirm.")
-showLogin()
+
+pendingSignup = { name, email, phone }
+toast("Code sent! Check your email.")
+showSignupStep2(email)
+}
+
+async function verifySignupOtp(e){
+e.preventDefault()
+if(!pendingSignup){
+toast("Please start again — enter your email.")
+showSignupStep1()
+return
+}
+const token = $("suOtp").value.trim()
+if(token.length !== 6){
+toast("Please enter the 6-digit code.")
+return
+}
+
+const submitBtn = e.target.querySelector('button')
+if(submitBtn){ submitBtn.disabled = true; submitBtn.textContent = "VERIFYING..." }
+
+const { data, error } = await supabaseClient.auth.verifyOtp({
+email: pendingSignup.email,
+token,
+type: 'email'
+})
+
+if(submitBtn){ submitBtn.disabled = false; submitBtn.textContent = "VERIFY & CREATE ACCOUNT" }
+
+if(error){
+toast("Incorrect or expired code: " + readableError(error))
+return
+}
+
+// Make sure name/phone are saved even if the account already existed
+// before this metadata was attached.
+await supabaseClient.auth.updateUser({ data:{ full_name: pendingSignup.name, phone: pendingSignup.phone } })
+
+toast("Welcome to LYRICS FASHION!")
+pendingSignup = null
+closePanels()
 }
 
 async function sendPasswordReset(){
@@ -1799,17 +2147,17 @@ if(!session){
 showLogin()
 return
 }
-$("accountTabs").style.display="none"
 $("loginForm").style.display="none"
-$("registerForm").style.display="none"
+$("signupStep1Form").style.display="none"
+$("signupStep2Form").style.display="none"
 $("forgotForm").style.display="none"
 $("accountLoggedIn").style.display="block"
 $("accName").textContent = session.user.user_metadata?.full_name || "My Account"
 $("accEmail").textContent = session.user.email
-loadMyOrders(session.user.id)
+loadAccountOrders(session.user.id)
 }
 
-async function loadMyOrders(userId){
+async function loadAccountOrders(userId){
 const { data: orders, error } = await supabaseClient
 .from('orders')
 .select('id,items,total_amount,status,created_at')
@@ -1993,7 +2341,7 @@ p.name.toLowerCase().includes(q) || (p.brand||"").toLowerCase().includes(q) || (
 
 $("searchSuggestions").innerHTML = matches.length ? matches.map(p => `
 <div onclick="closePanels();openProductDetail(${p.id})" style="display:flex;align-items:center;gap:10px;padding:10px 4px;border-bottom:1px solid var(--line);cursor:pointer">
-<div style="width:40px;height:50px;background:var(--cream);border-radius:6px;overflow:hidden;flex-shrink:0">
+<div style="width:40px;height:50px;background:var(--cream);border-radius:10px;overflow:hidden;flex-shrink:0">
 ${p.imgs ? `<img src="${p.imgs.split(',')[0].trim()}" style="width:100%;height:100%;object-fit:cover">` : ''}
 </div>
 <div style="flex:1">
@@ -2027,6 +2375,14 @@ $("searchResults").innerHTML = results.length
 let pdCurrentProduct = null
 let pdCurrentIndex = 0
 let pdQty = 1
+let pdSelectedSize = null
+
+function selectPdSize(size){
+pdSelectedSize = size
+$("pdSizePills").querySelectorAll('.sizePill').forEach(btn =>
+btn.classList.toggle('active', btn.dataset.size === size)
+)
+}
 let pdTouchStartX = 0
 
 function openProductDetail(productId){
@@ -2076,12 +2432,23 @@ $("pdAddToCart").textContent = inStock ? "ADD TO CART" : "OUT OF STOCK"
 const sizes = Array.isArray(product.sizes) ? product.sizes : []
 const infoBits = []
 if(product.fabric) infoBits.push(`<b>Fabric:</b> ${product.fabric}`)
-if(sizes.length) infoBits.push(`<b>Available Sizes:</b> ${sizes.join(', ')}`)
 $("pdFabricSizes").innerHTML = infoBits.length
 ? infoBits.map(b=>`<div style="margin-top:4px">${b}</div>`).join('')
 : ""
 const hasSizeChart = product.size_chart && Object.keys(product.size_chart).length > 0
 $("pdSizeChartBtn").style.display = hasSizeChart ? "inline-block" : "none"
+
+// Selectable size pills
+pdSelectedSize = null
+if(sizes.length){
+$("pdSizeSelectWrap").style.display = "block"
+$("pdSizePills").innerHTML = sizes.map(s =>
+`<button type="button" class="sizePill" data-size="${s}" onclick="selectPdSize('${s.replace(/'/g,"\\'")}')">${s}</button>`
+).join('')
+}else{
+$("pdSizeSelectWrap").style.display = "none"
+$("pdSizePills").innerHTML = ""
+}
 
 // Related products — same category, excluding current
 const related = allProducts.filter(p => p.cat === product.cat && p.id !== product.id).slice(0, 4)
@@ -2201,43 +2568,190 @@ function openAboutUs(){
 openPanel("aboutUsPanel")
 }
 
-function openTrackOrder(){
+let lastOrderRef = null, lastOrderPhone = null
+
+async function openTrackOrder(){
 $("trackOrderResult").innerHTML = ""
+const profile = getCustomerProfile()
+
+if(profile){
+$("trackOrderManualWrap").style.display = "none"
+$("trackOrderMyList").innerHTML = `<div class="empty" style="padding:20px 10px">Loading your orders...</div>`
 openPanel("trackOrderPanel")
+await loadMyOrders(profile)
+}else{
+// No profile yet (shouldn't normally happen since ordering now
+// requires one) — fall back to manual Order ID + phone search.
+$("trackOrderMyList").innerHTML = ""
+$("trackOrderManualWrap").style.display = "block"
+if(lastOrderRef) $("trackOrderId").value = lastOrderRef
+if(lastOrderPhone) $("trackOrderPhone").value = lastOrderPhone
+openPanel("trackOrderPanel")
+}
+}
+
+async function loadMyOrders(profile){
+const { data, error } = await supabaseClient.rpc('get_customer_orders', { p_customer_id: profile.id })
+
+if(error){
+console.error(error)
+$("trackOrderMyList").innerHTML = `<div class="empty" style="padding:20px 10px">Could not load your orders. Please try again.</div>`
+return
+}
+
+if(!data || !data.length){
+$("trackOrderMyList").innerHTML = `
+<div class="empty" style="padding:30px 10px">
+You haven't placed any orders yet with this name/phone.<br><br>
+<a href="#" onclick="switchAccount();return false" style="color:var(--gold);text-decoration:underline;font-size:12px">Not you? Look up an order manually</a>
+</div>`
+return
+}
+
+// Group the flat row list back into one card per order_ref
+const groups = {}
+data.forEach(r => {
+const key = r.order_ref || ('#' + r.id)
+if(!groups[key]) groups[key] = []
+groups[key].push(r)
+})
+
+const fmtDate = iso => new Date(iso).toLocaleDateString('en-US', { month:'short', day:'2-digit', year:'numeric' })
+
+$("trackOrderMyList").innerHTML = Object.entries(groups).map(([ref, rows]) => {
+const o = rows[0]
+const total = rows.reduce((s,r) => s + Number(r.total_amount||0), 0)
+const itemCount = rows.reduce((s,r) => s + Number(r.quantity||1), 0)
+return `
+<div class="pickerRow" style="border:1px solid var(--line);margin-bottom:10px;padding:16px" onclick='viewOrderGroup(${JSON.stringify(ref)})'>
+<div>
+<div style="font-weight:700;font-size:13px">${ref}</div>
+<div style="font-size:11px;color:var(--muted);margin-top:3px">${fmtDate(o.created_at)} · ${itemCount} item${itemCount>1?'s':''} · ৳${total.toLocaleString()}</div>
+</div>
+${statusBadgeHTML(o.status)}
+</div>`
+}).join('') + `
+<div style="text-align:center;margin-top:14px">
+<a href="#" onclick="switchAccount();return false" style="color:var(--muted);text-decoration:underline;font-size:11px">Not you? Switch account</a>
+</div>`
+
+// cache for tap-to-expand
+window._myOrderGroups = groups
+}
+
+async function viewOrderGroup(ref){
+const rows = (window._myOrderGroups || {})[ref]
+if(!rows) return
+$("trackOrderResult").scrollIntoView?.({ behavior:'smooth' })
+await renderOrderReceipt(rows)
 }
 
 async function submitTrackOrder(e){
 e.preventDefault()
-const id = Number($("trackOrderId").value.trim())
+const ref = $("trackOrderId").value.trim()
 const phone = $("trackOrderPhone").value.trim()
 $("trackOrderResult").innerHTML = `<div class="empty" style="padding:20px 10px">Searching...</div>`
 
-const { data, error } = await supabaseClient.rpc('track_order', { p_id:id, p_phone:phone })
+const { data, error } = await supabaseClient.rpc('track_order', { p_ref:ref, p_phone:phone })
 
 if(error || !data || !data.length){
 $("trackOrderResult").innerHTML = `<div class="empty" style="padding:20px 10px">No matching order found. Please check the Order ID and phone number.</div>`
 return
 }
 
-const o = data[0]
-const steps = ['Pending','Processing','Shipped','Delivered']
-const currentStep = steps.indexOf(o.status)
+await renderOrderReceipt(data)
+}
+
+async function renderOrderReceipt(rows){
+const o = rows[0] // shared status/address/timeline info
+const fmtTime = iso => new Date(iso).toLocaleString('en-US', { month:'short', day:'2-digit', hour:'numeric', minute:'2-digit', hour12:true })
+
+if((o.status||'').toLowerCase() === 'cancelled'){
 $("trackOrderResult").innerHTML = `
-<div style="background:var(--cream);border-radius:12px;padding:18px">
-<div class="summaryRow"><span>Order ID</span><b>#${o.id}</b></div>
-<div class="summaryRow"><span>Items</span><b style="text-align:right;max-width:60%">${o.items||''}</b></div>
-<div class="summaryRow"><span>Total</span><b>৳${Number(o.total_amount||0).toLocaleString()}</b></div>
-<div class="summaryRow" style="margin-bottom:0"><span>Delivery</span><b>${o.delivery_method==='pickup'?'Store Pickup':'Home Delivery'}</b></div>
-</div>
-<div style="display:flex;justify-content:space-between;margin-top:20px">
-${steps.map((s,i) => `
-<div style="text-align:center;flex:1">
-<div style="width:24px;height:24px;border-radius:50%;margin:0 auto 6px;display:flex;align-items:center;justify-content:center;font-size:11px;
-background:${i<=currentStep?'#111':'#eee'};color:${i<=currentStep?'#fff':'#999'}">${i+1}</div>
-<div style="font-size:9px;color:${i<=currentStep?'#111':'#999'}">${s}</div>
-</div>
-`).join('')}
+<div style="background:#fde0e0;border-radius:12px;padding:18px;color:#c0392b;font-weight:700;text-align:center">
+Order ${o.order_ref || '#'+o.id} was cancelled
 </div>`
+return
+}
+
+const steps = [
+{ key:'pending', title:'Order Placed (COD)', desc:`Your order ${o.order_ref || '#'+o.id} was successfully placed.`, time:o.created_at },
+{ key:'processing', title:'Processing', desc:'We have received your order and our team is confirming it.' },
+{ key:'shipped', title:'Shipped', desc:'Your order has been handed to our delivery rider.' },
+{ key:'delivered', title:'Delivered', desc:'You have received your order. Thank you for shopping with us!' }
+]
+const order = ['pending','processing','shipped','delivered']
+const currentIdx = order.indexOf((o.status||'pending').toLowerCase())
+
+const timelineHTML = steps.map((s,i) => {
+const state = i < currentIdx ? 'done' : i === currentIdx ? 'current' : 'pending'
+const isLast = i === steps.length - 1
+const time = i === currentIdx ? o.status_updated_at : s.time
+return `
+<div class="trackStep ${state}">
+<div class="trackStepCol">
+<div class="trackDot">${state === 'pending' ? (i+1) : '✓'}</div>
+${!isLast ? `<div class="trackLine"></div>` : ''}
+</div>
+<div class="trackStepBody">
+<div class="trackTitle" style="color:${state==='pending' ? '#aaa' : '#111'}">${s.title}</div>
+<div class="trackDesc">${s.desc}</div>
+${time ? `<div class="trackTime">${fmtTime(time)}</div>` : ''}
+</div>
+</div>`
+}).join('')
+
+// Pull product images for the itemized list below (orders only stores
+// product_id, not the image, so we look it up from products).
+const productIds = [...new Set(rows.map(r => r.product_id).filter(Boolean))]
+let imgById = {}
+if(productIds.length){
+const { data: prods } = await supabaseClient.from('products').select('id,imgs').in('id', productIds)
+;(prods||[]).forEach(p => { imgById[p.id] = (p.imgs||'').split(',')[0]?.trim() })
+}
+
+const grandTotal = rows.reduce((s,r) => s + Number(r.total_amount||0), 0)
+const itemsHTML = rows.map(r => {
+const label = (r.items||'').split(',')[0]?.trim() || 'Item'
+const img = imgById[r.product_id]
+return `
+<div style="display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)">
+<div style="width:52px;height:62px;background:var(--cream);border-radius:10px;overflow:hidden;flex-shrink:0">
+${img ? `<img src="${img}" style="width:100%;height:100%;object-fit:cover">` : ''}
+</div>
+<div style="flex:1;min-width:0">
+<div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${label}</div>
+<div style="font-size:11px;color:var(--muted);margin-top:2px">Qty: ${r.quantity||1} × ৳${Number(r.unit_price||0).toLocaleString()}</div>
+</div>
+<div style="font-weight:700;font-size:13px">৳${Number((r.unit_price||0)*(r.quantity||1)).toLocaleString()}</div>
+</div>`
+}).join('')
+
+const addressLine = o.delivery_method === 'pickup'
+? 'Store Pickup (Mirpur 12)'
+: [o.delivery_address, o.upazila, o.district].filter(Boolean).join(', ')
+
+$("trackOrderResult").innerHTML = `
+<button type="button" onclick="$('trackOrderResult').innerHTML=''" style="background:none;border:0;color:var(--muted);font-size:12px;margin-bottom:14px;cursor:pointer">← Back to my orders</button>
+
+${timelineHTML}
+
+<div style="background:var(--cream);border-radius:12px;padding:18px;margin-top:6px;margin-bottom:16px">
+<div class="summaryRow"><span>Order ID</span><b>${o.order_ref || '#'+o.id}</b></div>
+<div class="summaryRow" style="margin-bottom:0"><span>Delivery</span><b style="text-align:right;max-width:65%">${o.delivery_method==='pickup'?'Store Pickup':'Home Delivery'}</b></div>
+</div>
+
+<h3 style="font-size:13px;letter-spacing:0.5px;margin-bottom:4px">ITEMS</h3>
+${itemsHTML}
+<div class="summaryRow total" style="margin-top:14px"><span>Total</span><span>৳${grandTotal.toLocaleString()}</span></div>
+
+<h3 style="font-size:13px;letter-spacing:0.5px;margin-top:20px;margin-bottom:8px">DELIVERY ADDRESS</h3>
+<p style="font-size:13px;color:#333;line-height:1.6">${addressLine || '—'}</p>
+<p style="font-size:12px;color:var(--muted);margin-top:4px">${o.customer||''} · ${o.phone||''}</p>
+
+<p style="font-size:11px;color:var(--muted);text-align:center;margin-top:20px">
+Any query? Message us on <a href="https://wa.me/8801877270165" target="_blank" style="color:var(--gold)">WhatsApp</a>.
+</p>`
 }
 
 function openSizeChart(){
@@ -2246,16 +2760,30 @@ if(!chart || !Object.keys(chart).length){
 toast("Size chart not available for this product.")
 return
 }
+const availableSizes = Array.isArray(pdCurrentProduct.sizes) ? pdCurrentProduct.sizes : []
 const sizes = Object.keys(chart)
 const measures = Object.keys(chart[sizes[0]] || {})
+const selectable = availableSizes.length > 0
 let html = `<table style="width:100%;border-collapse:collapse;font-size:12px">
 <tr style="border-bottom:1px solid var(--line)"><th style="text-align:left;padding:8px 4px">Size</th>${measures.map(m=>`<th style="text-align:left;padding:8px 4px;text-transform:capitalize">${m}</th>`).join('')}</tr>`
 sizes.forEach(s => {
-html += `<tr style="border-bottom:1px solid var(--line)"><td style="padding:8px 4px;font-weight:700">${s}</td>${measures.map(m=>`<td style="padding:8px 4px">${chart[s][m]}"</td>`).join('')}</tr>`
+const isSelected = s === pdSelectedSize
+const canSelect = selectable && availableSizes.includes(s)
+html += `<tr class="${canSelect ? 'sizeChartRow' : ''}${isSelected ? ' selected' : ''}" style="border-bottom:1px solid var(--line)" ${canSelect ? `onclick="pickSizeFromChart('${s.replace(/'/g,"\\'")}')"` : ''}>
+<td style="padding:8px 4px;font-weight:700">${s}${isSelected ? ' ✓' : ''}</td>
+${measures.map(m=>`<td style="padding:8px 4px">${chart[s][m]}"</td>`).join('')}
+</tr>`
 })
-html += `</table><p style="font-size:11px;color:var(--muted);margin-top:10px">All measurements in inches.</p>`
+html += `</table><p style="font-size:11px;color:var(--muted);margin-top:10px">All measurements in inches.${selectable ? ' Tap a row to select that size.' : ''}</p>`
 $("sizeChartTable").innerHTML = html
 openPanel("sizeChartPanel")
+}
+
+function pickSizeFromChart(size){
+selectPdSize(size)
+closePanels()
+openPanel("productPanel")
+toast("Size " + size + " selected")
 }
 
 function pdChangeQty(delta){
@@ -2263,18 +2791,29 @@ pdQty = Math.max(1, pdQty + delta)
 $("pdQty").textContent = pdQty
 }
 
+function pdSizeRequiredButMissing(){
+const sizes = Array.isArray(pdCurrentProduct.sizes) ? pdCurrentProduct.sizes : []
+if(sizes.length && !pdSelectedSize){
+toast("Please select a size first.")
+return true
+}
+return false
+}
+
 function pdAddToCart(){
 if(!pdCurrentProduct) return
+if(pdSizeRequiredButMissing()) return
 for(let i = 0; i < pdQty; i++){
-addToCart(pdCurrentProduct.id)
+addToCart(pdCurrentProduct.id, pdSelectedSize)
 }
 closePanels()
 }
 
 function pdBuyNow(){
 if(!pdCurrentProduct) return
+if(pdSizeRequiredButMissing()) return
 for(let i = 0; i < pdQty; i++){
-addToCart(pdCurrentProduct.id)
+addToCart(pdCurrentProduct.id, pdSelectedSize)
 }
 checkout()
 }
@@ -2293,24 +2832,28 @@ updateCartBadge()
 function updateCartBadge(){
 const cart = getCart()
 const count = cart.reduce((s,i)=>s+i.qty,0)
-const badge = $("cartCount")
+;["cartCount","cartCountTop"].forEach(id => {
+const badge = $(id)
+if(!badge) return
 if(count > 0){
 badge.style.display = "flex"
 badge.textContent = count
 }else{
 badge.style.display = "none"
 }
+})
 }
 
-function addToCart(productId){
+function addToCart(productId, size){
 const product = allProducts.find(p => p.id === productId)
 if(!product) return
 if(Number(product.stock) <= 0){
 toast("This item is out of stock.")
 return
 }
+size = size || null
 const cart = getCart()
-const existing = cart.find(i => i.id === productId)
+const existing = cart.find(i => i.id === productId && (i.size || null) === size)
 if(existing){
 existing.qty += 1
 }else{
@@ -2319,25 +2862,26 @@ id: product.id,
 name: product.name,
 price: Number(product.price),
 imgs: product.imgs,
+size: size,
 qty: 1
 })
 }
 saveCart(cart)
-toast(product.name + " added to cart")
+toast(product.name + (size ? ` (Size: ${size})` : '') + " added to cart")
 }
 
-function changeQty(productId, delta){
+function changeQty(productId, size, delta){
 const cart = getCart()
-const item = cart.find(i => i.id === productId)
+const item = cart.find(i => i.id === productId && (i.size || null) === (size || null))
 if(!item) return
 item.qty += delta
-const updated = item.qty > 0 ? cart : cart.filter(i => i.id !== productId)
+const updated = item.qty > 0 ? cart : cart.filter(i => i !== item)
 saveCart(updated)
 renderCart()
 }
 
-function removeFromCart(productId){
-saveCart(getCart().filter(i => i.id !== productId))
+function removeFromCart(productId, size){
+saveCart(getCart().filter(i => !(i.id === productId && (i.size || null) === (size || null))))
 renderCart()
 }
 
@@ -2356,21 +2900,24 @@ $("checkoutBtn").disabled = true
 return
 }
 
-wrap.innerHTML = cart.map(i => `
+wrap.innerHTML = cart.map(i => {
+const sizeArg = i.size ? `'${i.size.replace(/'/g,"\\'")}'` : 'null'
+return `
 <div class="cartItem">
 <div class="cartImg">${i.imgs ? `<img src="${i.imgs.split(',')[0].trim()}">` : "🛍️"}</div>
 <div class="cartInfo">
 <h4>${i.name}</h4>
-<small>৳${i.price.toLocaleString()} each</small>
+<small>৳${i.price.toLocaleString()} each${i.size ? ` &bull; Size: ${i.size}` : ''}</small>
 <div class="qtyRow">
-<button class="qtyBtn" onclick="changeQty(${i.id},-1)">−</button>
+<button class="qtyBtn" onclick="changeQty(${i.id},${sizeArg},-1)">−</button>
 <span>${i.qty}</span>
-<button class="qtyBtn" onclick="changeQty(${i.id},1)">+</button>
-<button class="removeBtn" onclick="removeFromCart(${i.id})">Remove</button>
+<button class="qtyBtn" onclick="changeQty(${i.id},${sizeArg},1)">+</button>
+<button class="removeBtn" onclick="removeFromCart(${i.id},${sizeArg})">Remove</button>
 </div>
 </div>
 </div>
-`).join("")
+`
+}).join("")
 
 $("cartTotal").textContent = "৳" + cartSubtotal().toLocaleString()
 $("checkoutBtn").disabled = false
@@ -2464,6 +3011,88 @@ select.appendChild(opt)
 })
 }
 
+/* ============================================================
+   ADDRESS PICKER — a searchable, rounded full-screen list that
+   replaces the native <select> UI for Region/City/Area/SubArea.
+   The underlying <select> elements stay in the DOM (hidden) and
+   keep driving the existing cascading-fetch logic unchanged; this
+   picker just reads their .options and writes back .value, then
+   fires a real change event so onRegionChange/onCityChange/etc
+   still run exactly as before.
+   ============================================================ */
+let pickerActiveSelectId = null
+
+function openAddressPicker(selectId, title){
+const select = $(selectId)
+const btn = $(selectId + "Btn")
+if(!select || select.disabled || (btn && btn.disabled)) return
+
+pickerActiveSelectId = selectId
+$("pickerSheetTitle").textContent = title
+$("pickerSearchInput").value = ""
+renderPickerList("")
+$("pickerSheet").classList.add("open")
+setTimeout(() => $("pickerSearchInput").focus(), 150)
+}
+
+function closeAddressPicker(){
+$("pickerSheet").classList.remove("open")
+pickerActiveSelectId = null
+}
+
+function renderPickerList(filter){
+const select = $(pickerActiveSelectId)
+if(!select) return
+const q = filter.trim().toLowerCase()
+const opts = Array.from(select.options).filter(o => o.value !== "")
+const matches = q ? opts.filter(o => o.textContent.toLowerCase().includes(q)) : opts
+
+if(!matches.length){
+$("pickerListBody").innerHTML = `<div class="pickerEmpty">No matches found${q ? ` for "${filter}"` : ''}.</div>`
+return
+}
+
+$("pickerListBody").innerHTML = matches.map(o => `
+<div class="pickerRow ${o.value === select.value ? 'selected' : ''}" onclick="selectPickerOption(${JSON.stringify(o.value)})">
+<span>${o.textContent}</span>
+${o.value === select.value ? '<span class="check">✓</span>' : ''}
+</div>`).join('')
+}
+
+function selectPickerOption(value){
+const select = $(pickerActiveSelectId)
+if(!select) return
+select.value = value
+select.dispatchEvent(new Event('change'))
+closeAddressPicker()
+}
+
+function syncPickerButtons(){
+[
+['coRegion','Select Region'],
+['coCity','Select City'],
+['coArea','Select Area'],
+['coSubArea','Select Subarea']
+].forEach(([id, placeholder]) => {
+const select = $(id)
+const btn = $(id + "Btn")
+const btnText = $(id + "BtnText")
+if(!select || !btn || !btnText) return
+btn.disabled = select.disabled
+const selected = select.options[select.selectedIndex]
+if(selected && selected.value){
+btnText.textContent = selected.textContent
+btn.classList.remove('placeholder')
+}else{
+btnText.textContent = placeholder
+btn.classList.add('placeholder')
+}
+})
+// SubArea button visibility mirrors the (hidden) select's own
+// show/hide logic, which onCityChange/onRegionChange still control.
+$("coSubAreaBtn").style.display = $("coSubArea").style.display === 'none' ? 'none' : 'flex'
+}
+
 async function onRegionChange(){
 const regionName = $("coRegion").value
 const citySelect = $("coCity")
@@ -2481,7 +3110,7 @@ subAreaSelect.style.display = 'none'
 const divisionId = divisionIdByName[regionName]
 if(!divisionId){
 citySelect.innerHTML = '<option value="">Select City</option>'
-updateCheckoutSummary()
+updateCheckoutSummary();syncPickerButtons()
 return
 }
 
@@ -2494,7 +3123,7 @@ const { data, error } = await supabaseClient
 if(error || !data){
 console.error(error)
 citySelect.innerHTML = '<option value="">Could not load cities</option>'
-updateCheckoutSummary()
+updateCheckoutSummary();syncPickerButtons()
 return
 }
 
@@ -2521,7 +3150,7 @@ options += `<option value="${label}">${label}</option>`
 
 citySelect.innerHTML = options
 citySelect.disabled = false
-updateCheckoutSummary()
+updateCheckoutSummary();syncPickerButtons()
 }
 
 async function onCityChange(){
@@ -2537,7 +3166,7 @@ subAreaSelect.style.display = 'none'
 
 if(!cityValue){
 areaSelect.innerHTML = '<option value="">Select Area</option>'
-updateCheckoutSummary()
+updateCheckoutSummary();syncPickerButtons()
 return
 }
 
@@ -2551,7 +3180,7 @@ const { data, error } = await supabaseClient
 if(error || !data){
 console.error(error)
 areaSelect.innerHTML = '<option value="">Could not load areas</option>'
-updateCheckoutSummary()
+updateCheckoutSummary();syncPickerButtons()
 return
 }
 
@@ -2566,7 +3195,7 @@ return `<option value="${label}">${label}</option>`
 $("coSubAreaLabel").textContent = 'SUB AREA (OPTIONAL)'
 subAreaSelect.style.display = 'flex'
 areaSelect.disabled = false
-updateCheckoutSummary()
+updateCheckoutSummary();syncPickerButtons()
 return
 }
 
@@ -2574,7 +3203,7 @@ return
 const districtId = districtIdByName[cityValue]
 if(!districtId){
 areaSelect.innerHTML = '<option value="">Select Area</option>'
-updateCheckoutSummary()
+updateCheckoutSummary();syncPickerButtons()
 return
 }
 
@@ -2587,7 +3216,7 @@ const { data, error } = await supabaseClient
 if(error || !data){
 console.error(error)
 areaSelect.innerHTML = '<option value="">Could not load areas</option>'
-updateCheckoutSummary()
+updateCheckoutSummary();syncPickerButtons()
 return
 }
 
@@ -2602,7 +3231,7 @@ return `<option value="${label}">${label}</option>`
 $("coSubAreaLabel").textContent = 'UNION'
 subAreaSelect.style.display = 'flex'
 areaSelect.disabled = false
-updateCheckoutSummary()
+updateCheckoutSummary();syncPickerButtons()
 }
 
 async function onAreaChange(){
@@ -2613,7 +3242,7 @@ const subAreaSelect = $("coSubArea")
 if(!areaValue){
 subAreaSelect.innerHTML = '<option value="">Select Subarea</option>'
 subAreaSelect.disabled = true
-updateCheckoutSummary()
+updateCheckoutSummary();syncPickerButtons()
 return
 }
 
@@ -2621,7 +3250,7 @@ if(cityValue === DHAKA_CITY_VALUE){
 // Inside Dhaka City: Sub Area comes from the dhaka_city_sub_areas table
 const areaId = dhakaAreaIdByName[areaValue]
 if(!areaId){
-updateCheckoutSummary()
+updateCheckoutSummary();syncPickerButtons()
 return
 }
 
@@ -2635,7 +3264,7 @@ const { data, error } = await supabaseClient
 if(error || !data || !data.length){
 subAreaSelect.innerHTML = '<option value="">Select Subarea</option>'
 subAreaSelect.disabled = true
-updateCheckoutSummary()
+updateCheckoutSummary();syncPickerButtons()
 return
 }
 
@@ -2645,7 +3274,7 @@ const label = s.name_en || s.name_bn
 return `<option value="${label}">${label}</option>`
 }).join('')
 subAreaSelect.disabled = false
-updateCheckoutSummary()
+updateCheckoutSummary();syncPickerButtons()
 return
 }
 
@@ -2655,7 +3284,7 @@ const upazilaId = upazilaIdByName[areaValue]
 if(!upazilaId){
 subAreaSelect.innerHTML = '<option value="">Select Union</option>'
 subAreaSelect.disabled = true
-updateCheckoutSummary()
+updateCheckoutSummary();syncPickerButtons()
 return
 }
 
@@ -2669,7 +3298,7 @@ const { data, error } = await supabaseClient
 if(error || !data || !data.length){
 subAreaSelect.innerHTML = '<option value="">Select Union</option>'
 subAreaSelect.disabled = true
-updateCheckoutSummary()
+updateCheckoutSummary();syncPickerButtons()
 return
 }
 
@@ -2679,20 +3308,92 @@ const label = u.name_en || u.name
 return `<option value="${label}">${label}</option>`
 }).join('')
 subAreaSelect.disabled = false
-updateCheckoutSummary()
+updateCheckoutSummary();syncPickerButtons()
 }
 
 /* ============================================================
    CHECKOUT
    ============================================================ */
+
+/* --- Quick profile: frictionless "login" (name + phone/email, no
+   password) required once before a customer can place an order. --- */
+function getCustomerProfile(){
+try{
+const raw = localStorage.getItem('lf_customer')
+return raw ? JSON.parse(raw) : null
+}catch{
+return null
+}
+}
+
+function setCustomerProfile(profile){
+localStorage.setItem('lf_customer', JSON.stringify(profile))
+}
+
+function switchAccount(){
+localStorage.removeItem('lf_customer')
+toast("Switched — enter a different name/phone to continue.")
+openTrackOrder()
+}
+
+async function submitQuickProfile(e){
+e.preventDefault()
+const name = $("qpName").value.trim()
+const phone = $("qpPhone").value.trim()
+const email = $("qpEmail").value.trim()
+
+if(!phone && !email){
+toast("Please give at least a phone number or an email.")
+return
+}
+
+const submitBtn = e.target.querySelector('button')
+submitBtn.disabled = true
+submitBtn.textContent = "PLEASE WAIT..."
+
+const { data, error } = await supabaseClient
+.from('customers')
+.insert({ name, phone: phone || null, email: email || null })
+.select()
+.single()
+
+submitBtn.disabled = false
+submitBtn.textContent = "CONTINUE"
+
+if(error || !data){
+console.error(error)
+toast("Could not save your details. Please try again.")
+return
+}
+
+setCustomerProfile({ id:data.id, name, phone, email })
+closePanels()
+await proceedToCheckout()
+}
+
 async function checkout(){
 if(!getCart().length) return
+const profile = getCustomerProfile()
+if(!profile){
+closePanels()
+openPanel("quickProfilePanel")
+return
+}
+await proceedToCheckout()
+}
+
+async function proceedToCheckout(){
+const profile = getCustomerProfile()
 await loadDeliverySettings()
 if(!$("coRegion").options.length || $("coRegion").options.length === 1){
 await loadRegionsIntoSelect()
 }
 $("pickupAddressText").textContent = deliverySettings.pickup_address
-await updateCheckoutSummary()
+if(profile){
+$("coName").value = profile.name || ''
+$("coPhone").value = profile.phone || ''
+}
+await updateCheckoutSummary();syncPickerButtons()
 closePanels()
 openPanel("checkoutPanel")
 }
@@ -2714,7 +3415,7 @@ $("coCity").required = false
 $("coArea").required = false
 $("coAddress").required = false
 }
-updateCheckoutSummary()
+updateCheckoutSummary();syncPickerButtons()
 }
 
 let appliedCoupon = null
@@ -2744,7 +3445,7 @@ if(error || !data || !data.active){
 appliedCoupon = null
 $("coCouponMsg").textContent = "Invalid or inactive coupon code."
 $("coCouponMsg").style.color = "var(--red)"
-updateCheckoutSummary()
+updateCheckoutSummary();syncPickerButtons()
 return
 }
 
@@ -2752,7 +3453,7 @@ if(data.expires && new Date(data.expires) < new Date()){
 appliedCoupon = null
 $("coCouponMsg").textContent = "This coupon has expired."
 $("coCouponMsg").style.color = "var(--red)"
-updateCheckoutSummary()
+updateCheckoutSummary();syncPickerButtons()
 return
 }
 
@@ -2760,14 +3461,14 @@ if(data.minorder && subtotal < Number(data.minorder)){
 appliedCoupon = null
 $("coCouponMsg").textContent = `Minimum order ৳${Number(data.minorder).toLocaleString()} required for this coupon.`
 $("coCouponMsg").style.color = "var(--red)"
-updateCheckoutSummary()
+updateCheckoutSummary();syncPickerButtons()
 return
 }
 
 appliedCoupon = data
 $("coCouponMsg").textContent = `Coupon "${data.code}" applied!`
 $("coCouponMsg").style.color = "var(--gold)"
-updateCheckoutSummary()
+updateCheckoutSummary();syncPickerButtons()
 }
 
 async function updateCheckoutSummary(){
@@ -2801,6 +3502,14 @@ e.preventDefault()
 const cart = getCart()
 if(!cart.length){
 toast("Your cart is empty.")
+return
+}
+
+const profile = getCustomerProfile()
+if(!profile){
+toast("Please enter your name and phone/email first.")
+closePanels()
+openPanel("quickProfilePanel")
 return
 }
 
@@ -2844,15 +3553,21 @@ const userId = session ? session.user.id : null
 
 // One row per cart line item. Full delivery charge and discount are
 // applied to the first item only so the total isn't charged multiple times.
+// order_ref is the SAME on every row from this checkout — it's what the
+// customer sees as their Order ID and what Track Order looks up by, so
+// multi-item orders can be found and shown as one itemized order.
+const orderRef = "LF" + Date.now().toString().slice(-8)
 const rows = cart.map((item, idx) => ({
 customer: name,
 phone: phone,
 user_id: userId,
+customer_id: profile.id,
 address: address,
-items: cart.map(i => `${i.name} x${i.qty}`).join(', '),
+items: cart.map(i => `${i.name}${i.size ? ` (${i.size})` : ''} x${i.qty}`).join(', '),
 payment: 'COD',
 status: 'Pending',
 date: new Date().toISOString(),
+order_ref: orderRef,
 district: cityLabel,
 upazila: area,
 delivery_method: method,
@@ -2883,21 +3598,19 @@ submitBtn.textContent = "PLACE ORDER"
 return
 }
 
-// Note: orders has no public SELECT policy (by design, so customers can't
-// browse each other's orders), so we can't read back the real DB id here.
-// A client-side reference number is shown instead — the actual order
-// (with real id) is visible to you in the admin dashboard / Supabase table.
-const firstOrderId = "LF" + Date.now().toString().slice(-8)
+// The real order id is now stored in every row as order_ref — the
+// customer can use this exact number in Track Order to pull up their
+// full itemized order at any time.
 const total = subtotal - discount + charge
 const methodLabel = method === 'pickup' ? 'Store Pickup (Mirpur 12)' : `Home Delivery — ${cityLabel}${area ? ', ' + area : ''}${subArea ? ', ' + subArea : ''}`
 
 // Build a WhatsApp message so the customer can confirm the order
 // instantly with the shop owner — no backend/SMS service needed.
 const waText = encodeURIComponent(
-`New Order #${firstOrderId}\n` +
+`New Order #${orderRef}\n` +
 `Name: ${name}\n` +
 `Phone: ${phone}\n` +
-`Items: ${cart.map(i => `${i.name} x${i.qty}`).join(', ')}\n` +
+`Items: ${cart.map(i => `${i.name}${i.size ? ` (${i.size})` : ''} x${i.qty}`).join(', ')}\n` +
 `Delivery: ${methodLabel}\n` +
 (address ? `Address: ${address}\n` : '') +
 (note ? `Note: ${note}\n` : '') +
@@ -2906,7 +3619,11 @@ const waText = encodeURIComponent(
 const waNumber = (deliverySettings.whatsapp_number || '8801877270165').replace(/\D/g,'')
 $("successWhatsapp").href = `https://wa.me/${waNumber}?text=${waText}`
 
-$("successOrderId").textContent = "#" + firstOrderId
+$("successOrderId").textContent = "#" + orderRef
+lastOrderRef = orderRef
+lastOrderPhone = phone
+// Keep the saved profile's phone in sync in case they edited it here
+setCustomerProfile({ ...profile, name, phone })
 $("successTotal").textContent = "৳" + total.toLocaleString()
 $("successMethod").textContent = methodLabel
 
@@ -2988,14 +3705,25 @@ if(section==='products'){ $("navProducts").classList.add('active'); $("adminTitl
 if(section==='orders'){ $("navOrders").classList.add('active'); $("adminTitle").textContent="Orders"; loadAllOrders() }
 }
 
+function statusBadgeHTML(status){
+const s = (status||'pending').toLowerCase()
+const label = s.charAt(0).toUpperCase() + s.slice(1)
+return `<span class="statusBadge ${s}">${label}</span>`
+}
+
 function renderAdminProductsTable(){
-if(!allProducts.length){
-$("adminProductsBody").innerHTML = `<tr><td colspan="8">No products yet.</td></tr>`
+const q = ($("adminProductSearch")?.value || '').trim().toLowerCase()
+const list = q
+? allProducts.filter(p => (p.name||'').toLowerCase().includes(q) || (p.cat||'').toLowerCase().includes(q))
+: allProducts
+
+if(!list.length){
+$("adminProductsBody").innerHTML = `<tr><td colspan="8">${q ? 'No products match your search.' : 'No products yet.'}</td></tr>`
 return
 }
-$("adminProductsBody").innerHTML = allProducts.map(p => `
+$("adminProductsBody").innerHTML = list.map(p => `
 <tr>
-<td><div style="width:36px;height:44px;background:var(--cream);border-radius:6px;overflow:hidden">${p.imgs ? `<img src="${p.imgs.split(',')[0].trim()}" style="width:100%;height:100%;object-fit:cover">` : ''}</div></td>
+<td><div style="width:36px;height:44px;background:var(--cream);border-radius:10px;overflow:hidden">${p.imgs ? `<img src="${p.imgs.split(',')[0].trim()}" style="width:100%;height:100%;object-fit:cover">` : ''}</div></td>
 <td>${p.name}</td>
 <td>${p.cat||'—'}</td>
 <td>${p.gender||'—'}</td>
@@ -3115,10 +3843,13 @@ renderAdminProductsTable()
 $("adminProductCount").textContent = allProducts.length
 }
 
-async function loadAllOrders(){
+let adminOrdersCache = []
+
+async function loadAllOrders(skipFetch){
+if(!skipFetch){
 const { data: orders, error } = await supabaseClient
 .from('orders')
-.select('id,customer,phone,total_amount,status,created_at')
+.select('id,customer,phone,total_amount,status,created_at,order_ref')
 .order('created_at', { ascending:false })
 .limit(100)
 
@@ -3126,18 +3857,49 @@ if(error){
 $("adminAllOrdersBody").innerHTML = `<tr><td colspan="6">Could not load orders.</td></tr>`
 return
 }
+adminOrdersCache = orders || []
+}
 
-$("adminAllOrdersBody").innerHTML = orders.length
-? orders.map(o => `
+const q = ($("adminOrderSearch")?.value || '').trim().toLowerCase()
+const list = q
+? adminOrdersCache.filter(o => (o.customer||'').toLowerCase().includes(q) || (o.phone||'').includes(q))
+: adminOrdersCache
+
+$("adminAllOrdersBody").innerHTML = list.length
+? list.map(o => `
 <tr>
-<td>#${o.id}</td>
+<td>${o.order_ref || '#'+o.id}</td>
 <td>${o.customer||'—'}</td>
 <td>${o.phone||'—'}</td>
 <td>৳${Number(o.total_amount||0).toLocaleString()}</td>
-<td>${o.status}</td>
+<td>
+<select class="statusSelect" onchange="updateOrderStatus(${o.id}, this.value, ${o.order_ref ? `'${o.order_ref}'` : 'null'})" style="font-size:11px;padding:5px 8px;border-radius:8px;border:1px solid var(--line);background:#fff">
+${['Pending','Processing','Shipped','Delivered','Cancelled'].map(s =>
+`<option value="${s}" ${o.status===s?'selected':''}>${s}</option>`
+).join('')}
+</select>
+</td>
 <td>${new Date(o.created_at).toLocaleDateString()}</td>
 </tr>`).join("")
-: `<tr><td colspan="6">No orders yet</td></tr>`
+: `<tr><td colspan="6">${q ? 'No orders match your search.' : 'No orders yet'}</td></tr>`
+}
+
+async function updateOrderStatus(orderId, newStatus, orderRef){
+// Multi-item orders share one order_ref across several rows — update
+// them all together so status stays consistent for Track Order.
+const query = supabaseClient.from('orders').update({ status:newStatus })
+const { error } = orderRef
+? await query.eq('order_ref', orderRef)
+: await query.eq('id', orderId)
+
+if(error){
+toast("Could not update status: " + readableError(error))
+return
+}
+adminOrdersCache.forEach(o => {
+if(orderRef ? o.order_ref === orderRef : o.id === orderId) o.status = newStatus
+})
+toast(`Order ${orderRef || '#'+orderId} marked as ${newStatus}`)
 }
 
 async function showAdmin(){
@@ -3147,8 +3909,20 @@ toast("Connection issue — please reload the page.")
 openAccount()
 return
 }
-const { data:{ session } } = await supabaseClient.auth.getSession()
-if(!session || session.user.email.toLowerCase() !== ADMIN_EMAIL){
+// getUser() makes a live server check (and silently refreshes an
+// expired access token using the stored refresh token), unlike
+// getSession() which can return stale/expired local data after the
+// app has been closed for a while. This is what was causing the
+// admin dashboard to look "logged out" on reopen.
+let { data:{ user }, error } = await supabaseClient.auth.getUser()
+
+if(error || !user){
+// Refresh token may just need a nudge — try once before giving up.
+const refreshed = await supabaseClient.auth.refreshSession()
+user = refreshed?.data?.user || null
+}
+
+if(!user || user.email.toLowerCase() !== ADMIN_EMAIL){
 toast("Admin access only. Please login with the admin account.")
 openAccount()
 return
@@ -3178,29 +3952,38 @@ window.scrollTo(0,0)
 async function loadAdminData(){
 $("adminProductCount").textContent = allProducts.length
 
-const { data: orders, error } = await supabaseClient
+// Total sales + order count come from ALL orders, not just the
+// 10 most recent (previously this silently limited sales figures).
+const { data: allOrders, error: allErr } = await supabaseClient
 .from('orders')
-.select('id,customer,total_amount,status,created_at')
+.select('id,customer,phone,total_amount,status,created_at,order_ref')
 .order('created_at', { ascending:false })
-.limit(10)
 
-if(error){
-console.error(error)
+if(allErr){
+console.error(allErr)
 $("adminOrdersBody").innerHTML = `<tr><td colspan="4">Could not load orders (are you logged in as admin?)</td></tr>`
+$("adminTotalSales").textContent = "৳0"
+$("adminOrderCount").textContent = "0"
+$("adminCustomerCount").textContent = "—"
 return
 }
 
-const total = (orders||[]).reduce((s,o)=>s+Number(o.total_amount||0),0)
+const orders = allOrders || []
+const total = orders.reduce((s,o)=>s+Number(o.total_amount||0),0)
 $("adminTotalSales").textContent = "৳" + total.toLocaleString()
 $("adminOrderCount").textContent = orders.length
 
-$("adminOrdersBody").innerHTML = orders.length
-? orders.map(o => `
+const uniqueCustomers = new Set(orders.map(o => o.phone).filter(Boolean))
+$("adminCustomerCount").textContent = uniqueCustomers.size
+
+const recent = orders.slice(0, 10)
+$("adminOrdersBody").innerHTML = recent.length
+? recent.map(o => `
 <tr>
 <td>#${o.id}</td>
 <td>${o.customer||'—'}</td>
 <td>৳${Number(o.total_amount||0).toLocaleString()}</td>
-<td>${o.status}</td>
+<td>${statusBadgeHTML(o.status)}</td>
 </tr>`).join("")
 : `<tr><td colspan="4">No orders yet</td></tr>`
 }
