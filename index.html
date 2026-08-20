@@ -585,7 +585,8 @@ transition:border-color .15s ease
 .pickerField .chev{color:#555;font-size:12px;margin-left:8px}
 
 .pickerSheet{
-position:fixed;inset:0;
+position:fixed;top:0;left:0;right:0;
+height:100dvh;
 background:white;
 z-index:400;
 display:none;
@@ -3017,6 +3018,23 @@ select.appendChild(opt)
    ============================================================ */
 let pickerActiveSelectId = null
 
+function syncPickerSheetHeight(){
+const sheet = $("pickerSheet")
+if(!sheet || !sheet.classList.contains("open")) return
+// Fixed-position sheets don't reliably resize when the on-screen keyboard
+// opens on mobile (the layout viewport stays the same while the visual
+// viewport shrinks), which was leaving the list rendered off-screen until
+// the keyboard was dismissed. visualViewport gives us the real visible
+// height so we can keep the sheet correctly sized while the keyboard is up.
+if(window.visualViewport){
+sheet.style.height = window.visualViewport.height + "px"
+}
+}
+
+if(window.visualViewport){
+window.visualViewport.addEventListener("resize", syncPickerSheetHeight)
+}
+
 function openAddressPicker(selectId, title){
 const select = $(selectId)
 const btn = $(selectId + "Btn")
@@ -3027,11 +3045,20 @@ $("pickerSheetTitle").textContent = title
 $("pickerSearchInput").value = ""
 renderPickerList("")
 $("pickerSheet").classList.add("open")
-setTimeout(() => $("pickerSearchInput").focus(), 150)
+syncPickerSheetHeight()
+// Don't force the keyboard open immediately — let the sheet settle into
+// view first, then focus. syncPickerSheetHeight (bound to visualViewport's
+// resize event above) keeps the sheet correctly sized once the keyboard
+// does appear, so the list stays visible instead of being pushed off-screen.
+setTimeout(() => {
+$("pickerSearchInput").focus()
+syncPickerSheetHeight()
+}, 150)
 }
 
 function closeAddressPicker(){
 $("pickerSheet").classList.remove("open")
+$("pickerSearchInput").blur()
 pickerActiveSelectId = null
 }
 
