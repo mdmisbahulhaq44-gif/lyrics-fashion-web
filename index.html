@@ -971,19 +971,12 @@ FREE SHIPPING ON ORDERS OVER ৳1,000
 <a href="#women" onclick="closeDrawer()">Women</a>
 <a href="#men" onclick="closeDrawer()">Men</a>
 <a href="#accessories" onclick="closeDrawer()">Accessories</a>
-<a href="#sale" onclick="closeDrawer()">Sale</a>
+<a href="#new" onclick="closeDrawer()">Sale</a>
 <a href="#" onclick="closeDrawer();openAboutUs();return false">About Us</a>
 <a href="#" onclick="closeDrawer();openTrackOrder();return false">Track Order</a>
 </div>
 
 <section class="section" id="women" style="padding-left:0;padding-right:0;padding-top:24px">
-<div class="heading" style="padding:0 5%">
-<div>
-<div class="small">EXPLORE</div>
-<h2>Shop by Category</h2>
-</div>
-</div>
-
 <div class="categories" style="padding:0 5%">
 <div class="category">
 <div class="catText">
@@ -1025,7 +1018,6 @@ FREE SHIPPING ON ORDERS OVER ৳1,000
 <section class="section" id="new">
 <div class="heading">
 <div>
-<div class="small">CURATED FOR YOU</div>
 <h2>New Arrivals</h2>
 </div>
 </div>
@@ -1062,13 +1054,6 @@ FREE SHIPPING ON ORDERS OVER ৳1,000
 </div>
 </section>
 
-<section class="promo" id="sale">
-<div class="small">LIMITED TIME</div>
-<h2>THE NEW<br>SEASON IS HERE.</h2>
-<p>Discover exclusive pieces from our latest collection.</p>
-<a href="#new" class="btn light">SHOP NOW</a>
-</section>
-
 <section class="features">
 <div class="feature">
 <div style="font-size:25px">🚚</div>
@@ -1103,10 +1088,9 @@ FREE SHIPPING ON ORDERS OVER ৳1,000
 </div>
 </section>
 
-<section class="section" id="testimonials" style="padding-bottom:0">
+<section class="section" id="testimonials" style="padding-bottom:0;display:none">
 <div class="heading">
 <div>
-<div class="small">TESTIMONIALS</div>
 <h2>What Our Customers Say</h2>
 </div>
 </div>
@@ -1116,16 +1100,6 @@ FREE SHIPPING ON ORDERS OVER ৳1,000
 <style>
 @media(max-width:900px){#testimonialsWrap{grid-template-columns:1fr}}
 </style>
-
-<section class="news">
-<h2>Join LYRICS</h2>
-<p>Get new collection updates and exclusive offers.</p>
-
-<form class="newsform" onsubmit="subscribe(event)">
-<input type="email" placeholder="Your email address" required>
-<button>SUBSCRIBE</button>
-</form>
-</section>
 
 <footer>
 <div class="footergrid">
@@ -1145,7 +1119,7 @@ your signature style.
 <p><a href="#women">Women</a></p>
 <p><a href="#men">Men</a></p>
 <p><a href="#accessories">Accessories</a></p>
-<p><a href="#sale">Sale</a></p>
+<p><a href="#new">Sale</a></p>
 </div>
 
 <div>
@@ -3673,6 +3647,7 @@ const { data: reviews, error } = await supabaseClient
 .select('name,rating,comment')
 .gte('rating', 4)
 .not('comment', 'is', null)
+.neq('comment', '')
 .order('created_at', { ascending:false })
 .limit(3)
 
