@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
 <title>LYRICS FASHION — Premium Fashion in Bangladesh</title>
 <meta name="description" content="LYRICS FASHION — Premium men's and women's clothing in Bangladesh. Shirts, pants, polos and more with nationwide cash-on-delivery. Shop the latest collection online.">
 <meta name="keywords" content="LYRICS FASHION, Bangladesh fashion, men's clothing BD, women's clothing BD, online shirt shop Bangladesh, premium fashion Dhaka">
@@ -3045,11 +3045,22 @@ $("pickerListBody").innerHTML = `<div class="pickerEmpty">No matches found${q ? 
 return
 }
 
-$("pickerListBody").innerHTML = matches.map(o => `
-<div class="pickerRow ${o.value === select.value ? 'selected' : ''}" onclick="selectPickerOption(${JSON.stringify(o.value)})">
+$("pickerListBody").innerHTML = matches.map((o, i) => `
+<div class="pickerRow ${o.value === select.value ? 'selected' : ''}" data-picker-index="${i}">
 <span>${o.textContent}</span>
 ${o.value === select.value ? '<span class="check">✓</span>' : ''}
 </div>`).join('')
+
+// Store the actual values separately and wire clicks via addEventListener
+// instead of inline onclick="...${value}..." — embedding option text
+// (which can contain quotes, apostrophes, etc.) directly into an HTML
+// attribute string was corrupting the markup and causing clicks to fall
+// through to whatever was behind the sheet (this is what was closing
+// the whole checkout and dumping people back on the homepage).
+window._pickerRowValues = matches.map(o => o.value)
+$("pickerListBody").querySelectorAll('.pickerRow').forEach(row => {
+row.onclick = () => selectPickerOption(window._pickerRowValues[Number(row.dataset.pickerIndex)])
+})
 }
 
 function selectPickerOption(value){
@@ -4021,6 +4032,18 @@ loadTestimonials()
 document.querySelectorAll('input[name="coMethod"]').forEach(r =>
 r.addEventListener('change', onDeliveryMethodChange)
 )
+
+// On many Android phones the on-screen keyboard covers whatever input
+// you just tapped, especially inside a side panel, because the panel's
+// height doesn't shrink automatically. Nudge the focused field into
+// view once the keyboard has finished animating in.
+document.addEventListener('focusin', (e) => {
+const el = e.target
+if(!['INPUT','TEXTAREA','SELECT'].includes(el.tagName)) return
+setTimeout(() => {
+el.scrollIntoView({ block:'center', behavior:'smooth' })
+}, 350)
+})
 
 if(supabaseClient){
 supabaseClient.auth.onAuthStateChange((event, session) => {
