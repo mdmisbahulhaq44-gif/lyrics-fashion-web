@@ -2384,7 +2384,7 @@ let pdTouchStartX = 0
 
 function openProductDetail(productId){
 const product = allProducts.find(p => p.id == productId)
-if(!product) return
+if(!product){ toast("Product not found."); return }
 
 pdCurrentProduct = product
 pdCurrentIndex = 0
@@ -2845,7 +2845,7 @@ badge.style.display = "none"
 
 function addToCart(productId, size){
 const product = allProducts.find(p => p.id == productId)
-if(!product) return
+if(!product){ toast("Product not found."); return }
 if(Number(product.stock) <= 0){
 toast("This item is out of stock.")
 return
