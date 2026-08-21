@@ -2152,7 +2152,7 @@ return
 }
 
 $("accOrdersWrap").innerHTML = orders.map(o => `
-<div style="border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:10px">
+<div onclick="closePanels();openProductDetail(${o.product_id})" style="border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:10px;cursor:pointer">
 <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted)">
 <span>#${o.id}</span><span>${o.status}</span>
 </div>
