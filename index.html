@@ -270,20 +270,21 @@ gap:12px
 position:relative;
 overflow:hidden;
 border-radius:14px;
-background:linear-gradient(135deg,#eee,#d5d5d5);
-height:110px;
+background:#1a1a1a no-repeat center/cover;
+height:130px;
 display:flex;align-items:flex-end;
-padding:14px;
-color:white
+padding:16px;
+color:white;
+text-decoration:none;
+cursor:pointer;
+border:0;
+width:100%;
+text-align:left;
+font-family:inherit
 }
-.category:nth-child(1){background:linear-gradient(120deg,#3a3226,#8c7a5c)}
-.category:nth-child(2){background:linear-gradient(120deg,#5a4a3a,#c9b08b)}
-.category:nth-child(3){background:linear-gradient(120deg,#2c2c2c,#8a8a8a)}
-.category:nth-child(4){background:linear-gradient(120deg,#4a3d33,#ad8b7b)}
-.category:nth-child(5){background:linear-gradient(120deg,#111,#444)}
 .category:after{
 content:"";position:absolute;inset:0;
-background:linear-gradient(90deg,rgba(0,0,0,.45),transparent 60%)
+background:linear-gradient(0deg,rgba(0,0,0,.65) 0%,rgba(0,0,0,.15) 55%,rgba(0,0,0,0) 100%)
 }
 .catText{position:relative;z-index:2}
 .catText h3{
@@ -530,6 +531,23 @@ width:2px;flex:1;margin:2px 0;min-height:24px
 .trackStepBody .trackTitle{font-weight:700;font-size:14px}
 .trackStepBody .trackDesc{font-size:12px;color:var(--muted);margin-top:3px}
 .trackStepBody .trackTime{font-size:10px;color:#bbb;margin-top:2px}
+
+.riderPhoneRow{
+display:inline-flex;align-items:center;gap:8px;
+margin-top:8px;padding:8px 12px;
+background:#111;border-radius:8px
+}
+.riderPhoneNum{
+color:#fff;font-weight:700;font-size:14px;
+letter-spacing:.5px;text-decoration:none
+}
+.copyIconBtn{
+background:rgba(255,255,255,.15);border:0;border-radius:5px;
+width:26px;height:26px;
+display:flex;align-items:center;justify-content:center;
+color:#fff;cursor:pointer;flex-shrink:0
+}
+.copyIconBtn:active{background:rgba(255,255,255,.3)}
 
 .panelHead{
 display:flex;
@@ -956,13 +974,6 @@ FREE SHIPPING ON ORDERS OVER ৳1,000
 </div>
 </nav>
 
-<div class="catTabBar">
-<button onclick="scrollToShop()">SHOP NOW</button>
-<button onclick="filterByGenderFromTab('men')">MEN</button>
-<button onclick="filterByGenderFromTab('women')">WOMEN</button>
-<button onclick="scrollToShop()">SALE</button>
-</div>
-
 <!-- HERO BANNER
 To change the photo: use Admin Panel → Settings → Homepage Banner Image
 (or replace the URL inside url('...') in .hero CSS below).
@@ -985,42 +996,9 @@ Recommended: landscape photo, at least 1200px wide. -->
 <a href="#" onclick="closeDrawer();openTrackOrder();return false">Track Order</a>
 </div>
 
-<section class="section" id="women" style="padding-left:0;padding-right:0;padding-top:24px">
-<div class="categories" style="padding:0 5%">
-<div class="category">
-<div class="catText">
-<h3>Women</h3>
-<span>DISCOVER COLLECTION</span>
-</div>
-</div>
-
-<div class="category">
-<div class="catText">
-<h3>Men</h3>
-<span>SHOP MEN</span>
-</div>
-</div>
-
-<div class="category">
-<div class="catText">
-<h3>New In</h3>
-<span>LATEST ARRIVALS</span>
-</div>
-</div>
-
-<div class="category">
-<div class="catText">
-<h3>Accessories</h3>
-<span>COMPLETE YOUR LOOK</span>
-</div>
-</div>
-
-<div class="category">
-<div class="catText">
-<h3>Sale</h3>
-<span>LIMITED OFFERS</span>
-</div>
-</div>
+<section class="section" id="women" style="padding-left:0;padding-right:0;padding-top:36px">
+<div class="categories" id="homeCategoriesGrid" style="padding:0 5%">
+<!-- Category tiles are rendered here by loadHomeCategories(). Edit them from Admin Panel → Settings. -->
 </div>
 </section>
 
@@ -1851,6 +1829,18 @@ Paste a direct image link below (from Cloudinary, imgbb, imgur, etc). This photo
 <button class="btn" onclick="saveHeroBannerSetting()">SAVE BANNER</button>
 </div>
 
+<hr style="margin:36px 0;border:0;border-top:1px solid var(--line)">
+
+<div style="max-width:500px">
+<label style="display:block;font-size:12px;font-weight:700;letter-spacing:.5px;margin-bottom:8px">HOMEPAGE CATEGORIES</label>
+<p style="font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.6">
+These are the tiles shown below your banner (Women, Men, Sale, etc). Give each one a name, a subtitle, and an image link. Tapping any tile takes shoppers to the shop section — you can group your own products into these categories from the Products page.
+</p>
+<div id="categoryEditorRows"></div>
+<button type="button" onclick="addCategoryRow()" style="background:none;border:1px dashed var(--line);border-radius:8px;padding:10px;width:100%;font-size:12px;letter-spacing:.5px;cursor:pointer;margin-bottom:14px">+ ADD CATEGORY TILE</button>
+<button class="btn" onclick="saveHomeCategoriesSetting()">SAVE CATEGORIES</button>
+</div>
+
 </div>
 </div>
 
@@ -2000,6 +1990,28 @@ function toast(message){
 $("toast").textContent=message
 $("toast").classList.add("show")
 setTimeout(()=>$("toast").classList.remove("show"),2500)
+}
+
+async function copyRiderPhone(phone, btnEl){
+try{
+await navigator.clipboard.writeText(phone)
+}catch(e){
+// Fallback for browsers/webviews without Clipboard API permission
+const temp = document.createElement("textarea")
+temp.value = phone
+temp.style.position = "fixed"
+temp.style.opacity = "0"
+document.body.appendChild(temp)
+temp.select()
+try{ document.execCommand("copy") }catch(e2){}
+document.body.removeChild(temp)
+}
+toast("Phone number copied!")
+if(btnEl){
+const original = btnEl.innerHTML
+btnEl.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M20 6 9 17l-5-5"/></svg>`
+setTimeout(() => { btnEl.innerHTML = original }, 1500)
+}
 }
 
 /* ============================================================
@@ -2224,7 +2236,7 @@ function productCardHTML(p){
 const badge = p.badge ? `<span class="badge ${p.badge.toLowerCase()==='sale'?'sale':''}">${p.badge}</span>` : ""
 const oldPrice = p.old ? `<span class="old">৳${Number(p.old).toLocaleString()}</span>` : ""
 const imgOrIcon = p.imgs
-? `<img src="${p.imgs.split(',')[0].trim()}" alt="${p.name}">`
+? `<img src="${p.imgs.split(',')[0].trim()}" alt="${p.name}" loading="lazy" decoding="async">`
 : `<div class="placeholder">${iconFor(p)}</div>`
 const stockNote = (p.stock !== null && p.stock !== undefined && p.stock > 0 && p.stock <= 5)
 ? `<div style="font-size:11px;color:var(--red);margin-top:3px">Only ${p.stock} left</div>` : ""
@@ -2422,7 +2434,7 @@ const track = $("pdGalleryTrack")
 const dots = $("pdDots")
 
 if(images.length){
-track.innerHTML = images.map(url => `<div class="pdSlide"><img src="${url}" alt="${product.name}"></div>`).join("")
+track.innerHTML = images.map((url, i) => `<div class="pdSlide"><img src="${url}" alt="${product.name}" loading="${i===0?'eager':'lazy'}" decoding="async"></div>`).join("")
 dots.innerHTML = images.map((_, i) => `<span class="${i===0?'active':''}"></span>`).join("")
 }else{
 const icon = CAT_ICONS[(product.cat||"").toLowerCase()] || CAT_ICONS.default
@@ -2699,7 +2711,10 @@ return
 const steps = [
 { key:'pending', title:'Order Placed (COD)', desc:`Your order ${o.order_ref || '#'+o.id} was successfully placed.`, time:o.created_at },
 { key:'processing', title:'Processing', desc:'We have received your order and our team is confirming it.' },
-{ key:'shipped', title:'Shipped', desc: o.rider_name ? `Rider (${o.rider_name}${o.rider_phone ? ': '+o.rider_phone : ''}) has picked up your order for delivery.` : 'Your order has been handed to our delivery rider.' },
+{ key:'shipped', title:'Shipped', desc: o.rider_name
+? `Rider (${o.rider_name}) has picked up your order for delivery.` +
+(o.rider_phone ? `<div class="riderPhoneRow"><a href="tel:${o.rider_phone}" class="riderPhoneNum">${o.rider_phone}</a><button type="button" class="copyIconBtn" onclick="copyRiderPhone('${o.rider_phone}', this)" aria-label="Copy phone number"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button></div>` : '')
+: 'Your order has been handed to our delivery rider.' },
 { key:'delivered', title:'Delivered', desc:'You have received your order. Thank you for shopping with us!' }
 ]
 const order = ['pending','processing','shipped','delivered']
@@ -3046,6 +3061,133 @@ toast("Banner updated! Refresh your homepage to see it.")
 const img = $("heroPreviewImg")
 img.src = url
 img.style.display = 'block'
+}
+
+/* ============================================================
+   HOMEPAGE CATEGORY TILES — fetched from Supabase `settings` table
+   (key: homepage_categories, value: JSON array of {name, subtitle, image}).
+   Edit these from Admin Panel → Settings → Homepage Categories.
+   ============================================================ */
+function escapeHTML(s){
+return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+}
+
+const DEFAULT_HOME_CATEGORIES = [
+{ name:"Women", subtitle:"Discover Collection", image:"" },
+{ name:"Men", subtitle:"Shop Men", image:"" },
+{ name:"New In", subtitle:"Latest Arrivals", image:"" },
+{ name:"Accessories", subtitle:"Complete Your Look", image:"" },
+{ name:"Sale", subtitle:"Limited Offers", image:"" }
+]
+
+function renderHomeCategories(list){
+const grid = $("homeCategoriesGrid")
+if(!grid) return
+grid.innerHTML = list.map(c => `
+<button class="category" style="${c.image ? `background-image:url('${c.image.replace(/'/g,"\\'")}')` : 'background:#1a1a1a'}" onclick="scrollToShop()">
+<div class="catText">
+<h3>${escapeHTML(c.name || '')}</h3>
+<span>${escapeHTML(c.subtitle || '')}</span>
+</div>
+</button>
+`).join('')
+}
+
+async function loadHomeCategories(){
+try{
+const { data, error } = await supabaseClient
+.from('settings')
+.select('value')
+.eq('key', 'homepage_categories')
+.maybeSingle()
+
+let list = DEFAULT_HOME_CATEGORIES
+if(!error && data && data.value){
+try{
+const parsed = JSON.parse(data.value)
+if(Array.isArray(parsed) && parsed.length) list = parsed
+}catch(e){ /* fall back to defaults on bad JSON */ }
+}
+renderHomeCategories(list)
+}catch(e){
+console.error('Category tiles fetch failed:', e)
+renderHomeCategories(DEFAULT_HOME_CATEGORIES)
+}
+}
+
+let editingCategories = []
+
+async function loadHomeCategoriesSettingIntoForm(){
+const { data } = await supabaseClient
+.from('settings')
+.select('value')
+.eq('key', 'homepage_categories')
+.maybeSingle()
+
+let list = DEFAULT_HOME_CATEGORIES
+if(data && data.value){
+try{
+const parsed = JSON.parse(data.value)
+if(Array.isArray(parsed) && parsed.length) list = parsed
+}catch(e){}
+}
+editingCategories = JSON.parse(JSON.stringify(list))
+renderCategoryEditorRows()
+}
+
+function renderCategoryEditorRows(){
+const wrap = $("categoryEditorRows")
+if(!wrap) return
+wrap.innerHTML = editingCategories.map((c, i) => `
+<div style="border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:12px">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+<b style="font-size:12px;letter-spacing:.5px">TILE ${i+1}</b>
+<button type="button" onclick="removeCategoryRow(${i})" style="background:none;border:0;color:var(--red);font-size:12px;cursor:pointer">Remove</button>
+</div>
+<label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">CATEGORY NAME</label>
+<input type="text" value="${escapeAttr(c.name)}" oninput="updateCategoryField(${i},'name',this.value)" placeholder="e.g. Women" style="margin-bottom:10px">
+<label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">SUBTITLE</label>
+<input type="text" value="${escapeAttr(c.subtitle)}" oninput="updateCategoryField(${i},'subtitle',this.value)" placeholder="e.g. Discover Collection" style="margin-bottom:10px">
+<label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">IMAGE LINK</label>
+<input type="text" value="${escapeAttr(c.image)}" oninput="updateCategoryField(${i},'image',this.value)" placeholder="https://example.com/photo.jpg">
+</div>
+`).join('')
+}
+
+function escapeAttr(s){
+return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;')
+}
+
+function updateCategoryField(index, field, value){
+editingCategories[index][field] = value
+}
+
+function removeCategoryRow(index){
+editingCategories.splice(index, 1)
+renderCategoryEditorRows()
+}
+
+function addCategoryRow(){
+editingCategories.push({ name:"", subtitle:"", image:"" })
+renderCategoryEditorRows()
+}
+
+async function saveHomeCategoriesSetting(){
+const cleaned = editingCategories
+.map(c => ({ name:(c.name||'').trim(), subtitle:(c.subtitle||'').trim(), image:(c.image||'').trim() }))
+.filter(c => c.name)
+
+if(!cleaned.length){ toast("Add at least one category with a name."); return }
+
+const { error } = await supabaseClient
+.from('settings')
+.upsert({ key: 'homepage_categories', value: JSON.stringify(cleaned) }, { onConflict: 'key' })
+
+if(error){ toast("Could not save: " + readableError(error)); return }
+
+toast("Categories updated! Refresh your homepage to see it.")
+editingCategories = cleaned
+renderCategoryEditorRows()
 }
 
 async function calculateDeliveryCharge(subtotal, deliveryMethod, district){
@@ -3827,7 +3969,7 @@ $("adminSettingsView").style.display = section==='settings' ? 'block' : 'none'
 if(section==='dashboard'){ $("navDashboard").classList.add('active'); $("adminTitle").textContent="Dashboard"; loadAdminData() }
 if(section==='products'){ $("navProducts").classList.add('active'); $("adminTitle").textContent="Products"; renderAdminProductsTable() }
 if(section==='orders'){ $("navOrders").classList.add('active'); $("adminTitle").textContent="Orders"; loadAllOrders() }
-if(section==='settings'){ $("navSettings").classList.add('active'); $("adminTitle").textContent="Settings"; loadHeroBannerSettingIntoForm() }
+if(section==='settings'){ $("navSettings").classList.add('active'); $("adminTitle").textContent="Settings"; loadHeroBannerSettingIntoForm(); loadHomeCategoriesSettingIntoForm() }
 }
 
 function statusBadgeHTML(status){
@@ -4149,6 +4291,7 @@ updateCartBadge()
 await loadProducts()
 loadTestimonials()
 loadHeroBanner()
+loadHomeCategories()
 
 document.querySelectorAll('input[name="coMethod"]').forEach(r =>
 r.addEventListener('change', onDeliveryMethodChange)
