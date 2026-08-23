@@ -176,7 +176,8 @@ gap:3px;padding:9px 0 8px;
 font-size:9px;letter-spacing:.5px;
 color:#888;cursor:pointer;position:relative
 }
-.bottomNav button .bnIcon{font-size:19px;line-height:1;position:relative;display:inline-block}
+.bottomNav button .bnIcon{line-height:1;position:relative;display:inline-flex}
+.bottomNav button .bnIcon svg{display:block}
 .bottomNav button.active{color:#111}
 body{padding-bottom:64px}
 
@@ -199,15 +200,12 @@ border-bottom:1px solid var(--line)
 }
 
 .hero{
-min-height:78vh;
+width:100%;
+aspect-ratio:2.4/1;
 background:
-linear-gradient(90deg,rgba(0,0,0,.6),rgba(0,0,0,.15)),
 url('https://res.cloudinary.com/dtdztxbfg/image/upload/v1786946898/file_00000000078c8206b955fa4524f68d0d_xnkryd.png');
 background-size:cover;
-background-position:center 20%;
-display:flex;align-items:center;
-padding:7%;
-color:white
+background-position:center;
 }
 
 .heroText{max-width:650px}
@@ -901,7 +899,7 @@ border-radius:10px;font-size:13px;background:#fafafa
 @media(max-width:600px){
 nav{padding:0 18px}
 .logo{font-size:18px;letter-spacing:3px}
-.hero{min-height:72vh;padding:30px;background-position:center 15%}
+.hero{background-position:center}
 .section{padding:55px 18px}
 .catText h3{font-size:11px;letter-spacing:1.5px}
 .products{gap:12px}
@@ -951,8 +949,9 @@ FREE SHIPPING ON ORDERS OVER ৳1,000
 <div class="navRightIcons">
 <button class="iconbtn" onclick="openSearch()">⌕</button>
 <button class="iconbtn" onclick="openWishlist()">♡</button>
-<button class="iconbtn" onclick="openCart()" style="position:relative">
-🛍️<span class="cartCount" id="cartCountTop" style="display:none">0</span>
+<button class="iconbtn" onclick="openCart()" style="position:relative;display:inline-flex;align-items:center;justify-content:center">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M6 8h12l-1.2 11a2 2 0 0 1-2 1.8H9.2a2 2 0 0 1-2-1.8L6 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+<span class="cartCount" id="cartCountTop" style="display:none">0</span>
 </button>
 </div>
 </nav>
@@ -963,6 +962,12 @@ FREE SHIPPING ON ORDERS OVER ৳1,000
 <button onclick="filterByGenderFromTab('women')">WOMEN</button>
 <button onclick="scrollToShop()">SALE</button>
 </div>
+
+<!-- HERO BANNER
+To change the photo: use Admin Panel → Settings → Homepage Banner Image
+(or replace the URL inside url('...') in .hero CSS below).
+Recommended: landscape photo, at least 1200px wide. -->
+<div class="hero"></div>
 
 <!-- DRAWER MENU -->
 <div class="overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
@@ -1153,19 +1158,19 @@ your signature style.
 <!-- BOTTOM NAV -->
 <div class="bottomNav" id="bottomNav">
 <button class="active" onclick="showShop();window.scrollTo(0,0)">
-<span class="bnIcon">🏠</span>Home
+<span class="bnIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="21" height="21"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9.5 21v-6.5h5V21"/></svg></span>Home
 </button>
 <button onclick="scrollToShop()">
-<span class="bnIcon">▦</span>Category
+<span class="bnIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="21" height="21"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></svg></span>Category
 </button>
 <button onclick="openCart()">
-<span class="bnIcon">🛒<span class="cartCount" id="cartCount" style="display:none">0</span></span>Cart
+<span class="bnIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="21" height="21"><path d="M6 8h12l-1.2 11a2 2 0 0 1-2 1.8H9.2a2 2 0 0 1-2-1.8L6 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><span class="cartCount" id="cartCount" style="display:none">0</span></span>Cart
 </button>
 <button onclick="openTrackOrder()">
-<span class="bnIcon">📦</span>Track
+<span class="bnIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="21" height="21"><path d="M21 8 12 3 3 8l9 5 9-5Z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg></span>Track
 </button>
 <button onclick="openAccount()">
-<span class="bnIcon">👤</span>Login
+<span class="bnIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="21" height="21"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.2-3.8 4.2-6 7-6s5.8 2.2 7 6"/></svg></span>Login
 </button>
 </div>
 
@@ -1716,10 +1721,10 @@ Your wishlist is currently empty.
 <button class="active" id="navDashboard" onclick="adminNav('dashboard')">📊 Dashboard</button>
 <button id="navProducts" onclick="adminNav('products')">🛍️ Products</button>
 <button id="navOrders" onclick="adminNav('orders')">📦 Orders</button>
+<button id="navSettings" onclick="adminNav('settings')">⚙️ Settings</button>
 <button class="soon">👥 Customers <span class="tag">Soon</span></button>
 <button class="soon">🏷️ Categories <span class="tag">Soon</span></button>
 <button class="soon">🎟️ Discounts <span class="tag">Soon</span></button>
-<button class="soon">⚙️ Settings <span class="tag">Soon</span></button>
 
 <br><br>
 
@@ -1828,6 +1833,24 @@ Your wishlist is currently empty.
 <tr><td colspan="7">Loading...</td></tr>
 </tbody>
 </table>
+</div>
+</div>
+
+<!-- SETTINGS VIEW -->
+<div id="adminSettingsView" style="display:none">
+<div class="adminTable">
+<h2 style="margin-bottom:20px">Site Settings</h2>
+
+<div style="max-width:500px">
+<label style="display:block;font-size:12px;font-weight:700;letter-spacing:.5px;margin-bottom:8px">HOMEPAGE BANNER IMAGE</label>
+<p style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.6">
+Paste a direct image link below (from Cloudinary, imgbb, imgur, etc). This photo will show as the big banner at the top of your homepage.
+</p>
+<img id="heroPreviewImg" src="" style="width:100%;max-height:220px;object-fit:cover;border-radius:8px;margin-bottom:14px;display:none;background:#f2f2f2">
+<input type="text" id="stHeroImage" placeholder="https://example.com/your-photo.jpg" style="margin-bottom:14px">
+<button class="btn" onclick="saveHeroBannerSetting()">SAVE BANNER</button>
+</div>
+
 </div>
 </div>
 
@@ -2967,6 +2990,64 @@ whatsapp_number: map.whatsapp_number || '8801877270165'
 return deliverySettings
 }
 
+/* ============================================================
+   HERO BANNER IMAGE — fetched from Supabase `settings` table.
+   To change the banner photo WITHOUT touching any code:
+   1. Open your Supabase project → Table Editor → "settings" table
+   2. Find (or add) a row with key = hero_banner_image
+   3. Paste your new image link in the "value" column, save
+   4. Refresh the site — the banner updates automatically
+   ============================================================ */
+async function loadHeroBanner(){
+const fallbackUrl = 'https://res.cloudinary.com/dtdztxbfg/image/upload/v1786946898/file_00000000078c8206b955fa4524f68d0d_xnkryd.png'
+try{
+const { data, error } = await supabaseClient
+.from('settings')
+.select('value')
+.eq('key', 'hero_banner_image')
+.maybeSingle()
+
+const url = (!error && data && data.value) ? data.value : fallbackUrl
+const heroEl = document.querySelector('.hero')
+if(heroEl){
+heroEl.style.backgroundImage = `url('${url}')`
+heroEl.style.backgroundSize = 'cover'
+heroEl.style.backgroundPosition = 'center'
+}
+}catch(e){
+console.error('Hero banner fetch failed:', e)
+}
+}
+
+async function loadHeroBannerSettingIntoForm(){
+const { data } = await supabaseClient
+.from('settings')
+.select('value')
+.eq('key', 'hero_banner_image')
+.maybeSingle()
+
+const url = data?.value || ''
+$("stHeroImage").value = url
+const img = $("heroPreviewImg")
+if(url){ img.src = url; img.style.display = 'block' } else { img.style.display = 'none' }
+}
+
+async function saveHeroBannerSetting(){
+const url = $("stHeroImage").value.trim()
+if(!url){ toast("Please paste an image link first."); return }
+
+const { error } = await supabaseClient
+.from('settings')
+.upsert({ key: 'hero_banner_image', value: url }, { onConflict: 'key' })
+
+if(error){ toast("Could not save: " + readableError(error)); return }
+
+toast("Banner updated! Refresh your homepage to see it.")
+const img = $("heroPreviewImg")
+img.src = url
+img.style.display = 'block'
+}
+
 async function calculateDeliveryCharge(subtotal, deliveryMethod, district){
 const s = await loadDeliverySettings()
 
@@ -3741,10 +3822,12 @@ document.querySelectorAll('.adminSide button').forEach(b=>b.classList.remove('ac
 $("adminDashboardView").style.display = section==='dashboard' ? 'block' : 'none'
 $("adminProductsView").style.display = section==='products' ? 'block' : 'none'
 $("adminOrdersView").style.display = section==='orders' ? 'block' : 'none'
+$("adminSettingsView").style.display = section==='settings' ? 'block' : 'none'
 
 if(section==='dashboard'){ $("navDashboard").classList.add('active'); $("adminTitle").textContent="Dashboard"; loadAdminData() }
 if(section==='products'){ $("navProducts").classList.add('active'); $("adminTitle").textContent="Products"; renderAdminProductsTable() }
 if(section==='orders'){ $("navOrders").classList.add('active'); $("adminTitle").textContent="Orders"; loadAllOrders() }
+if(section==='settings'){ $("navSettings").classList.add('active'); $("adminTitle").textContent="Settings"; loadHeroBannerSettingIntoForm() }
 }
 
 function statusBadgeHTML(status){
@@ -4065,6 +4148,7 @@ $("adminOrdersBody").innerHTML = recent.length
 updateCartBadge()
 await loadProducts()
 loadTestimonials()
+loadHeroBanner()
 
 document.querySelectorAll('input[name="coMethod"]').forEach(r =>
 r.addEventListener('change', onDeliveryMethodChange)
