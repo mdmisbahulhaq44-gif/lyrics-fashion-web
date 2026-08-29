@@ -91,9 +91,12 @@ nav{
 height:64px;padding:0 4%;
 display:flex;align-items:center;
 justify-content:space-between;
-border-bottom:1px solid var(--line);
+border-bottom:1px solid rgba(255,255,255,.4);
 position:sticky;top:0;z-index:100;
-background:#fff
+background:rgba(255,255,255,.65);
+backdrop-filter:blur(20px) saturate(180%);
+-webkit-backdrop-filter:blur(20px) saturate(180%);
+box-shadow:0 1px 20px rgba(0,0,0,.04)
 }
 
 .navLeft, .navRightIcons{
@@ -165,8 +168,11 @@ background:#111;color:#fff
 /* BOTTOM MOBILE NAV — Fabrilife style */
 .bottomNav{
 position:fixed;bottom:0;left:0;right:0;
-background:#fff;
-border-top:1px solid var(--line);
+background:rgba(255,255,255,.7);
+backdrop-filter:blur(20px) saturate(180%);
+-webkit-backdrop-filter:blur(20px) saturate(180%);
+border-top:1px solid rgba(255,255,255,.5);
+box-shadow:0 -1px 20px rgba(0,0,0,.04);
 display:flex;
 z-index:200;
 padding-bottom:env(safe-area-inset-bottom)
@@ -187,7 +193,11 @@ body{padding-bottom:64px}
 .drawer{
 position:fixed;top:0;bottom:0;left:0;
 width:min(300px,80vw);
-background:#fff;z-index:501;
+background:rgba(255,255,255,.75);
+backdrop-filter:blur(24px) saturate(180%);
+-webkit-backdrop-filter:blur(24px) saturate(180%);
+box-shadow:2px 0 30px rgba(0,0,0,.08);
+z-index:501;
 transform:translateX(-100%);
 transition:.3s;
 padding:25px 22px;
@@ -477,7 +487,9 @@ color:#777;font-size:11px
 /* OVERLAYS */
 .overlay{
 position:fixed;inset:0;
-background:rgba(0,0,0,.45);
+background:rgba(0,0,0,.35);
+backdrop-filter:blur(3px);
+-webkit-backdrop-filter:blur(3px);
 z-index:500;
 display:none
 }
@@ -486,7 +498,10 @@ display:none
 .panel{
 position:fixed;top:0;bottom:0;
 right:0;width:min(430px,100%);
-background:white;
+background:rgba(255,255,255,.8);
+backdrop-filter:blur(24px) saturate(180%);
+-webkit-backdrop-filter:blur(24px) saturate(180%);
+box-shadow:-2px 0 30px rgba(0,0,0,.08);
 z-index:501;
 transform:translateX(100%);
 transition:.35s;
@@ -535,21 +550,20 @@ width:2px;flex:1;margin:2px 0;min-height:24px
 .trackStepBody .trackTime{font-size:10px;color:#bbb;margin-top:2px}
 
 .riderPhoneRow{
-display:inline-flex;align-items:center;gap:8px;
-margin-top:8px;padding:8px 12px;
-background:#111;border-radius:8px
+display:inline-flex;align-items:center;gap:7px;
+margin-top:6px
 }
 .riderPhoneNum{
-color:#fff;font-weight:700;font-size:14px;
-letter-spacing:.5px;text-decoration:none
+color:var(--black);font-weight:500;font-size:13px;
+text-decoration:none
 }
 .copyIconBtn{
-background:rgba(255,255,255,.15);border:0;border-radius:5px;
-width:26px;height:26px;
+background:none;border:1px solid var(--line);border-radius:6px;
+width:24px;height:24px;
 display:flex;align-items:center;justify-content:center;
-color:#fff;cursor:pointer;flex-shrink:0
+color:#555;cursor:pointer;flex-shrink:0
 }
-.copyIconBtn:active{background:rgba(255,255,255,.3)}
+.copyIconBtn:active{background:var(--cream)}
 
 .panelHead{
 display:flex;
@@ -776,7 +790,10 @@ position:fixed;
 bottom:25px;
 left:50%;
 transform:translateX(-50%);
-background:#111;color:#fff;
+background:rgba(20,20,20,.75);
+backdrop-filter:blur(16px) saturate(180%);
+-webkit-backdrop-filter:blur(16px) saturate(180%);
+color:#fff;
 padding:13px 25px;
 border-radius:30px;
 z-index:999;
