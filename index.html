@@ -91,12 +91,10 @@ nav{
 height:64px;padding:0 4%;
 display:flex;align-items:center;
 justify-content:space-between;
-border-bottom:1px solid rgba(255,255,255,.4);
+border-bottom:1px solid var(--line);
 position:sticky;top:0;z-index:100;
-background:rgba(255,255,255,.65);
-backdrop-filter:blur(20px) saturate(180%);
--webkit-backdrop-filter:blur(20px) saturate(180%);
-box-shadow:0 1px 20px rgba(0,0,0,.04)
+background:#fff;
+box-shadow:0 1px 12px rgba(0,0,0,.03)
 }
 
 .navLeft, .navRightIcons{
@@ -168,11 +166,9 @@ background:#111;color:#fff
 /* BOTTOM MOBILE NAV — Fabrilife style */
 .bottomNav{
 position:fixed;bottom:0;left:0;right:0;
-background:rgba(255,255,255,.7);
-backdrop-filter:blur(20px) saturate(180%);
--webkit-backdrop-filter:blur(20px) saturate(180%);
-border-top:1px solid rgba(255,255,255,.5);
-box-shadow:0 -1px 20px rgba(0,0,0,.04);
+background:#fff;
+border-top:1px solid var(--line);
+box-shadow:0 -1px 12px rgba(0,0,0,.03);
 display:flex;
 z-index:200;
 padding-bottom:env(safe-area-inset-bottom)
@@ -486,9 +482,7 @@ color:#777;font-size:11px
 /* OVERLAYS */
 .overlay{
 position:fixed;inset:0;
-background:rgba(0,0,0,.35);
-backdrop-filter:blur(3px);
--webkit-backdrop-filter:blur(3px);
+background:rgba(0,0,0,.45);
 z-index:500;
 display:none
 }
@@ -788,9 +782,7 @@ position:fixed;
 bottom:25px;
 left:50%;
 transform:translateX(-50%);
-background:rgba(20,20,20,.75);
-backdrop-filter:blur(16px) saturate(180%);
--webkit-backdrop-filter:blur(16px) saturate(180%);
+background:#111;
 color:#fff;
 padding:13px 25px;
 border-radius:30px;
