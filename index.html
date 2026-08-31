@@ -82,13 +82,8 @@ button,input{font-family:inherit}
 button,a{-webkit-tap-highlight-color:transparent;outline:none}
 button:focus,a:focus{outline:none}
 
-.top{
-background:#111;color:#fff;text-align:center;
-font-size:11px;letter-spacing:2px;padding:10px
-}
-
 nav{
-height:64px;padding:0 4%;
+height:52px;padding:0 4%;
 display:flex;align-items:center;
 justify-content:space-between;
 border-bottom:1px solid rgba(255,255,255,.4);
@@ -270,7 +265,9 @@ margin-bottom:8px
 }
 .heading h2{
 font-size:38px;
-font-weight:800
+font-weight:800;
+text-transform:uppercase;
+letter-spacing:1px
 }
 
 .categories{
@@ -972,10 +969,6 @@ font-size:12px
 <!-- SHOP -->
 <div id="shopPage">
 
-<div class="top">
-FREE SHIPPING ON ORDERS OVER ৳1,000
-</div>
-
 <nav>
 <div class="navLeft">
 <button class="hamburgerBtn" onclick="openDrawer()"><span></span><span></span><span></span></button>
@@ -1298,7 +1291,7 @@ CHECKOUT
 <div style="text-align:center;padding:6px 0 20px">
 <div style="font-size:40px;margin-bottom:10px">👋</div>
 <p style="color:var(--muted);font-size:13px;line-height:1.7">
-Just your name and a phone or email — no password needed.<br>
+Just your name and phone number — no password needed.<br>
 This lets you track your orders anytime.
 </p>
 </div>
@@ -1308,12 +1301,7 @@ This lets you track your orders anytime.
 <input type="text" id="qpName" placeholder="Your full name" required>
 
 <label>PHONE NUMBER</label>
-<input type="tel" id="qpPhone" placeholder="01XXXXXXXXX">
-
-<label>EMAIL (OPTIONAL IF PHONE GIVEN)</label>
-<input type="email" id="qpEmail" placeholder="you@example.com">
-
-<p style="font-size:11px;color:var(--muted);margin-top:-6px">Give either your phone number or your email — one is enough.</p>
+<input type="tel" id="qpPhone" placeholder="01XXXXXXXXX" required>
 
 <button class="btn" style="width:100%;margin-top:6px">CONTINUE</button>
 </form>
@@ -1918,8 +1906,18 @@ return document.getElementById(id)
 /* ============================================================
    PANELS
    ============================================================ */
+function lockBodyScroll(){
+document.body.style.overflow = "hidden"
+}
+
+function unlockBodyScrollIfNoneOpen(){
+const anyOpen = document.querySelector(".panel.show, .drawer.show")
+if(!anyOpen) document.body.style.overflow = ""
+}
+
 function openPanel(id){
 closePanels()
+lockBodyScroll()
 $("overlay").classList.add("show")
 $(id).classList.add("show")
 }
@@ -1927,6 +1925,7 @@ $(id).classList.add("show")
 function closePanels(){
 $("overlay").classList.remove("show")
 document.querySelectorAll(".panel").forEach(x=>x.classList.remove("show"))
+unlockBodyScrollIfNoneOpen()
 }
 
 function openAccount(){
@@ -1935,6 +1934,7 @@ refreshAccountView()
 }
 
 function openDrawer(){
+lockBodyScroll()
 $("drawerOverlay").classList.add("show")
 $("drawer").classList.add("show")
 }
@@ -1942,6 +1942,7 @@ $("drawer").classList.add("show")
 function closeDrawer(){
 $("drawerOverlay").classList.remove("show")
 $("drawer").classList.remove("show")
+unlockBodyScrollIfNoneOpen()
 }
 
 function scrollToShop(){
@@ -3622,10 +3623,9 @@ async function submitQuickProfile(e){
 e.preventDefault()
 const name = $("qpName").value.trim()
 const phone = $("qpPhone").value.trim()
-const email = $("qpEmail").value.trim()
 
-if(!phone && !email){
-toast("Please give at least a phone number or an email.")
+if(!phone){
+toast("Please enter your phone number.")
 return
 }
 
@@ -3635,8 +3635,8 @@ submitBtn.textContent = "PLEASE WAIT..."
 
 const { data: newId, error } = await supabaseClient.rpc('create_customer_profile', {
 p_name: name,
-p_phone: phone || null,
-p_email: email || null
+p_phone: phone,
+p_email: null
 })
 
 submitBtn.disabled = false
@@ -3648,7 +3648,7 @@ toast("Could not save your details. Please try again.")
 return
 }
 
-setCustomerProfile({ id:newId, name, phone, email })
+setCustomerProfile({ id:newId, name, phone, email:null })
 closePanels()
 await proceedToCheckout()
 }
