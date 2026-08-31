@@ -208,7 +208,7 @@ overflow:auto
 display:block;padding:14px 0;
 text-decoration:none;color:#111;
 font-size:14px;letter-spacing:1px;
-border-bottom:1px solid var(--line)
+border-bottom:1px solid rgba(0,0,0,.08)
 }
 
 .hero{
@@ -569,7 +569,7 @@ color:#555;cursor:pointer;flex-shrink:0
 display:flex;
 justify-content:space-between;
 align-items:center;
-border-bottom:1px solid var(--line);
+border-bottom:1px solid rgba(0,0,0,.08);
 padding-bottom:18px;
 margin-bottom:25px
 }
@@ -695,7 +695,7 @@ border-bottom:2px solid #111
 display:flex;
 gap:12px;
 padding:15px 0;
-border-bottom:1px solid var(--line)
+border-bottom:1px solid rgba(0,0,0,.08)
 }
 .cartImg{
 width:70px;height:85px;
@@ -1190,7 +1190,7 @@ your signature style.
 <div style="text-align:center;margin-top:4px">
 <a href="#" onclick="showForgotPassword();return false" style="font-size:11px;color:var(--muted);text-decoration:underline">Forgot password?</a>
 </div>
-<div style="text-align:center;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)">
+<div style="text-align:center;margin-top:14px;padding-top:14px;border-top:1px solid rgba(0,0,0,.08)">
 <span style="font-size:12px;color:var(--muted)">Don't have an account? </span>
 <a href="#" onclick="showSignupStep1();return false" style="font-size:12px;color:#111;font-weight:700;text-decoration:underline">Create one</a>
 </div>
@@ -1518,12 +1518,12 @@ BUY NOW
 <div style="flex:1;font-size:9px;color:var(--muted)"><div style="font-size:18px">↩️</div>Easy Return</div>
 </div>
 
-<div id="pdRelatedSection" style="border-top:1px solid var(--line);margin-top:30px;padding-top:20px;display:none">
+<div id="pdRelatedSection" style="border-top:1px solid rgba(0,0,0,.08);margin-top:30px;padding-top:20px;display:none">
 <div style="font-size:11px;letter-spacing:2px;color:var(--muted);margin-bottom:14px">YOU MAY ALSO LIKE</div>
 <div id="pdRelatedWrap"></div>
 </div>
 
-<div style="border-top:1px solid var(--line);margin-top:30px;padding-top:20px">
+<div style="border-top:1px solid rgba(0,0,0,.08);margin-top:30px;padding-top:20px">
 <div style="font-size:11px;letter-spacing:2px;color:var(--muted);margin-bottom:14px">REVIEWS</div>
 <div id="pdReviewsList"><div class="empty" style="padding:20px 10px">Loading reviews...</div></div>
 
@@ -2375,7 +2375,7 @@ p.name.toLowerCase().includes(q) || (p.brand||"").toLowerCase().includes(q) || (
 ).slice(0, 5)
 
 $("searchSuggestions").innerHTML = matches.length ? matches.map(p => `
-<div onclick="closePanels();openProductDetail(${p.id})" style="display:flex;align-items:center;gap:10px;padding:10px 4px;border-bottom:1px solid var(--line);cursor:pointer">
+<div onclick="closePanels();openProductDetail(${p.id})" style="display:flex;align-items:center;gap:10px;padding:10px 4px;border-bottom:1px solid rgba(0,0,0,.08);cursor:pointer">
 <div style="width:40px;height:50px;background:var(--cream);border-radius:10px;overflow:hidden;flex-shrink:0">
 ${p.imgs ? `<img src="${p.imgs.split(',')[0].trim()}" style="width:100%;height:100%;object-fit:cover">` : ''}
 </div>
@@ -2562,7 +2562,7 @@ $("pdRatingSummary").textContent = "No ratings yet"
 const avg = reviews.reduce((s,r)=>s+r.rating,0) / reviews.length
 $("pdRatingSummary").innerHTML = `<span style="color:var(--gold)">${starString(avg)}</span> ${avg.toFixed(1)} (${reviews.length} review${reviews.length>1?'s':''})`
 $("pdReviewsList").innerHTML = reviews.map(r => `
-<div style="border-bottom:1px solid var(--line);padding:12px 0">
+<div style="border-bottom:1px solid rgba(0,0,0,.08);padding:12px 0">
 <div style="display:flex;justify-content:space-between;align-items:center">
 <b style="font-size:13px">${r.name}</b>
 <span style="color:var(--gold);font-size:12px">${starString(r.rating)}</span>
@@ -2771,7 +2771,7 @@ const itemsHTML = rows.map(r => {
 const label = (r.items||'').split(',')[0]?.trim() || 'Item'
 const img = imgById[r.product_id]
 return `
-<div style="display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line);cursor:pointer" onclick="closePanels();openProductDetail(${r.product_id})">
+<div style="display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid rgba(0,0,0,.08);cursor:pointer" onclick="closePanels();openProductDetail(${r.product_id})">
 <div style="width:52px;height:62px;background:var(--cream);border-radius:10px;overflow:hidden;flex-shrink:0">
 ${img ? `<img src="${img}" style="width:100%;height:100%;object-fit:cover">` : ''}
 </div>
