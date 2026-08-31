@@ -495,7 +495,7 @@ display:none
 .panel{
 position:fixed;top:0;bottom:0;
 right:0;width:min(430px,100%);
-background:rgba(255,255,255,.8);
+background:rgba(255,255,255,.9);
 backdrop-filter:blur(24px) saturate(180%);
 -webkit-backdrop-filter:blur(24px) saturate(180%);
 z-index:501;
@@ -1908,11 +1908,15 @@ return document.getElementById(id)
    ============================================================ */
 function lockBodyScroll(){
 document.body.style.overflow = "hidden"
+$("bottomNav").style.display = "none"
 }
 
 function unlockBodyScrollIfNoneOpen(){
 const anyOpen = document.querySelector(".panel.show, .drawer.show")
-if(!anyOpen) document.body.style.overflow = ""
+if(!anyOpen){
+document.body.style.overflow = ""
+if($("shopPage").style.display !== "none") $("bottomNav").style.display = "flex"
+}
 }
 
 function openPanel(id){
