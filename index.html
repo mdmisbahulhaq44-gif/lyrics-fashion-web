@@ -62,7 +62,7 @@ fbq('track', 'PageView');
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://res.cloudinary.com">
 <link rel="preconnect" href="https://otdbpahqfsarkzdpzwga.supabase.co">
-<link rel="preload" as="image" fetchpriority="high" href="https://res.cloudinary.com/dtdztxbfg/image/upload/f_auto,q_auto,w_1200/v1787488489/IMG_20260823_183338_ge9det.png">
+<link rel="preload" as="image" fetchpriority="high" href="https://res.cloudinary.com/dtdztxbfg/image/upload/w_1200/v1787488489/IMG_20260823_183338_ge9det.png">
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
 <style>
@@ -308,17 +308,17 @@ letter-spacing:1px
 
 .categories{
 display:grid;
-grid-template-columns:repeat(2,1fr);
-gap:12px
+grid-template-columns:1fr;
+gap:16px
 }
 .category{
 position:relative;
 overflow:hidden;
 border-radius:14px;
 background:#1a1a1a no-repeat center/cover;
-height:130px;
+aspect-ratio:2.4/1;
 display:flex;align-items:flex-end;
-padding:16px;
+padding:20px;
 color:white;
 text-decoration:none;
 cursor:pointer;
@@ -333,16 +333,20 @@ background:linear-gradient(0deg,rgba(0,0,0,.65) 0%,rgba(0,0,0,.15) 55%,rgba(0,0,
 }
 .catText{position:relative;z-index:2}
 .catText h3{
-font-size:12px;
+font-size:18px;
 font-weight:700;
 letter-spacing:2px;
 text-transform:uppercase
 }
 .catText span{
 display:block;
-font-size:8.5px;letter-spacing:1px;
-margin-top:3px;color:rgba(255,255,255,.75)
+font-size:10px;letter-spacing:1px;
+margin-top:4px;color:rgba(255,255,255,.75)
 }
+
+.breadcrumb{font-size:12px;color:var(--muted);margin-bottom:14px}
+.breadcrumb a{color:var(--muted);text-decoration:none}
+.breadcrumb a:hover{color:#111}
 
 .filters{
 display:flex;gap:8px;
@@ -968,7 +972,7 @@ border-radius:10px;font-size:13px;background:#fafafa
 nav{padding:0 18px}
 .logo{font-size:18px;letter-spacing:3px}
 .section{padding:55px 18px}
-.catText h3{font-size:11px;letter-spacing:1.5px}
+.catText h3{font-size:15px;letter-spacing:1.5px}
 .products{gap:12px}
 .heading h2{font-size:28px}
 .promo{margin:10px 18px 55px;padding:45px 25px}
@@ -1051,10 +1055,20 @@ Recommended: landscape photos, at least 1200px wide. -->
 </div>
 </section>
 
+<!-- CATEGORY HUB PAGE — shown instead of the homepage when the URL is
+#/shop/men or #/shop/women. Lists that gender's categories as big tiles,
+mirroring the homepage tiles above. Tapping a tile goes to #/shop/<gender>/<category>. -->
+<section class="section" id="categoryHub" style="display:none">
+<div class="breadcrumb" id="hubBreadcrumb"></div>
+<div class="heading"><div><h2 id="hubHeading"></h2></div></div>
+<div class="categories" id="hubTileGrid"></div>
+</section>
+
 <section class="section" id="new">
+<div class="breadcrumb" id="shopBreadcrumb" style="display:none"></div>
 <div class="heading">
 <div>
-<h2>New Arrivals</h2>
+<h2 id="shopHeading">New Arrivals</h2>
 </div>
 </div>
 
@@ -1940,15 +1954,14 @@ function $(id){
 return document.getElementById(id)
 }
 
-// Adds Cloudinary auto-format/auto-quality + a sensible max-width to any
-// Cloudinary URL so the browser downloads a smaller, modern-format image
-// instead of the original full-size upload. Non-Cloudinary URLs pass through
-// unchanged. Safe to call on every image render.
+// Resizes any Cloudinary image to the width it's actually displayed at (so
+// the browser isn't downloading a giant original for a small thumbnail) —
+// WITHOUT any quality/format compression, per Misbah's request: images
+// render at full/lossless quality, only their pixel dimensions are capped.
 function cldOpt(url, width){
 if(!url || !url.includes('res.cloudinary.com') || !url.includes('/upload/')) return url
-if(url.includes('/upload/f_auto') || url.includes('/upload/q_auto')) return url
-const w = width ? `,w_${width}` : ''
-return url.replace('/upload/', `/upload/f_auto,q_auto${w}/`)
+if(!width || url.includes('/upload/w_')) return url
+return url.replace('/upload/', `/upload/w_${width}/`)
 }
 
 /* ============================================================
@@ -2335,6 +2348,7 @@ $("productsGrid").innerHTML = Array(8).fill(0).map(()=>`
 </div>
 `).join('')
 
+try{
 const { data, error } = await supabaseClient
 .from('products')
 .select('id,name,brand,price,old,badge,cat,imgs,stock,gender,color_name,color_group,fabric,sizes,size_chart,created_at')
@@ -2349,6 +2363,12 @@ return
 allProducts = data || []
 renderProductGrid(allProducts)
 renderFilters(allProducts)
+}catch(e){
+// A network hiccup here shouldn't take down the rest of the page —
+// cart, routing, and everything else below this should still work.
+console.error('Products fetch failed:', e)
+$("productsGrid").innerHTML = `<div class="empty">Could not load products.</div>`
+}
 }
 
 function renderProductGrid(list){
@@ -2411,7 +2431,7 @@ applyFiltersAndSort()
 }
 
 function filterByCategory(cat, btn){
-document.querySelectorAll(".filter").forEach(f=>f.classList.remove("active"))
+document.querySelectorAll("#filters .filter").forEach(f=>f.classList.remove("active"))
 btn.classList.add("active")
 currentCategory = cat
 applyFiltersAndSort()
@@ -3171,12 +3191,13 @@ heroTimer = setInterval(() => heroSlide(1), 4500)
 
 function onHeroSlideClick(i){
 const s = heroSlides[i]
-if(s && (s.gender || s.category)) goToShopFiltered(s.gender, s.category)
+if(s && (s.gender || s.category)) navigateToCategory(s.gender, s.category)
 }
 
 // Jumps to the shop section and, if given, applies a gender (ALL/men/women)
-// and/or category filter — used by hero slides and homepage category tiles
-// so tapping either one opens a "panel" showing just those products.
+// and/or category filter — used as a fallback for tiles/slides that aren't
+// linked to a specific men/women hub (e.g. "Sale"), so tapping them still
+// does something useful instead of nothing.
 function goToShopFiltered(gender, category){
 scrollToShop()
 setTimeout(() => {
@@ -3190,6 +3211,124 @@ if(catBtn) filterByCategory(category, catBtn)
 }, 60)
 }
 }, 400)
+}
+
+/* ============================================================
+   CATEGORY BROWSING PAGES — tapping Men/Women (from the hero or the
+   homepage tiles) opens a dedicated "page" listing that gender's
+   categories as big tiles; tapping one of those opens another "page"
+   showing just that category's products. Built as hash routes
+   (#/shop/men, #/shop/men/Baggy) so it feels like real navigation —
+   with instant, app-like transitions and back-button support — while
+   staying inside this single file and your existing Supabase data.
+   ============================================================ */
+function navigateToCategory(gender, category){
+if(gender === 'men' || gender === 'women'){
+window.location.hash = category
+? `#/shop/${gender}/${encodeURIComponent(category)}`
+: `#/shop/${gender}`
+} else {
+goToShopFiltered(gender, category)
+}
+}
+
+function capitalize(s){
+return s ? s.charAt(0).toUpperCase() + s.slice(1) : s
+}
+
+// Shows exactly one of: the homepage, a gender's category hub, or a
+// single filtered category page — hiding the others so each feels like
+// its own dedicated page rather than a scrolled section.
+function setViewMode(mode){
+$("heroCarousel").style.display = mode === 'home' ? '' : 'none'
+$("women").style.display = mode === 'home' ? '' : 'none'
+$("categoryHub").style.display = mode === 'hub' ? '' : 'none'
+$("new").style.display = mode === 'hub' ? 'none' : ''
+$("shopBreadcrumb").style.display = mode === 'category' ? 'block' : 'none'
+const features = document.querySelector('.features')
+if(features) features.style.display = mode === 'home' ? '' : 'none'
+if(mode !== 'category') $("shopHeading").textContent = 'New Arrivals'
+}
+
+function parseRoute(){
+const parts = window.location.hash.replace(/^#\/?/, '').split('/').filter(Boolean)
+if(parts[0] === 'shop' && (parts[1] === 'men' || parts[1] === 'women')){
+return { gender: parts[1], category: parts[2] ? decodeURIComponent(parts[2]) : null }
+}
+return null
+}
+
+function renderRoute(){
+const route = parseRoute()
+if(!route){ showHomeView(); return }
+if(route.category) showCategoryView(route.gender, route.category)
+else showHubView(route.gender)
+}
+
+function showHomeView(){
+setViewMode('home')
+const allBtn = document.querySelector('#genderTabs [data-gender="ALL"]')
+if(allBtn) filterByGender('ALL', allBtn)
+}
+
+function getCategoriesForGender(gender){
+const list = allProducts.filter(p => p.gender === gender || p.gender === 'unisex')
+const byCategory = new Map()
+list.forEach(p => {
+if(!p.cat) return
+if(!byCategory.has(p.cat)) byCategory.set(p.cat, [])
+byCategory.get(p.cat).push(p)
+})
+return Array.from(byCategory.entries()).map(([cat, products]) => {
+const prices = products.map(p => Number(p.price)).filter(n => !isNaN(n))
+return {
+cat,
+count: products.length,
+image: products[0] && products[0].imgs ? products[0].imgs.split(',')[0].trim() : '',
+minPrice: prices.length ? Math.min(...prices) : null
+}
+})
+}
+
+function showHubView(gender){
+const cats = getCategoriesForGender(gender)
+$("hubHeading").textContent = capitalize(gender)
+$("hubBreadcrumb").innerHTML = `<a href="#" onclick="event.preventDefault();window.location.hash=''">Home</a> / ${escapeHTML(capitalize(gender))}`
+
+$("hubTileGrid").innerHTML = cats.length ? cats.map(c => `
+<button class="category" style="${c.image ? `background-image:url('${cldOpt(c.image, 700).replace(/'/g,"\\'")}')` : 'background:#1a1a1a'}" onclick="handleHubTileClick('${gender}','${c.cat.replace(/'/g,"\\'")}',${c.count})">
+<div class="catText">
+<h3>${escapeHTML(c.cat)}</h3>
+<span>${c.count} PRODUCT${c.count===1?'':'S'}${c.minPrice!==null ? ' · FROM ৳'+c.minPrice : ''}</span>
+</div>
+</button>
+`).join('') : `<p style="color:var(--muted);font-size:13px">No products in ${escapeHTML(capitalize(gender))} yet — add some from the Admin Panel.</p>`
+
+setViewMode('hub')
+window.scrollTo(0, 0)
+}
+
+// A category with just one product goes straight to that product instead
+// of showing a one-item list — one less tap than gorurghash's flow.
+function handleHubTileClick(gender, cat, count){
+if(count === 1){
+const product = allProducts.find(p => (p.gender === gender || p.gender === 'unisex') && p.cat === cat)
+if(product){ openProductDetail(product.id); return }
+}
+window.location.hash = `#/shop/${gender}/${encodeURIComponent(cat)}`
+}
+
+function showCategoryView(gender, category){
+setViewMode('category')
+$("shopBreadcrumb").innerHTML = `<a href="#" onclick="event.preventDefault();window.location.hash=''">Home</a> / <a href="#" onclick="event.preventDefault();window.location.hash='#/shop/${gender}'">${escapeHTML(capitalize(gender))}</a> / ${escapeHTML(category)}`
+$("shopHeading").textContent = category
+
+const genderBtn = document.querySelector(`#genderTabs [data-gender="${gender}"]`)
+if(genderBtn) filterByGender(gender, genderBtn)
+const catBtn = document.querySelector(`#filters [data-cat="${category}"]`)
+if(catBtn) filterByCategory(category, catBtn)
+
+window.scrollTo(0, 0)
 }
 
 let editingHeroSlides = []
@@ -3298,7 +3437,7 @@ function renderHomeCategories(list){
 const grid = $("homeCategoriesGrid")
 if(!grid) return
 grid.innerHTML = list.map(c => `
-<button class="category" style="${c.image ? `background-image:url('${cldOpt(c.image, 500).replace(/'/g,"\\'")}')` : 'background:#1a1a1a'}" onclick="goToShopFiltered('${(c.gender||'').replace(/'/g,"\\'")}','${(c.category||'').replace(/'/g,"\\'")}')">
+<button class="category" style="${c.image ? `background-image:url('${cldOpt(c.image, 700).replace(/'/g,"\\'")}')` : 'background:#1a1a1a'}" onclick="navigateToCategory('${(c.gender||'').replace(/'/g,"\\'")}','${(c.category||'').replace(/'/g,"\\'")}')">
 <div class="catText">
 <h3>${escapeHTML(c.name || '')}</h3>
 <span>${escapeHTML(c.subtitle || '')}</span>
@@ -4519,6 +4658,9 @@ loadHeroBanner()
 loadTestimonials()
 loadHomeCategories()
 await loadProducts()
+
+window.addEventListener('hashchange', renderRoute)
+renderRoute()
 
 document.querySelectorAll('input[name="coMethod"]').forEach(r =>
 r.addEventListener('change', onDeliveryMethodChange)
