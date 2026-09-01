@@ -209,15 +209,47 @@ font-size:14px;letter-spacing:1px;
 border-bottom:1px solid rgba(0,0,0,.08)
 }
 
-.hero{
+.heroCarousel{
+position:relative;
 width:100%;
 aspect-ratio:2.4/1;
-background:
-#111
-url('https://res.cloudinary.com/dtdztxbfg/image/upload/f_auto,q_auto,w_1200/v1787488489/IMG_20260823_183338_ge9det.png');
+overflow:hidden;
+background:#111
+}
+.heroTrack{
+display:flex;
+height:100%;
+transition:transform .4s ease
+}
+.heroSlide{
+min-width:100%;height:100%;
 background-size:cover;
 background-position:center;
+cursor:pointer
 }
+.heroArrow{
+position:absolute;top:50%;transform:translateY(-50%);
+width:40px;height:40px;border-radius:50%;
+border:0;background:rgba(255,255,255,.9);
+font-size:22px;cursor:pointer;
+display:flex;align-items:center;justify-content:center;
+box-shadow:0 2px 8px rgba(0,0,0,.15);
+z-index:3
+}
+.heroArrowLeft{left:12px}
+.heroArrowRight{right:12px}
+.heroDots{
+position:absolute;bottom:14px;left:0;right:0;
+display:flex;justify-content:center;gap:6px;
+z-index:3
+}
+.heroDots span{
+width:7px;height:7px;border-radius:50%;
+background:rgba(255,255,255,.6);
+transition:.2s;
+cursor:pointer
+}
+.heroDots span.active{background:#fff;width:18px;border-radius:5px}
 
 .heroText{max-width:650px}
 .tag{
@@ -935,7 +967,6 @@ border-radius:10px;font-size:13px;background:#fafafa
 @media(max-width:600px){
 nav{padding:0 18px}
 .logo{font-size:18px;letter-spacing:3px}
-.hero{background-position:center}
 .section{padding:55px 18px}
 .catText h3{font-size:11px;letter-spacing:1.5px}
 .products{gap:12px}
@@ -988,11 +1019,15 @@ font-size:12px
 </div>
 </nav>
 
-<!-- HERO BANNER
-To change the photo: use Admin Panel → Settings → Homepage Banner Image
-(or replace the URL inside url('...') in .hero CSS below).
-Recommended: landscape photo, at least 1200px wide. -->
-<div class="hero"></div>
+<!-- HERO BANNER (multi-slide carousel)
+To add/edit slides: use Admin Panel → Settings → Homepage Hero Banner (Slides).
+Recommended: landscape photos, at least 1200px wide. -->
+<div id="heroCarousel" class="heroCarousel">
+<div id="heroTrack" class="heroTrack"></div>
+<button class="heroArrow heroArrowLeft" onclick="heroSlide(-1)" aria-label="Previous slide">‹</button>
+<button class="heroArrow heroArrowRight" onclick="heroSlide(1)" aria-label="Next slide">›</button>
+<div id="heroDots" class="heroDots"></div>
+</div>
 
 <!-- DRAWER MENU -->
 <div class="overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
@@ -1829,13 +1864,13 @@ Your wishlist is currently empty.
 <h2 style="margin-bottom:20px">Site Settings</h2>
 
 <div style="max-width:500px">
-<label style="display:block;font-size:12px;font-weight:700;letter-spacing:.5px;margin-bottom:8px">HOMEPAGE BANNER IMAGE</label>
-<p style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.6">
-Paste a direct image link below (from Cloudinary, imgbb, imgur, etc). This photo will show as the big banner at the top of your homepage.
+<label style="display:block;font-size:12px;font-weight:700;letter-spacing:.5px;margin-bottom:8px">HOMEPAGE HERO BANNER (SLIDES)</label>
+<p style="font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.6">
+Add as many slides as you like — they auto-rotate on your homepage with swipe and arrow navigation, just like the tiles below. Optionally link a slide to Men, Women, or a specific category so tapping it jumps shoppers straight to those products.
 </p>
-<img id="heroPreviewImg" src="" style="width:100%;max-height:220px;object-fit:cover;border-radius:8px;margin-bottom:14px;display:none;background:#f2f2f2">
-<input type="text" id="stHeroImage" placeholder="https://example.com/your-photo.jpg" style="margin-bottom:14px">
-<button class="btn" onclick="saveHeroBannerSetting()">SAVE BANNER</button>
+<div id="heroSlideEditorRows"></div>
+<button type="button" onclick="addHeroSlideRow()" style="background:none;border:1px dashed var(--line);border-radius:8px;padding:10px;width:100%;font-size:12px;letter-spacing:.5px;cursor:pointer;margin-bottom:14px">+ ADD BANNER SLIDE</button>
+<button class="btn" onclick="saveHeroSlidesSetting()">SAVE BANNER SLIDES</button>
 </div>
 
 <hr style="margin:36px 0;border:0;border-top:1px solid var(--line)">
@@ -3043,63 +3078,203 @@ return deliverySettings
 }
 
 /* ============================================================
-   HERO BANNER IMAGE — fetched from Supabase `settings` table.
-   To change the banner photo WITHOUT touching any code:
-   1. Open your Supabase project → Table Editor → "settings" table
-   2. Find (or add) a row with key = hero_banner_image
-   3. Paste your new image link in the "value" column, save
-   4. Refresh the site — the banner updates automatically
+   HOMEPAGE HERO BANNER — multiple auto-rotating slides, fetched from
+   Supabase `settings` table (key: hero_slides, value: JSON array of
+   {image, gender, category}). Edit from Admin Panel → Settings →
+   Homepage Hero Banner (Slides). If a slide has a gender/category set,
+   tapping it jumps shoppers straight to that filtered section of the shop.
    ============================================================ */
+const DEFAULT_HERO_SLIDES = [
+{ image:'https://res.cloudinary.com/dtdztxbfg/image/upload/v1787488489/IMG_20260823_183338_ge9det.png', gender:'', category:'' }
+]
+
+let heroSlides = []
+let heroIndex = 0
+let heroTimer = null
+let heroTouchStartX = 0
+
 async function loadHeroBanner(){
-// Matches the CSS default above, so if this fetch is slow or fails,
-// what's already on screen is correct instead of a random placeholder.
-const fallbackUrl = 'https://res.cloudinary.com/dtdztxbfg/image/upload/v1787488489/IMG_20260823_183338_ge9det.png'
 try{
 const { data, error } = await supabaseClient
 .from('settings')
 .select('value')
-.eq('key', 'hero_banner_image')
+.eq('key', 'hero_slides')
 .maybeSingle()
 
-const url = (!error && data && data.value) ? data.value : fallbackUrl
-const heroEl = document.querySelector('.hero')
-if(heroEl){
-heroEl.style.backgroundImage = `url('${cldOpt(url, 1200)}')`
-heroEl.style.backgroundSize = 'cover'
-heroEl.style.backgroundPosition = 'center'
+let slides = DEFAULT_HERO_SLIDES
+if(!error && data && data.value){
+try{
+const parsed = JSON.parse(data.value)
+if(Array.isArray(parsed) && parsed.length) slides = parsed
+}catch(e){ /* fall back to default on bad JSON */ }
 }
+renderHeroSlides(slides)
 }catch(e){
 console.error('Hero banner fetch failed:', e)
+renderHeroSlides(DEFAULT_HERO_SLIDES)
 }
 }
 
-async function loadHeroBannerSettingIntoForm(){
+function renderHeroSlides(slides){
+heroSlides = slides
+heroIndex = 0
+const track = $("heroTrack")
+if(!track) return
+
+track.innerHTML = heroSlides.map((s, i) =>
+`<div class="heroSlide" style="background-image:url('${cldOpt(s.image, 1200).replace(/'/g,"\\'")}')" onclick="onHeroSlideClick(${i})"></div>`
+).join('')
+
+const dotsWrap = $("heroDots")
+if(dotsWrap){
+dotsWrap.innerHTML = heroSlides.map((_, i) =>
+`<span class="${i===0?'active':''}" onclick="event.stopPropagation();goToHeroSlide(${i})"></span>`
+).join('')
+}
+
+const multi = heroSlides.length > 1
+document.querySelectorAll('#heroCarousel .heroArrow').forEach(a => a.style.display = multi ? 'flex' : 'none')
+if(dotsWrap) dotsWrap.style.display = multi ? 'flex' : 'none'
+
+track.style.transform = 'translateX(0%)'
+
+track.ontouchstart = e => { heroTouchStartX = e.touches[0].clientX }
+track.ontouchend = e => {
+const delta = e.changedTouches[0].clientX - heroTouchStartX
+if(Math.abs(delta) > 40) heroSlide(delta > 0 ? -1 : 1)
+}
+
+startHeroAutoplay()
+}
+
+function goToHeroSlide(i){
+if(!heroSlides.length) return
+heroIndex = ((i % heroSlides.length) + heroSlides.length) % heroSlides.length
+$("heroTrack").style.transform = `translateX(-${heroIndex * 100}%)`
+$("heroDots").querySelectorAll('span').forEach((dot, idx) =>
+dot.classList.toggle('active', idx === heroIndex)
+)
+startHeroAutoplay()
+}
+
+function heroSlide(direction){
+if(heroSlides.length < 2) return
+goToHeroSlide(heroIndex + direction)
+}
+
+function startHeroAutoplay(){
+clearInterval(heroTimer)
+if(heroSlides.length > 1){
+heroTimer = setInterval(() => heroSlide(1), 4500)
+}
+}
+
+function onHeroSlideClick(i){
+const s = heroSlides[i]
+if(s && (s.gender || s.category)) goToShopFiltered(s.gender, s.category)
+}
+
+// Jumps to the shop section and, if given, applies a gender (ALL/men/women)
+// and/or category filter — used by hero slides and homepage category tiles
+// so tapping either one opens a "panel" showing just those products.
+function goToShopFiltered(gender, category){
+scrollToShop()
+setTimeout(() => {
+const g = gender || 'ALL'
+const genderBtn = document.querySelector(`#genderTabs [data-gender="${g}"]`)
+if(genderBtn) filterByGender(g, genderBtn)
+if(category){
+setTimeout(() => {
+const catBtn = document.querySelector(`#filters [data-cat="${category}"]`)
+if(catBtn) filterByCategory(category, catBtn)
+}, 60)
+}
+}, 400)
+}
+
+let editingHeroSlides = []
+
+async function loadHeroSlidesSettingIntoForm(){
 const { data } = await supabaseClient
 .from('settings')
 .select('value')
-.eq('key', 'hero_banner_image')
+.eq('key', 'hero_slides')
 .maybeSingle()
 
-const url = data?.value || ''
-$("stHeroImage").value = url
-const img = $("heroPreviewImg")
-if(url){ img.src = url; img.style.display = 'block' } else { img.style.display = 'none' }
+let slides = DEFAULT_HERO_SLIDES
+if(data && data.value){
+try{
+const parsed = JSON.parse(data.value)
+if(Array.isArray(parsed) && parsed.length) slides = parsed
+}catch(e){}
+}
+editingHeroSlides = JSON.parse(JSON.stringify(slides))
+renderHeroSlideEditorRows()
 }
 
-async function saveHeroBannerSetting(){
-const url = $("stHeroImage").value.trim()
-if(!url){ toast("Please paste an image link first."); return }
+function renderHeroSlideEditorRows(){
+const wrap = $("heroSlideEditorRows")
+if(!wrap) return
+wrap.innerHTML = editingHeroSlides.map((s, i) => `
+<div style="border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:12px">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+<b style="font-size:12px;letter-spacing:.5px">SLIDE ${i+1}</b>
+<button type="button" onclick="removeHeroSlideRow(${i})" style="background:none;border:0;color:var(--red);font-size:12px;cursor:pointer">Remove</button>
+</div>
+<img id="heroSlidePreview${i}" src="${escapeAttr(s.image)}" style="width:100%;max-height:140px;object-fit:cover;border-radius:8px;margin-bottom:10px;background:#f2f2f2;display:${s.image?'block':'none'}">
+<label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">IMAGE LINK</label>
+<input type="text" value="${escapeAttr(s.image)}" oninput="updateHeroSlideField(${i},'image',this.value)" placeholder="https://example.com/banner.jpg" style="margin-bottom:10px">
+<label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">TAP TAKES SHOPPERS TO (OPTIONAL)</label>
+<div style="display:flex;gap:8px">
+<select onchange="updateHeroSlideField(${i},'gender',this.value)" style="flex:1;border:1px solid var(--line);border-radius:8px;padding:8px">
+<option value="" ${!s.gender?'selected':''}>No link</option>
+<option value="ALL" ${s.gender==='ALL'?'selected':''}>All</option>
+<option value="men" ${s.gender==='men'?'selected':''}>Men</option>
+<option value="women" ${s.gender==='women'?'selected':''}>Women</option>
+</select>
+<input type="text" value="${escapeAttr(s.category)}" oninput="updateHeroSlideField(${i},'category',this.value)" placeholder="Category (optional)" style="flex:1">
+</div>
+</div>
+`).join('')
+}
+
+function updateHeroSlideField(index, field, value){
+editingHeroSlides[index][field] = value
+if(field === 'image'){
+const preview = $("heroSlidePreview" + index)
+if(preview){
+preview.src = value
+preview.style.display = value ? 'block' : 'none'
+}
+}
+}
+
+function removeHeroSlideRow(index){
+editingHeroSlides.splice(index, 1)
+renderHeroSlideEditorRows()
+}
+
+function addHeroSlideRow(){
+editingHeroSlides.push({ image:"", gender:"", category:"" })
+renderHeroSlideEditorRows()
+}
+
+async function saveHeroSlidesSetting(){
+const cleaned = editingHeroSlides
+.map(s => ({ image:(s.image||'').trim(), gender:(s.gender||'').trim(), category:(s.category||'').trim() }))
+.filter(s => s.image)
+
+if(!cleaned.length){ toast("Add at least one slide with an image link."); return }
 
 const { error } = await supabaseClient
 .from('settings')
-.upsert({ key: 'hero_banner_image', value: url }, { onConflict: 'key' })
+.upsert({ key: 'hero_slides', value: JSON.stringify(cleaned) }, { onConflict: 'key' })
 
 if(error){ toast("Could not save: " + readableError(error)); return }
 
-toast("Banner updated! Refresh your homepage to see it.")
-const img = $("heroPreviewImg")
-img.src = url
-img.style.display = 'block'
+toast("Banner slides updated! Refresh your homepage to see it.")
+editingHeroSlides = cleaned
+renderHeroSlideEditorRows()
 }
 
 /* ============================================================
@@ -3112,18 +3287,18 @@ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
 }
 
 const DEFAULT_HOME_CATEGORIES = [
-{ name:"Women", subtitle:"Discover Collection", image:"" },
-{ name:"Men", subtitle:"Shop Men", image:"" },
-{ name:"New In", subtitle:"Latest Arrivals", image:"" },
-{ name:"Accessories", subtitle:"Complete Your Look", image:"" },
-{ name:"Sale", subtitle:"Limited Offers", image:"" }
+{ name:"Women", subtitle:"Discover Collection", image:"", gender:"", category:"" },
+{ name:"Men", subtitle:"Shop Men", image:"", gender:"", category:"" },
+{ name:"New In", subtitle:"Latest Arrivals", image:"", gender:"", category:"" },
+{ name:"Accessories", subtitle:"Complete Your Look", image:"", gender:"", category:"" },
+{ name:"Sale", subtitle:"Limited Offers", image:"", gender:"", category:"" }
 ]
 
 function renderHomeCategories(list){
 const grid = $("homeCategoriesGrid")
 if(!grid) return
 grid.innerHTML = list.map(c => `
-<button class="category" style="${c.image ? `background-image:url('${cldOpt(c.image, 500).replace(/'/g,"\\'")}')` : 'background:#1a1a1a'}" onclick="scrollToShop()">
+<button class="category" style="${c.image ? `background-image:url('${cldOpt(c.image, 500).replace(/'/g,"\\'")}')` : 'background:#1a1a1a'}" onclick="goToShopFiltered('${(c.gender||'').replace(/'/g,"\\'")}','${(c.category||'').replace(/'/g,"\\'")}')">
 <div class="catText">
 <h3>${escapeHTML(c.name || '')}</h3>
 <span>${escapeHTML(c.subtitle || '')}</span>
@@ -3188,7 +3363,17 @@ wrap.innerHTML = editingCategories.map((c, i) => `
 <label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">SUBTITLE</label>
 <input type="text" value="${escapeAttr(c.subtitle)}" oninput="updateCategoryField(${i},'subtitle',this.value)" placeholder="e.g. Discover Collection" style="margin-bottom:10px">
 <label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">IMAGE LINK</label>
-<input type="text" value="${escapeAttr(c.image)}" oninput="updateCategoryField(${i},'image',this.value)" placeholder="https://example.com/photo.jpg">
+<input type="text" value="${escapeAttr(c.image)}" oninput="updateCategoryField(${i},'image',this.value)" placeholder="https://example.com/photo.jpg" style="margin-bottom:10px">
+<label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">TAP TAKES SHOPPERS TO (OPTIONAL)</label>
+<div style="display:flex;gap:8px">
+<select onchange="updateCategoryField(${i},'gender',this.value)" style="flex:1;border:1px solid var(--line);border-radius:8px;padding:8px">
+<option value="" ${!c.gender?'selected':''}>No link (just scroll to shop)</option>
+<option value="ALL" ${c.gender==='ALL'?'selected':''}>All</option>
+<option value="men" ${c.gender==='men'?'selected':''}>Men</option>
+<option value="women" ${c.gender==='women'?'selected':''}>Women</option>
+</select>
+<input type="text" value="${escapeAttr(c.category)}" oninput="updateCategoryField(${i},'category',this.value)" placeholder="Category (optional)" style="flex:1">
+</div>
 </div>
 `).join('')
 }
@@ -3207,13 +3392,13 @@ renderCategoryEditorRows()
 }
 
 function addCategoryRow(){
-editingCategories.push({ name:"", subtitle:"", image:"" })
+editingCategories.push({ name:"", subtitle:"", image:"", gender:"", category:"" })
 renderCategoryEditorRows()
 }
 
 async function saveHomeCategoriesSetting(){
 const cleaned = editingCategories
-.map(c => ({ name:(c.name||'').trim(), subtitle:(c.subtitle||'').trim(), image:(c.image||'').trim() }))
+.map(c => ({ name:(c.name||'').trim(), subtitle:(c.subtitle||'').trim(), image:(c.image||'').trim(), gender:(c.gender||'').trim(), category:(c.category||'').trim() }))
 .filter(c => c.name)
 
 if(!cleaned.length){ toast("Add at least one category with a name."); return }
@@ -4007,7 +4192,7 @@ $("adminSettingsView").style.display = section==='settings' ? 'block' : 'none'
 if(section==='dashboard'){ $("navDashboard").classList.add('active'); $("adminTitle").textContent="Dashboard"; loadAdminData() }
 if(section==='products'){ $("navProducts").classList.add('active'); $("adminTitle").textContent="Products"; renderAdminProductsTable() }
 if(section==='orders'){ $("navOrders").classList.add('active'); $("adminTitle").textContent="Orders"; loadAllOrders() }
-if(section==='settings'){ $("navSettings").classList.add('active'); $("adminTitle").textContent="Settings"; loadHeroBannerSettingIntoForm(); loadHomeCategoriesSettingIntoForm() }
+if(section==='settings'){ $("navSettings").classList.add('active'); $("adminTitle").textContent="Settings"; loadHeroSlidesSettingIntoForm(); loadHomeCategoriesSettingIntoForm() }
 }
 
 function statusBadgeHTML(status){
