@@ -187,7 +187,7 @@ color:#888;cursor:pointer;position:relative
 .bottomNav button .bnIcon{line-height:1;position:relative;display:inline-flex}
 .bottomNav button .bnIcon svg{display:block}
 .bottomNav button.active{color:#111}
-body{padding-bottom:64px}
+body{padding-bottom:calc(64px + env(safe-area-inset-bottom))}
 
 /* DRAWER MENU */
 .drawer{
@@ -370,7 +370,7 @@ display:grid;
 grid-template-columns:repeat(2,1fr);
 gap:16px
 }
-.product{cursor:pointer}
+.product{cursor:pointer;min-width:0}
 .productImage{
 aspect-ratio:3/4;
 background:#f4f4f4;
@@ -3214,19 +3214,18 @@ if(catBtn) filterByCategory(category, catBtn)
 }
 
 /* ============================================================
-   CATEGORY BROWSING PAGES — tapping Men/Women (from the hero or the
-   homepage tiles) opens a dedicated "page" listing that gender's
-   categories as big tiles; tapping one of those opens another "page"
-   showing just that category's products. Built as hash routes
-   (#/shop/men, #/shop/men/Baggy) so it feels like real navigation —
-   with instant, app-like transitions and back-button support — while
-   staying inside this single file and your existing Supabase data.
+   CATEGORY BROWSING PAGES — supports UNLIMITED nesting depth per
+   category (Men → Shirt → Casual Shirt → ... → products), so any
+   category can later be split into as many sub-varieties as needed.
+   To nest a product under a subcategory, just give it a "cat" value
+   with "/" between levels, e.g. "Shirt/Casual Shirt" — no separate
+   subcategory list to manage elsewhere; it's derived automatically
+   from whatever products exist. Routes look like #/shop/men/Shirt/Casual%20Shirt.
+   Works the same way for men, women, and unisex products.
    ============================================================ */
 function navigateToCategory(gender, category){
 if(gender === 'men' || gender === 'women'){
-window.location.hash = category
-? `#/shop/${gender}/${encodeURIComponent(category)}`
-: `#/shop/${gender}`
+window.location.hash = buildShopHash(gender, category ? [category] : [])
 } else {
 goToShopFiltered(gender, category)
 }
@@ -3236,15 +3235,25 @@ function capitalize(s){
 return s ? s.charAt(0).toUpperCase() + s.slice(1) : s
 }
 
-// Shows exactly one of: the homepage, a gender's category hub, or a
-// single filtered category page — hiding the others so each feels like
-// its own dedicated page rather than a scrolled section.
+function parseCatPath(p){
+return (p.cat || '').split('/').map(s => s.trim()).filter(Boolean)
+}
+
+function buildShopHash(gender, path){
+return `#/shop/${gender}` + (path.length ? '/' + path.map(encodeURIComponent).join('/') : '')
+}
+
+// Shows exactly one of: the homepage, a category hub (tiles), or a
+// products list — hiding the others so each feels like its own
+// dedicated page rather than a scrolled section.
 function setViewMode(mode){
 $("heroCarousel").style.display = mode === 'home' ? '' : 'none'
 $("women").style.display = mode === 'home' ? '' : 'none'
 $("categoryHub").style.display = mode === 'hub' ? '' : 'none'
 $("new").style.display = mode === 'hub' ? 'none' : ''
 $("shopBreadcrumb").style.display = mode === 'category' ? 'block' : 'none'
+$("genderTabs").style.display = mode === 'category' ? 'none' : ''
+$("filters").style.display = mode === 'category' ? 'none' : ''
 const features = document.querySelector('.features')
 if(features) features.style.display = mode === 'home' ? '' : 'none'
 if(mode !== 'category') $("shopHeading").textContent = 'New Arrivals'
@@ -3253,7 +3262,7 @@ if(mode !== 'category') $("shopHeading").textContent = 'New Arrivals'
 function parseRoute(){
 const parts = window.location.hash.replace(/^#\/?/, '').split('/').filter(Boolean)
 if(parts[0] === 'shop' && (parts[1] === 'men' || parts[1] === 'women')){
-return { gender: parts[1], category: parts[2] ? decodeURIComponent(parts[2]) : null }
+return { gender: parts[1], path: parts.slice(2).map(decodeURIComponent) }
 }
 return null
 }
@@ -3261,8 +3270,7 @@ return null
 function renderRoute(){
 const route = parseRoute()
 if(!route){ showHomeView(); return }
-if(route.category) showCategoryView(route.gender, route.category)
-else showHubView(route.gender)
+showCategoryPage(route.gender, route.path)
 }
 
 function showHomeView(){
@@ -3271,18 +3279,25 @@ const allBtn = document.querySelector('#genderTabs [data-gender="ALL"]')
 if(allBtn) filterByGender('ALL', allBtn)
 }
 
-function getCategoriesForGender(gender){
+// Distinct next-level category names directly under `path` for this
+// gender (also includes unisex products) — one level of the tree at a time.
+function getSubcategories(gender, path){
 const list = allProducts.filter(p => p.gender === gender || p.gender === 'unisex')
-const byCategory = new Map()
+const byNext = new Map()
 list.forEach(p => {
-if(!p.cat) return
-if(!byCategory.has(p.cat)) byCategory.set(p.cat, [])
-byCategory.get(p.cat).push(p)
+const segs = parseCatPath(p)
+if(segs.length <= path.length) return
+for(let i = 0; i < path.length; i++){
+if(segs[i].toLowerCase() !== path[i].toLowerCase()) return
+}
+const next = segs[path.length]
+if(!byNext.has(next)) byNext.set(next, [])
+byNext.get(next).push(p)
 })
-return Array.from(byCategory.entries()).map(([cat, products]) => {
+return Array.from(byNext.entries()).map(([seg, products]) => {
 const prices = products.map(p => Number(p.price)).filter(n => !isNaN(n))
 return {
-cat,
+seg,
 count: products.length,
 image: products[0] && products[0].imgs ? products[0].imgs.split(',')[0].trim() : '',
 minPrice: prices.length ? Math.min(...prices) : null
@@ -3290,44 +3305,67 @@ minPrice: prices.length ? Math.min(...prices) : null
 })
 }
 
-function showHubView(gender){
-const cats = getCategoriesForGender(gender)
-$("hubHeading").textContent = capitalize(gender)
-$("hubBreadcrumb").innerHTML = `<a href="#" onclick="event.preventDefault();window.location.hash=''">Home</a> / ${escapeHTML(capitalize(gender))}`
+// Products whose category path is EXACTLY `path` (a leaf, not a branch).
+function getProductsAtPath(gender, path){
+return allProducts.filter(p => {
+if(!(p.gender === gender || p.gender === 'unisex')) return false
+const segs = parseCatPath(p)
+if(segs.length !== path.length) return false
+return segs.every((s, i) => s.toLowerCase() === path[i].toLowerCase())
+})
+}
 
-$("hubTileGrid").innerHTML = cats.length ? cats.map(c => `
-<button class="category" style="${c.image ? `background-image:url('${cldOpt(c.image, 700).replace(/'/g,"\\'")}')` : 'background:#1a1a1a'}" onclick="handleHubTileClick('${gender}','${c.cat.replace(/'/g,"\\'")}',${c.count})">
+function breadcrumbHTML(gender, path){
+const crumbs = [
+`<a href="#" onclick="event.preventDefault();window.location.hash=''">Home</a>`,
+`<a href="#" onclick="event.preventDefault();window.location.hash='${buildShopHash(gender, [])}'">${escapeHTML(capitalize(gender))}</a>`
+]
+path.forEach((seg, i) => {
+const isLast = i === path.length - 1
+crumbs.push(isLast ? escapeHTML(seg) : `<a href="#" onclick="event.preventDefault();window.location.hash='${buildShopHash(gender, path.slice(0, i+1))}'">${escapeHTML(seg)}</a>`)
+})
+return crumbs.join(' / ')
+}
+
+// The main entry point: decides whether this path is a branch (show
+// tiles for the next level) or a leaf (show the matching products) —
+// and if a branch tile leads to exactly one product, skips straight to it.
+function showCategoryPage(gender, path){
+const subs = getSubcategories(gender, path)
+if(subs.length){ showHubView(gender, path, subs); return }
+
+const products = getProductsAtPath(gender, path)
+if(products.length === 1){
+openProductDetail(products[0].id)
+const parentPath = path.slice(0, -1)
+showHubView(gender, parentPath, getSubcategories(gender, parentPath))
+return
+}
+showProductsView(gender, path, products)
+}
+
+function showHubView(gender, path, subs){
+$("hubHeading").textContent = path.length ? path[path.length - 1] : capitalize(gender)
+$("hubBreadcrumb").innerHTML = breadcrumbHTML(gender, path)
+
+$("hubTileGrid").innerHTML = subs.length ? subs.map(s => `
+<button class="category" style="${s.image ? `background-image:url('${cldOpt(s.image, 700).replace(/'/g,"\\'")}')` : 'background:#1a1a1a'}" onclick="window.location.hash='${buildShopHash(gender, [...path, s.seg])}'">
 <div class="catText">
-<h3>${escapeHTML(c.cat)}</h3>
-<span>${c.count} PRODUCT${c.count===1?'':'S'}${c.minPrice!==null ? ' · FROM ৳'+c.minPrice : ''}</span>
+<h3>${escapeHTML(s.seg)}</h3>
+<span>${s.count} PRODUCT${s.count===1?'':'S'}${s.minPrice!==null ? ' · FROM ৳'+s.minPrice : ''}</span>
 </div>
 </button>
-`).join('') : `<p style="color:var(--muted);font-size:13px">No products in ${escapeHTML(capitalize(gender))} yet — add some from the Admin Panel.</p>`
+`).join('') : `<p style="color:var(--muted);font-size:13px">No products here yet — add some from the Admin Panel.</p>`
 
 setViewMode('hub')
 window.scrollTo(0, 0)
 }
 
-// A category with just one product goes straight to that product instead
-// of showing a one-item list — one less tap than gorurghash's flow.
-function handleHubTileClick(gender, cat, count){
-if(count === 1){
-const product = allProducts.find(p => (p.gender === gender || p.gender === 'unisex') && p.cat === cat)
-if(product){ openProductDetail(product.id); return }
-}
-window.location.hash = `#/shop/${gender}/${encodeURIComponent(cat)}`
-}
-
-function showCategoryView(gender, category){
+function showProductsView(gender, path, products){
 setViewMode('category')
-$("shopBreadcrumb").innerHTML = `<a href="#" onclick="event.preventDefault();window.location.hash=''">Home</a> / <a href="#" onclick="event.preventDefault();window.location.hash='#/shop/${gender}'">${escapeHTML(capitalize(gender))}</a> / ${escapeHTML(category)}`
-$("shopHeading").textContent = category
-
-const genderBtn = document.querySelector(`#genderTabs [data-gender="${gender}"]`)
-if(genderBtn) filterByGender(gender, genderBtn)
-const catBtn = document.querySelector(`#filters [data-cat="${category}"]`)
-if(catBtn) filterByCategory(category, catBtn)
-
+$("shopBreadcrumb").innerHTML = breadcrumbHTML(gender, path)
+$("shopHeading").textContent = path.length ? path[path.length - 1] : capitalize(gender)
+renderProductGrid(products)
 window.scrollTo(0, 0)
 }
 
@@ -3351,6 +3389,20 @@ editingHeroSlides = JSON.parse(JSON.stringify(slides))
 renderHeroSlideEditorRows()
 }
 
+// Builds the "which category" dropdown options for a given gender, pulled
+// live from real product data — so Admin can only pick a category that
+// actually exists (no more mistyped/mis-cased links that go nowhere).
+// Only offers top-level categories; a category with subcategories underneath
+// will link to its hub page rather than skipping straight to products.
+function categoryOptionsHTML(gender, selected){
+if(gender !== 'men' && gender !== 'women'){
+return `<option value="">—</option>`
+}
+const cats = getSubcategories(gender, [])
+return `<option value="">Whole ${capitalize(gender)} section (hub page)</option>` +
+cats.map(c => `<option value="${escapeAttr(c.seg)}" ${selected===c.seg?'selected':''}>${escapeHTML(c.seg)} (${c.count})</option>`).join('')
+}
+
 function renderHeroSlideEditorRows(){
 const wrap = $("heroSlideEditorRows")
 if(!wrap) return
@@ -3365,13 +3417,15 @@ wrap.innerHTML = editingHeroSlides.map((s, i) => `
 <input type="text" value="${escapeAttr(s.image)}" oninput="updateHeroSlideField(${i},'image',this.value)" placeholder="https://example.com/banner.jpg" style="margin-bottom:10px">
 <label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">TAP TAKES SHOPPERS TO (OPTIONAL)</label>
 <div style="display:flex;gap:8px">
-<select onchange="updateHeroSlideField(${i},'gender',this.value)" style="flex:1;border:1px solid var(--line);border-radius:8px;padding:8px">
+<select onchange="updateHeroSlideField(${i},'gender',this.value);updateHeroSlideField(${i},'category','');renderHeroSlideEditorRows()" style="flex:1;border:1px solid var(--line);border-radius:8px;padding:8px">
 <option value="" ${!s.gender?'selected':''}>No link</option>
 <option value="ALL" ${s.gender==='ALL'?'selected':''}>All</option>
 <option value="men" ${s.gender==='men'?'selected':''}>Men</option>
 <option value="women" ${s.gender==='women'?'selected':''}>Women</option>
 </select>
-<input type="text" value="${escapeAttr(s.category)}" oninput="updateHeroSlideField(${i},'category',this.value)" placeholder="Category (optional)" style="flex:1">
+<select onchange="updateHeroSlideField(${i},'category',this.value)" ${(s.gender==='men'||s.gender==='women')?'':'disabled'} style="flex:1;border:1px solid var(--line);border-radius:8px;padding:8px">
+${categoryOptionsHTML(s.gender, s.category)}
+</select>
 </div>
 </div>
 `).join('')
@@ -3505,13 +3559,15 @@ wrap.innerHTML = editingCategories.map((c, i) => `
 <input type="text" value="${escapeAttr(c.image)}" oninput="updateCategoryField(${i},'image',this.value)" placeholder="https://example.com/photo.jpg" style="margin-bottom:10px">
 <label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">TAP TAKES SHOPPERS TO (OPTIONAL)</label>
 <div style="display:flex;gap:8px">
-<select onchange="updateCategoryField(${i},'gender',this.value)" style="flex:1;border:1px solid var(--line);border-radius:8px;padding:8px">
+<select onchange="updateCategoryField(${i},'gender',this.value);updateCategoryField(${i},'category','');renderCategoryEditorRows()" style="flex:1;border:1px solid var(--line);border-radius:8px;padding:8px">
 <option value="" ${!c.gender?'selected':''}>No link (just scroll to shop)</option>
 <option value="ALL" ${c.gender==='ALL'?'selected':''}>All</option>
 <option value="men" ${c.gender==='men'?'selected':''}>Men</option>
 <option value="women" ${c.gender==='women'?'selected':''}>Women</option>
 </select>
-<input type="text" value="${escapeAttr(c.category)}" oninput="updateCategoryField(${i},'category',this.value)" placeholder="Category (optional)" style="flex:1">
+<select onchange="updateCategoryField(${i},'category',this.value)" ${(c.gender==='men'||c.gender==='women')?'':'disabled'} style="flex:1;border:1px solid var(--line);border-radius:8px;padding:8px">
+${categoryOptionsHTML(c.gender, c.category)}
+</select>
 </div>
 </div>
 `).join('')
