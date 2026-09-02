@@ -3341,6 +3341,12 @@ const parentPath = path.slice(0, -1)
 showHubView(gender, parentPath, getSubcategories(gender, parentPath))
 return
 }
+if(!products.length && path.length){
+// Nothing matches this path at all (e.g. a stale/mistyped link saved
+// from Admin before) — fall back one level instead of a blank page.
+showCategoryPage(gender, path.slice(0, -1))
+return
+}
 showProductsView(gender, path, products)
 }
 
