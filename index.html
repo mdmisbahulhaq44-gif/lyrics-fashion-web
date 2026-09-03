@@ -2549,6 +2549,12 @@ function openProductDetail(productId){
 const product = allProducts.find(p => p.id == productId)
 if(!product){ toast("Product not found."); return }
 
+// Always start a product's panel from the top — without this, tapping a
+// "related product" card while scrolled down (e.g. to Related Products)
+// swapped in the new product's data but kept the old scroll position,
+// which looked like the wrong product had randomly appeared.
+$("productPanel").scrollTop = 0
+
 pdCurrentProduct = product
 pdCurrentIndex = 0
 pdQty = 1
