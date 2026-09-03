@@ -344,6 +344,19 @@ font-size:10px;letter-spacing:1px;
 margin-top:4px;color:rgba(255,255,255,.75)
 }
 
+.hubTiles{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:12px
+}
+.hubTiles .category{
+aspect-ratio:3/4;
+padding:14px;
+border-radius:10px
+}
+.hubTiles .catText h3{font-size:13px;letter-spacing:1px}
+.hubTiles .catText span{font-size:9px}
+
 .breadcrumb{font-size:12px;color:var(--muted);margin-bottom:14px}
 .breadcrumb a{color:var(--muted);text-decoration:none}
 .breadcrumb a:hover{color:#111}
@@ -1056,12 +1069,13 @@ Recommended: landscape photos, at least 1200px wide. -->
 </section>
 
 <!-- CATEGORY HUB PAGE — shown instead of the homepage when the URL is
-#/shop/men or #/shop/women. Lists that gender's categories as big tiles,
-mirroring the homepage tiles above. Tapping a tile goes to #/shop/<gender>/<category>. -->
+#/shop/men or #/shop/women. Lists that gender's categories as a 2-column
+grid of tiles (matches gorurghash's subcategory page style — compact,
+good for many categories). Tapping a tile drills further in. -->
 <section class="section" id="categoryHub" style="display:none">
 <div class="breadcrumb" id="hubBreadcrumb"></div>
 <div class="heading"><div><h2 id="hubHeading"></h2></div></div>
-<div class="categories" id="hubTileGrid"></div>
+<div class="hubTiles" id="hubTileGrid"></div>
 </section>
 
 <section class="section" id="new">
@@ -1897,6 +1911,17 @@ These are the tiles shown below your banner (Women, Men, Sale, etc). Give each o
 <div id="categoryEditorRows"></div>
 <button type="button" onclick="addCategoryRow()" style="background:none;border:1px dashed var(--line);border-radius:8px;padding:10px;width:100%;font-size:12px;letter-spacing:.5px;cursor:pointer;margin-bottom:14px">+ ADD CATEGORY TILE</button>
 <button class="btn" onclick="saveHomeCategoriesSetting()">SAVE CATEGORIES</button>
+</div>
+
+<hr style="margin:36px 0;border:0;border-top:1px solid var(--line)">
+
+<div style="max-width:500px">
+<label style="display:block;font-size:12px;font-weight:700;letter-spacing:.5px;margin-bottom:8px">CATEGORY TILE PHOTOS</label>
+<p style="font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.6">
+By default, a category's tile (Baggy, Shirt, etc — at any depth) uses one of its own product photos. Paste a link here to use a nicer, custom photo instead — this list updates automatically as you add new categories.
+</p>
+<div id="categoryImageRows"></div>
+<button class="btn" onclick="saveCategoryImages()">SAVE CATEGORY PHOTOS</button>
 </div>
 
 </div>
@@ -3281,6 +3306,12 @@ if(allBtn) filterByGender('ALL', allBtn)
 
 // Distinct next-level category names directly under `path` for this
 // gender (also includes unisex products) — one level of the tree at a time.
+let categoryImages = {}
+
+function categoryImageKey(gender, path){
+return `${gender}::${path.join('/')}`
+}
+
 function getSubcategories(gender, path){
 const list = allProducts.filter(p => p.gender === gender || p.gender === 'unisex')
 const byNext = new Map()
@@ -3296,10 +3327,11 @@ byNext.get(next).push(p)
 })
 return Array.from(byNext.entries()).map(([seg, products]) => {
 const prices = products.map(p => Number(p.price)).filter(n => !isNaN(n))
+const customImage = categoryImages[categoryImageKey(gender, [...path, seg])]
 return {
 seg,
 count: products.length,
-image: products[0] && products[0].imgs ? products[0].imgs.split(',')[0].trim() : '',
+image: customImage || (products[0] && products[0].imgs ? products[0].imgs.split(',')[0].trim() : ''),
 minPrice: prices.length ? Math.min(...prices) : null
 }
 })
@@ -3529,6 +3561,80 @@ renderHomeCategories(DEFAULT_HOME_CATEGORIES)
 }
 
 let editingCategories = []
+
+/* ============================================================
+   CATEGORY TILE IMAGES — lets you set a custom "gorgeous" cover photo
+   for any category tile (at any depth) instead of always using a
+   product's own photo. Stored in Supabase `settings` under
+   category_images as {"men::Shirt": "https://...", ...}.
+   ============================================================ */
+async function loadCategoryImages(){
+try{
+const { data } = await supabaseClient
+.from('settings')
+.select('value')
+.eq('key', 'category_images')
+.maybeSingle()
+categoryImages = (data && data.value) ? JSON.parse(data.value) : {}
+}catch(e){
+console.error('Category images fetch failed:', e)
+categoryImages = {}
+}
+}
+
+// Walks the whole category tree for both genders and returns every place
+// a tile is shown (every branch node, at every depth) — so the editor
+// always reflects exactly the categories that currently exist.
+function getAllCategoryPaths(){
+const results = []
+function walk(gender, path){
+getSubcategories(gender, path).forEach(s => {
+const newPath = [...path, s.seg]
+results.push({ gender, path: newPath, label: `${capitalize(gender)} / ${newPath.join(' / ')}` })
+walk(gender, newPath)
+})
+}
+walk('men', [])
+walk('women', [])
+return results
+}
+
+async function loadCategoryImagesSettingIntoForm(){
+await loadCategoryImages()
+renderCategoryImageEditor()
+}
+
+function renderCategoryImageEditor(){
+const wrap = $("categoryImageRows")
+if(!wrap) return
+const paths = getAllCategoryPaths()
+wrap.innerHTML = paths.length ? paths.map(p => {
+const key = categoryImageKey(p.gender, p.path)
+const url = categoryImages[key] || ''
+const safeKey = escapeAttr(key)
+return `
+<div style="border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:12px">
+<b style="font-size:12px;letter-spacing:.5px;display:block;margin-bottom:8px">${escapeHTML(p.label)}</b>
+<img id="catImgPreview_${escapeAttr(key)}" src="${escapeAttr(url)}" style="width:100%;max-height:120px;object-fit:cover;border-radius:8px;margin-bottom:10px;background:#f2f2f2;display:${url?'block':'none'}">
+<input type="text" value="${escapeAttr(url)}" placeholder="Leave blank to auto-use a product photo" oninput="updateCategoryImageField('${safeKey}', this.value)" data-cat-key="${safeKey}">
+</div>`
+}).join('') : `<p style="font-size:12px;color:var(--muted)">No categories yet — add products with a Category first.</p>`
+}
+
+function updateCategoryImageField(key, value){
+if(value){ categoryImages[key] = value } else { delete categoryImages[key] }
+const preview = $("catImgPreview_" + key)
+if(preview){ preview.src = value; preview.style.display = value ? 'block' : 'none' }
+}
+
+async function saveCategoryImages(){
+const { error } = await supabaseClient
+.from('settings')
+.upsert({ key: 'category_images', value: JSON.stringify(categoryImages) }, { onConflict: 'key' })
+
+if(error){ toast("Could not save: " + readableError(error)); return }
+toast("Category images updated!")
+}
 
 async function loadHomeCategoriesSettingIntoForm(){
 const { data } = await supabaseClient
@@ -4393,7 +4499,7 @@ $("adminSettingsView").style.display = section==='settings' ? 'block' : 'none'
 if(section==='dashboard'){ $("navDashboard").classList.add('active'); $("adminTitle").textContent="Dashboard"; loadAdminData() }
 if(section==='products'){ $("navProducts").classList.add('active'); $("adminTitle").textContent="Products"; renderAdminProductsTable() }
 if(section==='orders'){ $("navOrders").classList.add('active'); $("adminTitle").textContent="Orders"; loadAllOrders() }
-if(section==='settings'){ $("navSettings").classList.add('active'); $("adminTitle").textContent="Settings"; loadHeroSlidesSettingIntoForm(); loadHomeCategoriesSettingIntoForm() }
+if(section==='settings'){ $("navSettings").classList.add('active'); $("adminTitle").textContent="Settings"; loadHeroSlidesSettingIntoForm(); loadHomeCategoriesSettingIntoForm(); loadCategoryImagesSettingIntoForm() }
 }
 
 function statusBadgeHTML(status){
@@ -4719,7 +4825,7 @@ updateCartBadge()
 loadHeroBanner()
 loadTestimonials()
 loadHomeCategories()
-await loadProducts()
+await Promise.all([loadProducts(), loadCategoryImages()])
 
 window.addEventListener('hashchange', renderRoute)
 renderRoute()
