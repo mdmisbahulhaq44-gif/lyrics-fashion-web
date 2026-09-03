@@ -229,15 +229,16 @@ cursor:pointer
 }
 .heroArrow{
 position:absolute;top:50%;transform:translateY(-50%);
-width:40px;height:40px;border-radius:50%;
-border:0;background:rgba(255,255,255,.9);
-font-size:22px;cursor:pointer;
+width:40px;height:40px;
+border:0;background:transparent;
+color:#fff;
+font-size:34px;font-weight:300;cursor:pointer;
 display:flex;align-items:center;justify-content:center;
-box-shadow:0 2px 8px rgba(0,0,0,.15);
+text-shadow:0 1px 6px rgba(0,0,0,.5);
 z-index:3
 }
-.heroArrowLeft{left:12px}
-.heroArrowRight{right:12px}
+.heroArrowLeft{left:6px}
+.heroArrowRight{right:6px}
 .heroDots{
 position:absolute;bottom:14px;left:0;right:0;
 display:flex;justify-content:center;gap:6px;
@@ -331,17 +332,27 @@ font-family:inherit
 content:"";position:absolute;inset:0;
 background:linear-gradient(0deg,rgba(0,0,0,.65) 0%,rgba(0,0,0,.15) 55%,rgba(0,0,0,0) 100%)
 }
-.catText{position:relative;z-index:2}
+.catText{
+position:relative;z-index:2;
+display:inline-block;
+background:rgba(0,0,0,.3);
+backdrop-filter:blur(3px);
+-webkit-backdrop-filter:blur(3px);
+border-radius:8px;
+padding:8px 12px
+}
 .catText h3{
 font-size:18px;
 font-weight:700;
 letter-spacing:2px;
-text-transform:uppercase
+text-transform:uppercase;
+text-shadow:0 1px 3px rgba(0,0,0,.4)
 }
 .catText span{
 display:block;
-font-size:10px;letter-spacing:1px;
-margin-top:4px;color:rgba(255,255,255,.75)
+font-size:11px;letter-spacing:1px;
+margin-top:4px;color:rgba(255,255,255,.95);
+font-weight:500
 }
 
 .hubTiles{
@@ -352,7 +363,7 @@ gap:12px
 .hubTiles .category{
 aspect-ratio:3/4;
 padding:14px;
-border-radius:10px
+border-radius:18px
 }
 .hubTiles .catText h3{font-size:13px;letter-spacing:1px}
 .hubTiles .catText span{font-size:9px}
@@ -1212,10 +1223,10 @@ your signature style.
 
 <!-- BOTTOM NAV -->
 <div class="bottomNav" id="bottomNav">
-<button class="active" onclick="showShop();window.scrollTo(0,0)">
+<button class="active" onclick="window.location.hash='';showShop();window.scrollTo(0,0)">
 <span class="bnIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="21" height="21"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9.5 21v-6.5h5V21"/></svg></span>Home
 </button>
-<button onclick="scrollToShop()">
+<button onclick="window.location.hash='';setTimeout(scrollToShop,50)">
 <span class="bnIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="21" height="21"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></svg></span>Category
 </button>
 <button onclick="openCart()">
