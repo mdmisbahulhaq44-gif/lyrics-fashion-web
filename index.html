@@ -315,7 +315,7 @@ gap:16px
 .category{
 position:relative;
 overflow:hidden;
-border-radius:14px;
+border-radius:0;
 background:#1a1a1a no-repeat center/cover;
 aspect-ratio:2.4/1;
 display:flex;align-items:flex-end;
@@ -3361,8 +3361,21 @@ route = { gender: parts[1], path: parts.slice(2).map(decodeURIComponent) }
 return { route, productId }
 }
 
+// Remembers a product we just auto-closed via back-navigation, so the
+// single-product "skip straight to it" shortcut below doesn't immediately
+// re-open the very product the user just backed out of (which would make
+// back navigation look stuck/broken for any category with only 1 item).
+let lastClosedProductId = null
+
 function renderRoute(){
 const { route, productId } = parseRoute()
+
+if(!productId && document.getElementById("productPanel").classList.contains("show")){
+lastClosedProductId = pdCurrentProduct ? pdCurrentProduct.id : null
+}else if(productId){
+lastClosedProductId = null
+}
+
 if(route) showCategoryPage(route.gender, route.path)
 else showHomeView()
 
@@ -3444,7 +3457,11 @@ const subs = getSubcategories(gender, path)
 if(subs.length){ showHubView(gender, path, subs); return }
 
 const products = getProductsAtPath(gender, path)
-if(products.length === 1){
+// Skip the auto-open shortcut exactly once if we just backed out of this
+// very product — otherwise back navigation would bounce straight back in.
+const skipShortcut = products.length === 1 && products[0].id === lastClosedProductId
+lastClosedProductId = null
+if(products.length === 1 && !skipShortcut){
 openProductDetail(products[0].id)
 const parentPath = path.slice(0, -1)
 showHubView(gender, parentPath, getSubcategories(gender, parentPath))
@@ -4903,6 +4920,22 @@ loadHeroBanner()
 loadTestimonials()
 loadHomeCategories()
 await Promise.all([loadProducts(), loadCategoryImages()])
+
+// If the page loaded directly on a product URL (a refresh while a product
+// was open, a shared link, etc.), there'd be no "base" entry underneath it
+// in this tab's history — so the very first back-press/swipe would leave
+// the site entirely instead of just closing the product panel. Split it
+// into two history entries (base, then product) so back always has
+// somewhere safe to land first.
+{
+const originalHash = window.location.hash
+const initialParsed = parseRoute()
+if(initialParsed.productId){
+const baseHash = originalHash.replace(/\/product\/[^/]+$/, '')
+history.replaceState(null, '', baseHash || (window.location.pathname + window.location.search))
+history.pushState(null, '', originalHash)
+}
+}
 
 window.addEventListener('hashchange', renderRoute)
 renderRoute()
