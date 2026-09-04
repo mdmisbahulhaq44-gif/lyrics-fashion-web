@@ -333,13 +333,7 @@ content:"";position:absolute;inset:0;
 background:linear-gradient(0deg,rgba(0,0,0,.65) 0%,rgba(0,0,0,.15) 55%,rgba(0,0,0,0) 100%)
 }
 .catText{
-position:relative;z-index:2;
-display:inline-block;
-background:rgba(0,0,0,.3);
-backdrop-filter:blur(3px);
--webkit-backdrop-filter:blur(3px);
-border-radius:8px;
-padding:8px 12px
+position:relative;z-index:2
 }
 .catText h3{
 font-size:18px;
@@ -352,7 +346,8 @@ text-shadow:0 1px 3px rgba(0,0,0,.4)
 display:block;
 font-size:11px;letter-spacing:1px;
 margin-top:4px;color:rgba(255,255,255,.95);
-font-weight:500
+font-weight:500;
+text-shadow:0 1px 3px rgba(0,0,0,.5)
 }
 
 .hubTiles{
@@ -364,6 +359,14 @@ gap:12px
 aspect-ratio:3/4;
 padding:14px;
 border-radius:18px
+}
+.hubTiles .catText{
+display:inline-block;
+background:rgba(0,0,0,.3);
+backdrop-filter:blur(3px);
+-webkit-backdrop-filter:blur(3px);
+border-radius:8px;
+padding:8px 12px
 }
 .hubTiles .catText h3{font-size:13px;letter-spacing:1px}
 .hubTiles .catText span{font-size:9px}
@@ -2029,6 +2032,30 @@ document.querySelectorAll(".panel").forEach(x=>x.classList.remove("show"))
 unlockBodyScrollIfNoneOpen()
 }
 
+// Swipe-right-to-close on any open panel — lets you dismiss the product
+// panel (or cart, wishlist, etc.) with a side gesture instead of only the
+// × button. Ignored when the touch starts inside something that already
+// has its own horizontal swipe (the image gallery, the hero carousel).
+let panelSwipeStartX = 0, panelSwipeStartY = 0
+document.addEventListener('touchstart', e => {
+const panel = e.target.closest('.panel.show')
+if(!panel || e.target.closest('.pdGalleryTrack, .heroTrack')){ panelSwipeStartX = 0; return }
+panelSwipeStartX = e.touches[0].clientX
+panelSwipeStartY = e.touches[0].clientY
+}, { passive:true })
+document.addEventListener('touchend', e => {
+if(!panelSwipeStartX) return
+const panel = document.querySelector('.panel.show')
+if(!panel) return
+const dx = e.changedTouches[0].clientX - panelSwipeStartX
+const dy = e.changedTouches[0].clientY - panelSwipeStartY
+if(dx > 90 && Math.abs(dy) < 60){
+if(panel.id === 'productPanel' && window.location.hash.includes('/product/')) history.back()
+else closePanels()
+}
+panelSwipeStartX = 0
+}, { passive:true })
+
 function openAccount(){
 openPanel("accountPanel")
 refreshAccountView()
@@ -2545,7 +2572,12 @@ wrap.style.display = "block"
 }
 let pdTouchStartX = 0
 
-function openProductDetail(productId){
+// Renders the product panel's content for a given product — does NOT
+// touch the URL/history. Call openProductDetail() instead from click
+// handlers; that pushes a history entry first so back/swipe-back closes
+// the panel properly instead of leaving the site (this function is what
+// the router calls once the URL already reflects the open product).
+function renderProductDetail(productId){
 const product = allProducts.find(p => p.id == productId)
 if(!product){ toast("Product not found."); return }
 
@@ -2634,6 +2666,20 @@ if(Math.abs(delta) > 40) pdSlide(delta > 0 ? -1 : 1)
 
 openPanel("productPanel")
 loadReviews(product.id)
+}
+
+// Opens a product by pushing a "/product/<id>" hash segment onto whatever
+// route we're currently on, so the browser's own back button/gesture
+// closes the panel and returns to exactly where you were — instead of
+// leaving the site, since showing the panel alone never touched history.
+function openProductDetail(productId){
+const base = window.location.hash.replace(/\/product\/[^/]+$/, '')
+const newHash = (base && base !== '#') ? `${base}/product/${productId}` : `#/product/${productId}`
+if(window.location.hash === newHash){
+renderProductDetail(productId)
+}else{
+window.location.hash = newHash
+}
 }
 
 function pdSlide(direction){
@@ -3302,17 +3348,31 @@ if(mode !== 'category') $("shopHeading").textContent = 'New Arrivals'
 }
 
 function parseRoute(){
-const parts = window.location.hash.replace(/^#\/?/, '').split('/').filter(Boolean)
-if(parts[0] === 'shop' && (parts[1] === 'men' || parts[1] === 'women')){
-return { gender: parts[1], path: parts.slice(2).map(decodeURIComponent) }
+let parts = window.location.hash.replace(/^#\/?/, '').split('/').filter(Boolean)
+let productId = null
+if(parts.length >= 2 && parts[parts.length - 2] === 'product'){
+productId = decodeURIComponent(parts[parts.length - 1])
+parts = parts.slice(0, -2)
 }
-return null
+let route = null
+if(parts[0] === 'shop' && (parts[1] === 'men' || parts[1] === 'women')){
+route = { gender: parts[1], path: parts.slice(2).map(decodeURIComponent) }
+}
+return { route, productId }
 }
 
 function renderRoute(){
-const route = parseRoute()
-if(!route){ showHomeView(); return }
-showCategoryPage(route.gender, route.path)
+const { route, productId } = parseRoute()
+if(route) showCategoryPage(route.gender, route.path)
+else showHomeView()
+
+if(productId){
+renderProductDetail(productId)
+}else if(document.getElementById("productPanel").classList.contains("show")){
+// The URL no longer has a product segment (user hit back/swiped back) —
+// close the panel to match, instead of leaving it open over the wrong page.
+closePanels()
+}
 }
 
 function showHomeView(){
