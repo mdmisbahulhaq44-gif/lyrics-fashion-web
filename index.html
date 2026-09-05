@@ -1989,6 +1989,12 @@ console.error('Unhandled error:', readableError(e.reason))
 
 const ADMIN_EMAIL = "mdmisbahulhaq44@gmail.com";
 
+// The browser's own automatic scroll-restoration on back/forward fights
+// with the scroll resets this router does on its own (e.g. back-to-top
+// when returning home) — turning it off lets our explicit scrollTo calls
+// stick instead of being silently overridden a moment later.
+if('scrollRestoration' in history){ history.scrollRestoration = 'manual' }
+
 function $(id){
 return document.getElementById(id)
 }
@@ -3376,22 +3382,24 @@ lastClosedProductId = pdCurrentProduct ? pdCurrentProduct.id : null
 lastClosedProductId = null
 }
 
+// Close the panel (and unlock body scroll) BEFORE rendering the page
+// underneath — otherwise a scroll-to-top there would still be blocked by
+// the panel's scroll lock and get silently overridden once it unlocks.
+if(!productId && document.getElementById("productPanel").classList.contains("show")){
+closePanels()
+}
+
 if(route) showCategoryPage(route.gender, route.path)
 else showHomeView()
 
-if(productId){
-renderProductDetail(productId)
-}else if(document.getElementById("productPanel").classList.contains("show")){
-// The URL no longer has a product segment (user hit back/swiped back) —
-// close the panel to match, instead of leaving it open over the wrong page.
-closePanels()
-}
+if(productId) renderProductDetail(productId)
 }
 
 function showHomeView(){
 setViewMode('home')
 const allBtn = document.querySelector('#genderTabs [data-gender="ALL"]')
 if(allBtn) filterByGender('ALL', allBtn)
+window.scrollTo(0, 0)
 }
 
 // Distinct next-level category names directly under `path` for this
