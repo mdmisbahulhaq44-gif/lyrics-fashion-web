@@ -1630,10 +1630,11 @@ BUY NOW
 <input type="text" id="pfBrand" value="VENOM">
 
 <label>CATEGORY</label>
-<input type="text" id="pfCat" placeholder="e.g. Shirt, Pants, Polo" required>
+<div id="pfCatBuilder" style="margin-bottom:8px"></div>
+<input type="hidden" id="pfCat" required>
 
 <label>GENDER</label>
-<select id="pfGender">
+<select id="pfGender" onchange="renderPfCatBuilder()">
 <option value="men">Men</option>
 <option value="women">Women</option>
 <option value="unisex">Unisex</option>
@@ -4633,6 +4634,75 @@ $("adminProductsBody").innerHTML = list.map(p => `
 </tr>`).join('')
 }
 
+/* ============================================================
+   CATEGORY PICKER (product form) — lets Admin build a nested category
+   path (e.g. "Shirt/Flow Shirts") by picking from existing categories
+   at each level instead of typing slashes. Reuses getSubcategories()
+   so the options are always exactly what's already in use.
+   ============================================================ */
+let pfCatLevels = []
+let pfCatCustom = []
+
+function pfCatLevelChange(i, value){
+if(value === '__new__'){
+pfCatCustom[i] = true
+pfCatLevels[i] = ''
+}else{
+pfCatCustom[i] = false
+pfCatLevels[i] = value
+}
+pfCatLevels = pfCatLevels.slice(0, i + 1)
+pfCatCustom = pfCatCustom.slice(0, i + 1)
+renderPfCatBuilder()
+}
+
+function pfCatSetCustomName(i, value){
+pfCatLevels[i] = value
+syncPfCat()
+}
+
+function pfCatAddLevel(){
+pfCatLevels.push('')
+pfCatCustom.push(false)
+renderPfCatBuilder()
+}
+
+function pfCatRemoveLevel(i){
+pfCatLevels = pfCatLevels.slice(0, i)
+pfCatCustom = pfCatCustom.slice(0, i)
+renderPfCatBuilder()
+}
+
+function syncPfCat(){
+$("pfCat").value = pfCatLevels.filter(v => v && v.trim()).join('/')
+}
+
+function renderPfCatBuilder(){
+const wrap = $("pfCatBuilder")
+if(!wrap) return
+const gender = $("pfGender").value
+
+wrap.innerHTML = pfCatLevels.map((val, i) => {
+const path = pfCatLevels.slice(0, i)
+const opts = getSubcategories(gender, path)
+const custom = pfCatCustom[i]
+return `
+<div style="display:flex;gap:8px;margin-bottom:8px">
+<select onchange="pfCatLevelChange(${i}, this.value)" style="flex:1;border:1px solid var(--line);border-radius:8px;padding:9px">
+<option value="">— Select —</option>
+${opts.map(o => `<option value="${escapeAttr(o.seg)}" ${(!custom && val===o.seg)?'selected':''}>${escapeHTML(o.seg)}</option>`).join('')}
+<option value="__new__" ${custom?'selected':''}>+ Add new...</option>
+</select>
+<button type="button" onclick="pfCatRemoveLevel(${i})" style="background:none;border:1px solid var(--line);border-radius:8px;width:38px;color:var(--red);cursor:pointer">✕</button>
+</div>
+${custom ? `<input type="text" value="${escapeAttr(val)}" placeholder="Type new ${i===0?'category':'subcategory'} name" oninput="pfCatSetCustomName(${i}, this.value)" style="margin-bottom:8px">` : ''}
+`
+}).join('') + `
+<button type="button" onclick="pfCatAddLevel()" style="background:none;border:1px dashed var(--line);border-radius:8px;padding:8px;width:100%;font-size:12px;letter-spacing:.5px;cursor:pointer">+ ${pfCatLevels.length ? 'ADD SUBCATEGORY LEVEL' : 'CHOOSE CATEGORY'}</button>
+`
+syncPfCat()
+}
+
 function openProductForm(productId){
 $("productForm").reset()
 $("pfDeleteBtn").style.display = "none"
@@ -4643,8 +4713,11 @@ $("productFormTitle").textContent = "Edit Product"
 $("pfId").value = p.id
 $("pfName").value = p.name || ""
 $("pfBrand").value = p.brand || ""
-$("pfCat").value = p.cat || ""
 $("pfGender").value = p.gender || "men"
+pfCatLevels = (p.cat || "").split('/').map(s => s.trim()).filter(Boolean)
+pfCatCustom = pfCatLevels.map(() => false)
+if(!pfCatLevels.length){ pfCatLevels = ['']; pfCatCustom = [false] }
+renderPfCatBuilder()
 $("pfPrice").value = p.price || ""
 $("pfOld").value = p.old || ""
 $("pfBadge").value = p.badge || ""
@@ -4661,6 +4734,9 @@ $("productFormTitle").textContent = "Add Product"
 $("pfId").value = ""
 $("pfGender").value = "men"
 $("pfBrand").value = "VENOM"
+pfCatLevels = ['']
+pfCatCustom = [false]
+renderPfCatBuilder()
 }
 openPanel("productFormPanel")
 }
